@@ -3,3 +3,4 @@
 .idea
 Images
 Ignore
+__pycache__/
