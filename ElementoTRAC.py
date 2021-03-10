@@ -108,7 +108,7 @@ largura2 = int(Image.shape[1])
 altura2 = int(Image.shape[0])
 edgeAnalyze = Image[0:altura2, 0:int(largura2 * bh)]
 
-
+# Todo: Make the config window with QT5.
 if DebugControls:
     cv2.namedWindow("Controls")
     cv2.resizeWindow("Controls", 600, 600)
@@ -187,6 +187,9 @@ if DebugControls:
             print(lower, upper)
             break
 else:
+
+    # Todo: Transform in another file or function to use.
+
     Tabs = [mainConfig['Edge'], mainConfig['Screw']]
 
     mask = Op.refineMask(Op.HSVMask(Image, lower, upper))
