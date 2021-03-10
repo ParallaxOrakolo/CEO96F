@@ -64,7 +64,7 @@ def findContoursPlus(image, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_SIMPLE, 
                 else:
                     lesst3A = False
                 outPut_A.append(
-                    {"class": 'A', "boundRect": [(xA, yA), (wA, hA)], "dimension": [alturaA, larguraA], "countourns": boxA,
+                    {"class": 'A', "boundRect": [(xA, yA), (wA, hA)], "dimension": [alturaA, larguraA], "contour": boxA,
                      'hierarchy': [lesst3A, currentHierarchy], "centers": [centro_momentsA, centro_boxA]})
             elif AreaMin_B < area < AreaMax_B:
                 xB, yB, wB, hB = cv2.boundingRect(currentContour)
@@ -86,7 +86,7 @@ def findContoursPlus(image, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_SIMPLE, 
                 else:
                     lesst3B = False
                 outPut_B.append(
-                    {"class": 'B', "boundRect": [xB, yB, wB, hB], "dimension": [alturaB, larguraB], "countourns": boxB,
+                    {"class": 'B', "boundRect": [xB, yB, wB, hB], "dimension": [alturaB, larguraB], "contour": boxB,
                      'hierarchy': [lesst3B, currentHierarchy], "centers": [centro_momentsB, centro_boxB]})
         return outPut_A, outPut_B
     except TypeError:
@@ -101,3 +101,35 @@ def refineMask(maskToRefine, kerenelA=(3, 3), kernelB=(2, 2)):
     return cv2.morphologyEx(cv2.morphologyEx(maskToRefine, cv2.MORPH_CLOSE, (np.ones(kerenelA, np.uint8))),
                             cv2.MORPH_OPEN,
                             (np.ones(kernelB, np.uint8)))
+
+
+def meshImg(img, nRows=3, mCols=3):
+    rois = []
+    for i in range(0, nRows):
+        lines = []
+        for j in range(0, mCols):
+            roi = img[
+                  int(i*img.shape[0]/nRows):int(i*img.shape[0]/nRows + img.shape[0]/nRows),
+                  int(j*img.shape[1]/mCols):int(j*img.shape[1]/mCols + img.shape[1]/mCols)
+                  ]
+            lines.append(roi)
+        rois.append(lines)
+    return rois
+
+
+def concatImg(imgMeshed, index, p1, p2, **orientation):
+    pc = [x for x in range(p1, p2 + 1)]
+    img = np.zeros(2)
+    if orientation.get('h') or orientation.get('H'):
+        for x in pc:
+            if x == pc[0]:
+                img = np.concatenate((imgMeshed[index][x], imgMeshed[index][x + 1]), axis=1)
+            elif x != pc[len(pc)-1]:
+                img = np.concatenate((img, imgMeshed[index][x + 1]), axis=1)
+    else:
+        for x in pc:
+            if x == pc[0]:
+                img = np.concatenate((imgMeshed[x][index], imgMeshed[x + 1][index]), axis=0)
+            elif x != pc[len(pc) - 1]:
+                img = np.concatenate((img, imgMeshed[x + 1][index]), axis=0)
+    return img
