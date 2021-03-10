@@ -1,0 +1,50 @@
+{
+  "Filtros": {
+    "HSV": {
+      "0":{
+        "Application": "Hole",
+        "Valores": {
+          "lower":[78, 59, 6],
+          "upper":[84, 255, 124]
+        }
+      },
+      "1":{
+        "Application": "Edge",
+        "Valores": {
+          "lower":[13, 3, 126],
+          "upper":[128, 40, 241]
+        }
+      },
+      "2":{
+        "Application": "Screw",
+        "Valores": {
+          "lower":[0, 4, 38],
+          "upper":[42, 93, 246]
+        }
+      }
+    }
+  },
+  "Debugs": {
+        "all": false,
+        "print": false,
+        "pictures": false,
+        "markings": false,
+        "realTime": false,
+        "testControls": false
+    },
+
+  "Hole":{
+    "perimeter": 5,
+    "areaMin": 3500,
+    "areaMax": 4500
+  },
+  "Edge": {
+      "areaMin": 25319,
+      "areaMax": 30319
+    },
+  "Screw":{
+      "areaMin": 10002,
+      "areaMax": 20169
+    }
+
+}
