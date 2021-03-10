@@ -39,8 +39,8 @@
     "areaMax": 4500
   },
   "Edge": {
-      "areaMin": 25319,
-      "areaMax": 30319
+      "areaMin": 15000,
+      "areaMax": 50000
     },
   "Screw":{
       "areaMin": 10002,
