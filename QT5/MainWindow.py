@@ -41,7 +41,7 @@ class JsonTree(QWidget):
         view.setColumnWidth(0, int(self.label.width()/2))
         self.vt.addWidget(view)
     
-    def saveData(self)
+    def saveData(self):
         bkp = model.json()
         with open(jsonpath, 'w', encoding='utf-8') as jsonFile2:
             json.dump(bkp, jsonFile2, indent=4)
