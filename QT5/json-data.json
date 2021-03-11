@@ -1,0 +1,108 @@
+{
+    "Cameras": {
+        "Hole": {
+            "Properties": {
+                "brightness": 1,
+                "contrast": 0,
+                "exposure": -4,
+                "gain": 66,
+                "gama": 298,
+                "hue": 3,
+                "saturation": 70
+            },
+            "Settings": {
+                "frame_height": 1280,
+                "frame_width": 720,
+                "id": 0,
+                "scale": 0.04276480601654536
+            }
+        },
+        "Screw": {
+            "Properties": {
+                "brightness": 1,
+                "contrast": 0,
+                "exposure": -4,
+                "gain": 66,
+                "gama": 298,
+                "hue": 3,
+                "saturation": 59
+            },
+            "Settings": {
+                "frame_height": 1280,
+                "frame_width": 720,
+                "id": 1,
+                "scale": 0.04276480601654536
+            }
+        }
+    },
+    "Debugs": {
+        "all": false,
+        "markings": false,
+        "pictures": false,
+        "print": false,
+        "realTime": false,
+        "testControls": false
+    },
+    "Edge": {
+        "areaMax": 50000,
+        "areaMin": 15000
+    },
+    "Filtros": {
+        "HSV": {
+            "0": {
+                "Application": "Hole",
+                "Valores": {
+                    "lower": [
+                        78,
+                        59,
+                        6
+                    ],
+                    "upper": [
+                        84,
+                        255,
+                        124
+                    ]
+                }
+            },
+            "1": {
+                "Application": "Edge",
+                "Valores": {
+                    "lower": [
+                        13,
+                        3,
+                        126
+                    ],
+                    "upper": [
+                        128,
+                        40,
+                        241
+                    ]
+                }
+            },
+            "2": {
+                "Application": "Screw",
+                "Valores": {
+                    "lower": [
+                        0,
+                        4,
+                        38
+                    ],
+                    "upper": [
+                        42,
+                        93,
+                        246
+                    ]
+                }
+            }
+        }
+    },
+    "Hole": {
+        "areaMax": 4500,
+        "areaMin": 3500,
+        "perimeter": 5
+    },
+    "Screw": {
+        "areaMax": 20169,
+        "areaMin": 10002
+    }
+}
