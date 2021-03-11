@@ -133,3 +133,15 @@ def concatImg(imgMeshed, index, p1, p2, **orientation):
             elif x != pc[len(pc) - 1]:
                 img = np.concatenate((img, imgMeshed[x + 1][index]), axis=0)
     return img
+
+
+def takeSnapshot(cameraID):  # Função que lê e retorna a imagem presente na camera
+    if type(cameraID) != cv2.VideoCapture:
+        image_status, image = (cv2.VideoCapture(cameraID, cv2.CAP_DSHOW)).read()
+    else:
+        image_status, image = cameraID.read()
+    if image_status:
+        return image
+    else:
+        # Todo: Raise an Exception
+        exit('Camera não encontrada, verifique a conexão.')

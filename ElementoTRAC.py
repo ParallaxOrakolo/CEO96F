@@ -68,6 +68,11 @@ def findCircle(circle_Mask, areaMinC, areaMaxC, perimeter_size, blur_Size=3):
 
 
 def findScrew(imgAnalyse, tabs):
+
+    if type(imgAnalyse) != np.ndarray:
+        print(type(imgAnalyse))
+        imgAnalyse = Op.takeSnapshot(imgAnalyse)
+
     width = int(Image.shape[1])
     height = int(Image.shape[0])
     offset_screw = 0.00
@@ -97,6 +102,11 @@ def findScrew(imgAnalyse, tabs):
 
 
 def findHole(imgAnalyse, minArea, maxArea, c_perimeter):
+
+    if type(imgAnalyse) != np.ndarray:
+        print(type(imgAnalyse))
+        imgAnalyse = Op.takeSnapshot(imgAnalyse)
+
     for values in HSValues:
         globals()[values] = np.array(Op.extractHSValue(HSValues, values))
 
