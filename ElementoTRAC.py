@@ -2,6 +2,7 @@
 #                                                    Imports                                                           #
 import FastFunctions as Ff
 import OpencvPlus as Op
+import operator as opr
 import numpy as np
 import cv2
 
@@ -238,7 +239,13 @@ if DebugControls:
             break
 """
 
-# Todo: Make a square around the cell.
+# Make a square around the cell.
+p1 = tuple(map(opr.add, map(opr.mul, (((Quadrants[line][column]).shape[:2])[::-1]), (column, line)), (-10, -10)))
+p2 = tuple(map(opr.add, map(opr.mul, (((Quadrants[line-1][column-1]).shape[:2])[::-1]), (column+1, line+1)), (10, 10)))
+cv2.rectangle(Image, p1, p2, (0, 0, 255), 5)
+cv2.imshow('Image_Original', cv2.resize(Image, None, fx=Escala*0.3, fy=Escala*0.3))
+
+
 Image = Quadrants[line][column]
 
 
