@@ -34,6 +34,9 @@
      <height>271</height>
     </rect>
    </property>
+   <property name="styleSheet">
+    <string notr="true"/>
+   </property>
    <property name="frameShape">
     <enum>QFrame::StyledPanel</enum>
    </property>
@@ -50,7 +53,7 @@
      </rect>
     </property>
     <property name="styleSheet">
-     <string notr="true">background-color: rgb(124, 205, 255);</string>
+     <string notr="true"/>
     </property>
     <property name="text">
      <string/>
@@ -65,7 +68,7 @@
       <height>261</height>
      </rect>
     </property>
-    <layout class="QVBoxLayout" name="vt" stretch="">
+    <layout class="QVBoxLayout" name="vt">
      <property name="sizeConstraint">
       <enum>QLayout::SetDefaultConstraint</enum>
      </property>
@@ -82,7 +85,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Print</string>
+    <string>Save</string>
    </property>
   </widget>
  </widget>
