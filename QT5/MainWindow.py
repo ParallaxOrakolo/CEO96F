@@ -111,7 +111,7 @@ class MachineController(QWidget):
             Func = lambda fd, dm: 'G0 ' + str(value.objectName()).upper()+'-' + str(dm) + ' F' + str(fd)
             control[str(value.objectName()).upper()].display(control[str(value.objectName()).upper()].value()-self.dstMov.value())
 
-        # Todo: Implemment SendGCODE()
+        # Todo: Implement SendGCODE()
         print(Func(self.FRt.value(), self.dstMov.value()))
 
     def onClicked(self, marker):
@@ -131,7 +131,7 @@ class MachineController(QWidget):
                     _, img = cap.read()
                     if marker_s:
                         cv2.drawMarker(img, (int(img.shape[1] / 2), int(img.shape[0] / 2)),
-                                       (self.LedR.value(), self.LedG.value(), self.LedB.value()), markerSize=50,
+                                       (self.LedB.value(), self.LedG.value(), self.LedR.value()), markerSize=50,
                                        thickness=1)
                     self.displayImage(img, 1)
                     cv2.waitKey(1)
@@ -145,7 +145,7 @@ class MachineController(QWidget):
                 cv2.waitKey(1)
 
     def SerialMonitor(self, gcode):
-        # Todo: Implementar SendGcode e Waitingecho
+        # Todo: Implementar SendGcode e WaitingEcho
         self.Serial_Out.setText(str(gcode).upper())
 
     def displayImage(self, img, window=1):
