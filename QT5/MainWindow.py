@@ -6,7 +6,8 @@ from PyQt5.QtWidgets import (
     QVBoxLayout,
     QWidget,
     QDialog,
-    QApplication
+    QApplication,
+    QAction
 )
 
 from PyQt5.QtGui import QImage, QPixmap
@@ -46,10 +47,9 @@ class AnotherWindow(QWidget):
 class MachineController(QWidget):
 
     def __init__(self):
-
         super(MachineController, self).__init__()
         loadUi("Ui/machineController.ui", self)
-        # self.showMaximized()
+        self.Voltar.clicked.connect(lambda checked: self.hide())
         self.PhotoPath.setText(photoPath)
         self.LigarC.clicked.connect(self.onClicked)
         self.Snapshot.clicked.connect(self.takePicture)
@@ -187,31 +187,24 @@ class MainWindow(QMainWindow):
         self.window1 = JsonTree()
         self.window2 = MachineController()
 
-        self.Jse.clicked.connect(
-            lambda checked: self.toggle_window(self.window1)
-        )
+        self.actionSair.triggered.connect(self.quit_trigger)
+        self.actionJson_Editor.triggered.connect(lambda checked: self.toggle_window(self.window1))
+        self.actionMachine.triggered.connect(lambda checked: self.toggle_window(self.window2))
+        self.actionCam.triggered.connect(lambda checked: self.toggle_window(self.window3))
 
-        self.Mac.clicked.connect(
-            lambda checked: self.toggle_window(self.window2)
-        )
+    def quit_trigger(self):
+        sys.exit(200)
 
-        self.Hop.clicked.connect(
-            lambda checked: self.toggle_window(self.window2)
-        )
 
-        self.Jse.clicked.connect(
-            lambda checked: self.toggle_window(self.window2)
-        )
-
-        self.Jse.clicked.connect(
-            lambda checked: self.toggle_window(self.window2)
-        )
     def toggle_window(self, window):
         if window.isVisible():
             window.hide()
 
         else:
-            window.show()
+            if window.windowTitle() == self.window2.windowTitle():
+                window.showFullScreen()
+            else:
+                window.show()
 
 
 app = QApplication(sys.argv)
