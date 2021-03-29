@@ -50,9 +50,9 @@ except serial.serialutil.SerialException:
 # Indexação e diretorios fixos em variaveis.
 imgAnalysePath = "../Images/P_ (3).jpg"
 ConfigDataPath = "../Json/config.json"
-jsonpath = "json-data.json"
 blockImagePath = "Images/block.png"
 
+jsonpath = os.path.normpath(os.path.join(os.path.dirname(__file__), "json-data.json"))
 photoPath = os.path.normpath(os.path.join(os.path.dirname(__file__), imgAnalysePath))
 img = cv2.imread(photoPath)
 
@@ -241,17 +241,37 @@ class JsonTree(QWidget):
     def __init__(self):
         super(JsonTree, self).__init__()
         loadUi("Ui/jsonViwer.ui", self)
+
+        self.view = JsonMod.QtWidgets.QTreeView()
+        self.model = JsonMod.QJsonModel()
+
+        with open(jsonpath) as f:
+            self.model.load(json.load(f))
+
+        self.view.setModel(self.model)
+
         self.savebtw.clicked.connect(self.saveData)
         self.TrewView()
+        self.loadPath.setText(jsonpath)
+        self.load.clicked.connect(self.loadpath)
 
     def TrewView(self):
-        view.setColumnWidth(0, int(self.label.width()/2))
-        self.vt.addWidget(view)
+        self.view.setColumnWidth(0, int(self.label.width()/2))
+        self.vt.addWidget(self.view)
 
     def saveData(self):
-        bkp = model.json()
+        bkp = self.model.json()
         with open(jsonpath, 'w', encoding='utf-8') as jsonFile2:
             json.dump(bkp, jsonFile2, indent=4)
+
+    def loadpath(self):
+        global jsonpath
+        if os.path.isfile(self.loadPath.text()):
+            jsonpath = self.loadPath.text()
+            with open(jsonpath) as f:
+                self.model.load(json.load(f))
+
+            self.view.setModel(self.model)
 
 
 # Janela "Principal" para ajuste dos filtros, salvar valores.
@@ -528,13 +548,6 @@ class PopUp(QDialog):
 #                                                  Code Execution                                                      #
 
 app = QApplication(sys.argv)
-view = JsonMod.QtWidgets.QTreeView()
-model = JsonMod.QJsonModel()
-
-with open(jsonpath) as f:
-    model.load(json.load(f))
-
-view.setModel(model)
 
 w = MainWindow()
 w.showMaximized()
