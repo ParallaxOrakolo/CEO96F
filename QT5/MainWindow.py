@@ -266,7 +266,7 @@ class JsonTree(QWidget):
 
     def loadpath(self):
         global jsonpath
-        if os.path.isfile(self.loadPath.text()):
+        if os.path.isfile(self.loadPath.text()) and (self.loadPath.text()).endswith('.json'):
             jsonpath = self.loadPath.text()
             with open(jsonpath) as f:
                 self.model.load(json.load(f))
