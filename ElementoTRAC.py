@@ -142,7 +142,7 @@ mainConfig = Ff.readJson('Json/config.json')
 HSVjson = mainConfig['Filtros']['HSV']
 HSValues = HSVjson[str(HSVjsonIndex)]['Valores']
 
-HoleValues = mainConfig['Hole']
+HoleValues = mainConfig['Mask_Parameters']['Hole']
 
 DebugTypes = mainConfig['Debugs']
 if DebugTypes["all"]:
@@ -255,7 +255,7 @@ for filterValues in HSValues:
 for holeValue in HoleValues:
     locals()[holeValue] = HoleValues[holeValue]
 
-Tabs = [mainConfig['Edge'], mainConfig['Screw']]
+Tabs = [mainConfig['Mask_Parameters']['Edge'], mainConfig['Mask_Parameters']['Screw']]
 distance, chroma_key = findHole(Image, areaMin, areaMax, perimeter)
 cv2.imshow('Chroma Key', cv2.resize(chroma_key, None, fx=Escala, fy=Escala))
 cv2.imshow('Image', cv2.resize(Image, None, fx=Escala, fy=Escala))
