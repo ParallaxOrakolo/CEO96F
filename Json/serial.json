@@ -1,0 +1,6 @@
+{
+  "arduino": {
+    "porta": "COM8",
+    "velocidade": 250000
+  }
+}

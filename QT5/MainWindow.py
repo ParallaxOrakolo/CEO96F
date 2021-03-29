@@ -18,10 +18,12 @@ from PyQt5.uic import loadUi
 from JsonMod import JsonMod
 from random import randint
 from PyQt5 import QtCore
+from time import sleep
 
 import FastFunctions as Ff
 import OpencvPlus as Op
 import numpy as np
+import serial
 import json
 import sys
 import cv2
@@ -30,6 +32,20 @@ import os
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Variables                                                         #
+
+# Cria Comunicação Serial
+
+try:
+    with open('../Json/serial.json', 'r', encoding='utf-8') as serial_json_file:
+        serialData = json.load(serial_json_file)
+
+    arduino = serial.Serial(serialData['arduino']['porta'], serialData['arduino']['velocidade'])
+    sleep(1.2)
+except serial.serialutil.SerialException:
+    print(
+        "Não foi possivel estabelecer uma conexão com o controlador."+'\n'
+        "Verifique a porta ["+serialData['arduino']['porta']+"]"
+          )
 
 # Indexação e diretorios fixos em variaveis.
 imgAnalysePath = "../Images/P_ (3).jpg"
@@ -106,22 +122,27 @@ class MachineController(QWidget):
         self.Markers.clicked.connect(
             lambda checked: self.onClicked(True)
         )
+
         self.LedR.valueChanged.connect(
             lambda checked: self.SerialMonitor(
-                "M150 R{0} U{1} B{2}".format(self.LedR.value(), self.LedG.value(), self.LedB.value()))
+                Ff.sendGCODE(arduino,"M150 R{0} U{1} B{2}".format(self.LedR.value(), self.LedG.value(), self.LedB.value()), echo='True')
+            )
         )
 
         self.LedG.valueChanged.connect(
             lambda checked: self.SerialMonitor(
-                "M150 R{0} U{1} B{2}".format(self.LedR.value(), self.LedG.value(), self.LedB.value()))
+                Ff.sendGCODE(arduino,"M150 R{0} U{1} B{2}".format(self.LedR.value(), self.LedG.value(), self.LedB.value()), echo='True')
+            )
         )
+
         self.LedB.valueChanged.connect(
             lambda checked: self.SerialMonitor(
-                "M150 R{0} U{1} B{2}".format(self.LedR.value(), self.LedG.value(), self.LedB.value()))
+                Ff.sendGCODE(arduino, "M150 R{0} U{1} B{2}".format(self.LedR.value(), self.LedG.value(), self.LedB.value()), echo='True')
+            )
         )
 
         self.Serial_Send.clicked.connect(
-            lambda checked: self.SerialMonitor(self.Serial_In.text())
+            lambda checked: self.SerialMonitor(Ff.sendGCODE(arduino, (self.Serial_In.text()).upper(), echo=True))
         )
 
         self.X.clicked.connect(
@@ -160,9 +181,8 @@ class MachineController(QWidget):
         else:
             Func = lambda fd, dm: 'G0 ' + str(value.objectName()).upper()+'-' + str(dm) + ' F' + str(fd)
             control[str(value.objectName()).upper()].display(control[str(value.objectName()).upper()].value()-self.dstMov.value())
-
-        # Todo: Implement SendGCODE()
-        print(Func(self.FRt.value(), self.dstMov.value()))
+        self.Serial_In.setText(Func(self.FRt.value(), self.dstMov.value()))
+        self.SerialMonitor(Ff.sendGCODE(arduino, Func(self.FRt.value(), self.dstMov.value()), echo=True))
 
     def onClicked(self, marker):
         global cap, marker_s, img
@@ -195,8 +215,11 @@ class MachineController(QWidget):
                 cv2.waitKey(1)
 
     def SerialMonitor(self, gcode):
-        # Todo: Implementar SendGcode e WaitingEcho
-        self.Serial_Out.setText(str(gcode).upper())
+        retorno = ""
+        prefix = '\n' + "(send) " + (self.Serial_In.text()).upper() + ('\n'*2)
+        for linha in gcode:
+            retorno = retorno + linha + '\n'
+        self.Serial_Out.setText(prefix+retorno)
 
     def displayImage(self, img, window=1):
         qformat = QImage.Format_Indexed8
