@@ -31,10 +31,11 @@ import os
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Variables                                                         #
 
-# Indexação e diretorios fixos em variaveis
+# Indexação e diretorios fixos em variaveis.
+imgAnalysePath = "../Images/P_ (3).jpg"
 ConfigDataPath = '../Json/config.json'
 jsonpath = "json-data.json"
-imgAnalysePath = "../Images/P_ (3).jpg"
+blockImagePath = "../Images/block.png"
 
 photoPath = os.path.normpath(os.path.join(os.path.dirname(__file__), imgAnalysePath))
 img = cv2.imread(photoPath)
@@ -187,7 +188,7 @@ class MachineController(QWidget):
         else:
             cap.release()
             cap = False
-            img = cv2.imread('../Images/block.png')
+            img = cv2.imread(blockImagePath)
             self.LigarC.setText("Ligar câmera")
             while not cap:
                 self.displayImage(img, 1)
@@ -448,7 +449,7 @@ class MainWindow(QMainWindow):
             self.Start.setText("INICIAR")
             cap.release()
             cap = False
-            img = cv2.imread('../Images/block.png')
+            img = cv2.imread(blockImagePath)
             while not cap:
                 self.displayImage(img, 1)
                 cv2.waitKey(1)
