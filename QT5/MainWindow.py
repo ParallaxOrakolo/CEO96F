@@ -33,9 +33,9 @@ import os
 
 # Indexação e diretorios fixos em variaveis.
 imgAnalysePath = "../Images/P_ (3).jpg"
-ConfigDataPath = '../Json/config.json'
+ConfigDataPath = "../Json/config.json"
 jsonpath = "json-data.json"
-blockImagePath = "../Images/block.png"
+blockImagePath = "Images/block.png"
 
 photoPath = os.path.normpath(os.path.join(os.path.dirname(__file__), imgAnalysePath))
 img = cv2.imread(photoPath)

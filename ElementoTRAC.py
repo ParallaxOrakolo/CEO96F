@@ -18,8 +18,8 @@ distance = True
 Hole = True
 Edge = True
 
-pFA = (50, 50)
 pFB = (100, 60)
+pFA = (50, 50)
 fixPoint = (pFB[0], int(pFA[1]+((pFB[1]-pFA[1])/2)))
 
 Read = 'P_ (3).jpg' if not Hole else 'A3.jpg'
@@ -158,86 +158,7 @@ else:
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Code-Exec                                                         #
-# Todo: Make the config window with QT5.
-"""
-if DebugControls:
-    cv2.namedWindow("Controls")
-    cv2.resizeWindow("Controls", 600, 600)
-    cv2.createTrackbar("H Min ", "Controls", lower[0], 255, empty)
-    cv2.createTrackbar("S Min ", "Controls", lower[1], 255, empty)
-    cv2.createTrackbar("V Min ", "Controls", lower[2], 255, empty)
-    cv2.createTrackbar("H Max ", "Controls", upper[0], 255, empty)
-    cv2.createTrackbar("S Max ", "Controls", upper[1], 255, empty)
-    cv2.createTrackbar("V Max ", "Controls", upper[2], 255, empty)
-    cv2.createTrackbar("X1 ", "Controls", areaMin, 40000, empty)
-    cv2.createTrackbar("X2 ", "Controls", areaMax, 40000, empty)
-    cv2.createTrackbar("X3 ", "Controls", perimeter, 10, empty)
 
-    while True:
-        h_min = cv2.getTrackbarPos("H Min ", "Controls")
-        h_max = cv2.getTrackbarPos("H Max ", "Controls")
-        s_min = cv2.getTrackbarPos("S Min ", "Controls")
-        s_max = cv2.getTrackbarPos("S Max ", "Controls")
-        v_min = cv2.getTrackbarPos("V Min ", "Controls")
-        v_max = cv2.getTrackbarPos("V Max ", "Controls")
-        X1 = cv2.getTrackbarPos("X1 ", "Controls")
-        X2 = cv2.getTrackbarPos("X2 ", "Controls")
-        X3 = cv2.getTrackbarPos("X3 ", "Controls")
-
-        locals()['lower'] = np.array([h_min, s_min, v_min])
-        locals()['upper'] = np.array([h_max, s_max, v_max])
-        mask = Op.refineMask(Op.HSVMask(Image, lower, upper))
-        chroma_key = cv2.bitwise_and(Image, Image, mask=mask)
-        cv2.rectangle(chroma_key, pFA, pFB, (33, 48, 4), -1)
-        cv2.drawMarker(chroma_key, fixPoint, (0, 255, 0), markerSize=10, thickness=1)
-        if Hole:
-            edgeInfo = finCircle(mask, X1, X2, X3)
-            for Circle in edgeInfo:
-                cv2.circle(chroma_key, (int(Circle['center'][0]), int(Circle['center'][1])), int(Circle['radius']),
-                           (36, 255, 12), 2)
-                cv2.line(chroma_key, (int(Circle['center'][0]), int(Circle['center'][1])), fixPoint, (168, 50, 131))
-                cv2.line(chroma_key, (int(Circle['center'][0]), int(Circle['center'][1])),
-                         (int(Circle['center'][0]), fixPoint[1]), (255, 0, 0))
-
-                cv2.line(chroma_key, (int(Circle['center'][0]), fixPoint[1]), fixPoint, (0, 0, 255))
-                distance = (Circle['center'][1] - fixPoint[1])
-                cv2.putText(chroma_key, str(distance), (int(Circle['center'][0]), int(distance)),
-                            cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 3)
-
-        else:
-            if Edge:
-                mask = Op.refineMask(Op.HSVMask(edgeAnalyze, lower, upper))
-                cv2.rectangle(mask, (0, 0), (mask.shape[1], mask.shape[0]), (0, 0, 0), thickness=20)
-                chroma_key = cv2.bitwise_and(edgeAnalyze, edgeAnalyze, mask=mask)
-                Contorno, Null = Op.findContoursPlus(mask, AreaMin_A=X1, AreaMax_A=X2)
-                for info in Contorno:
-                    cv2.drawContours(chroma_key, [info['contour']], -1, (70, 20, 20), 3)
-                    cv2.drawMarker(chroma_key, tuple(info['contour'][0]), (20, 20, 70), markerSize=10, thickness=3)
-                    cv2.drawMarker(chroma_key, tuple(info['contour'][3]), (20, 20, 70), markerSize=10, thickness=3)
-                    PL = tuple(info['contour'][0])
-                    PL1 = (int(largura2), int(info['contour'][0][1]))
-                    Edge = False
-                cv2.imshow('edgeAnalyze', cv2.resize(edgeAnalyze, None, fx=Escala, fy=Escala))
-            else:
-                cv2.line(chroma_key, PL, PL1, (0, 255, 0), 10)
-                edgeAnalyze = Image[PL[1]: altura2, 0:largura2]
-                mask = Op.refineMask(Op.HSVMask(edgeAnalyze, lower, upper))
-                cv2.rectangle(mask, (0, 0), (mask.shape[1], mask.shape[0]), (0, 0, 0), thickness=20)
-                chroma_key = cv2.bitwise_and(edgeAnalyze, edgeAnalyze, mask=mask)
-                Contorno, Null = Op.findContoursPlus(mask, AreaMin_A=X1, AreaMax_A=X2)
-                for info in Contorno:
-                    cv2.drawContours(chroma_key, [info['contour']], -1, (70, 20, 20), 3)
-                    cv2.drawMarker(chroma_key, tuple(info['contour'][0]), (20, 20, 70), markerSize=10, thickness=3)
-                    cv2.drawMarker(chroma_key, tuple(info['contour'][3]), (20, 20, 70), markerSize=10, thickness=3)
-
-        cv2.imshow('Chroma Key', cv2.resize(chroma_key, None, fx=Escala, fy=Escala))
-        cv2.imshow('Mask', cv2.resize(mask, None, fx=Escala, fy=Escala))
-        Key = cv2.waitKey(1)
-        if Key == 27:
-            cv2.destroyAllWindows()
-            print(lower, upper)
-            break
-"""
 
 # Make a square around the cell.
 p1 = tuple(map(opr.add, map(opr.mul, (((Quadrants[line][column]).shape[:2])[::-1]), (column, line)), (-10, -10)))
