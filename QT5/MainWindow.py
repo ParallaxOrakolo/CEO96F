@@ -53,18 +53,21 @@ with open(ConfigDataPath, 'r', encoding='utf-8') as config_json_file:
 with open(ConfigDataPath, 'r', encoding='utf-8') as temp_json_file:
     tempData = json.load(temp_json_file)
 
+# Definição dos Normes dos Processos
+aProcess = configData["Filtros"]["HSV"]["0"]["Application"]
+bProcess = configData["Filtros"]["HSV"]["1"]["Application"]
+cProcess = configData["Filtros"]["HSV"]["2"]["Application"]
+zProcess = "Normal"
+
 # Definição dos modos de processo
 Tabs = []
 for Tab in configData['Mask_Parameters']:
     Tabs.append(Tab)
+Tabs.append(zProcess)
 
 # Criação de variaveis globais
 marker_s = False
 cap = False
-
-aProcess = configData["Filtros"]["HSV"]["0"]["Application"]
-bProcess = configData["Filtros"]["HSV"]["1"]["Application"]
-cProcess = configData["Filtros"]["HSV"]["2"]["Application"]
 
 nominalIndex = aProcess
 column = 1
@@ -287,8 +290,8 @@ class MainWindow(QMainWindow):
         self.window3 = PopUp()
 
         # Variaveis internas da classe principal referente a orientação da modo de identificação.
-        self.janela = bProcess
         self.TabIndex = 1
+        self.janela = Tabs[self.TabIndex]
 
         # Associação dos gatilhos à funções internas e/ou externas.
         self.LiveS.clicked.connect(self.onClicked)
@@ -300,7 +303,7 @@ class MainWindow(QMainWindow):
         self.actionMachine.triggered.connect(lambda checked: self.toggle_window(self.window2))
         self.actionCam.triggered.connect(lambda checked: self.toggle_window(self.window3))
         self.IndexCA.clicked.connect(lambda checked: self.Photo(aProcess))
-        self.IndexCB.clicked.connect(lambda checked: self.Photo("Screw"))
+        self.IndexCB.clicked.connect(lambda checked: self.Photo(cProcess))
         self.Start.clicked.connect(
             lambda checked: self.onClicked(True)
         )
@@ -353,30 +356,31 @@ class MainWindow(QMainWindow):
 
     # Atualiza os valores de configuração com base no modo atual.
     def LoadData(self):
-        self.h_min.setValue(configData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][0])
-        self.s_min.setValue(configData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][1])
-        self.v_min.setValue(configData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][2])
-        self.h_max.setValue(configData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['upper'][0])
-        self.s_max.setValue(configData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['upper'][1])
-        self.v_max.setValue(configData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['upper'][2])
-        self.A1.setValue(configData["Mask_Parameters"][self.janela]["areaMin"])
-        self.A2.setValue(configData["Mask_Parameters"][self.janela]["areaMax"])
+        if self.janela != zProcess:
+            self.h_min.setValue(configData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][0])
+            self.s_min.setValue(configData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][1])
+            self.v_min.setValue(configData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][2])
+            self.h_max.setValue(configData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['upper'][0])
+            self.s_max.setValue(configData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['upper'][1])
+            self.v_max.setValue(configData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['upper'][2])
+            self.A1.setValue(configData["Mask_Parameters"][self.janela]["areaMin"])
+            self.A2.setValue(configData["Mask_Parameters"][self.janela]["areaMax"])
 
     # Salva de forma temporaria quaiser alterações nos valores de configuração
     def PreSaveData(self):
-        tempData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][0] = self.h_min.value()
-        tempData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][1] = self.s_min.value()
-        tempData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][2] = self.v_min.value()
-        tempData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['upper'][0] = self.h_max.value()
-        tempData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['upper'][1] = self.s_max.value()
-        tempData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['upper'][2] = self.v_max.value()
-        tempData["Mask_Parameters"][self.janela]["areaMin"] = int(self.A1.value())
-        tempData["Mask_Parameters"][self.janela]["areaMax"] = int(self.A2.value())
+        if self.janela != zProcess:
+            tempData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][0] = self.h_min.value()
+            tempData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][1] = self.s_min.value()
+            tempData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][2] = self.v_min.value()
+            tempData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['upper'][0] = self.h_max.value()
+            tempData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['upper'][1] = self.s_max.value()
+            tempData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['upper'][2] = self.v_max.value()
+            tempData["Mask_Parameters"][self.janela]["areaMin"] = int(self.A1.value())
+            tempData["Mask_Parameters"][self.janela]["areaMax"] = int(self.A2.value())
 
     # Executa o código de identificação com base no modo atual
     def onClicked(self, FDs):
         global cap, img, nominalIndex
-        chr_k = img
         last = self.janela
         # Verifica se deve acionar a camera em modo permanente.
 
@@ -385,17 +389,16 @@ class MainWindow(QMainWindow):
 
         while True:
             # Atualiza a imagem em tempo real, se necessário.
-            if last != self.janela:
-                if self.LiveS.isChecked():
+            if self.LiveS.isChecked():
+                if last != self.janela:
                     if cap.isOpened(): cap.release()
-                    nominalIndex = "Screw" if self.janela == "Screw" or self.janela == bProcess else aProcess
+                    nominalIndex = cProcess if self.janela == cProcess or self.janela == bProcess else aProcess
                     self.Photo(nominalIndex, release=False)
                     last = self.janela
-            if self.LiveS.isChecked():
                 _, img = cap.read()
 
             # Caso o modo seja "Normal"
-            if self.janela == "Normal":
+            if self.janela == zProcess:
                 # Desenha apenas uma marcação no centro da imagem, para orientação e ajustes rápidos.
                 cv2.drawMarker(img, (int(img.shape[1] / 2), int(img.shape[0] / 2)), (255, 0, 255), thickness=2)
                 chr_k = img
@@ -444,8 +447,8 @@ class MainWindow(QMainWindow):
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
                     distances.append([distance_to_fix])
 
-            # Caso o modo seja "Screw" ou bProcess, referentes ao processo de identificação do parafuso.
-            if self.janela == "Screw" or self.janela == bProcess:
+            # Caso o modo seja cProcess ou bProcess, referentes ao processo de identificação do parafuso.
+            if self.janela == cProcess or self.janela == bProcess:
 
                 # Define e coleta e define dados da imagem a ser processada
                 Image = imgAnalyse = img
@@ -488,7 +491,7 @@ class MainWindow(QMainWindow):
                             edge_analyze = imgAnalyse[point_a[1]: height, 0:width]
 
                         # Se for a segunda etapa, realiza as marcações adequadas.
-                        if self.janela == "Screw":
+                        if self.janela == cProcess:
                             offset_screw = round(info_edge['dimension'][0], 3)
                             cv2.putText(chr_k, str(offset_screw), (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1,
                                         (255, 255, 255), thickness=3)
@@ -523,7 +526,8 @@ class MainWindow(QMainWindow):
 
     def displayImage(self, imgs, window=1):
         qformat = QImage.Format_Indexed8
-        # imgs = cv2.resize(img, None, fx=0.25, fy=0.25)
+        # if self.janela == zProcess:
+        #     imgs = cv2.resize(imgs, None, fx=0.50, fy=0.50)
         if len(imgs.shape) == 3:
             if (imgs.shape[2]) == 4:
                 qformat = QImage.Format_RGBA888
