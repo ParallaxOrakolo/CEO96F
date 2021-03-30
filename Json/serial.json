@@ -1,6 +1,6 @@
 {
-  "arduino": {
-    "porta": "COM8",
+  "Ramps 1.4": {
+    "porta": "COM12",
     "velocidade": 250000
   }
 }

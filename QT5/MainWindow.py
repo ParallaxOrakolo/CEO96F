@@ -20,7 +20,7 @@ from random import randint
 from PyQt5 import QtCore
 from time import sleep
 
-import FastFunctions as Ff
+import FastFunctions as Fast
 import OpencvPlus as Op
 import numpy as np
 import serial
@@ -34,18 +34,7 @@ import os
 #                                                    Variables                                                         #
 
 # Cria Comunicação Serial
-
-try:
-    with open('../Json/serial.json', 'r', encoding='utf-8') as serial_json_file:
-        serialData = json.load(serial_json_file)
-
-    arduino = serial.Serial(serialData['arduino']['porta'], serialData['arduino']['velocidade'])
-    sleep(1.2)
-except serial.serialutil.SerialException:
-    print(
-        "Não foi possivel estabelecer uma conexão com o controlador."+'\n'
-        "Verifique a porta ["+serialData['arduino']['porta']+"]"
-          )
+arduino = Fast.SerialConnect(name='Ramps 1.4')
 
 # Indexação e diretorios fixos em variaveis.
 imgAnalysePath = "../Images/P_ (3).jpg"
@@ -73,16 +62,21 @@ for Tab in configData['Mask_Parameters']:
 marker_s = False
 cap = False
 
-nominalIndex = 0
+aProcess = configData["Filtros"]["HSV"]["0"]["Application"]
+bProcess = configData["Filtros"]["HSV"]["1"]["Application"]
+cProcess = configData["Filtros"]["HSV"]["2"]["Application"]
+
+nominalIndex = aProcess
 column = 1
 line = 1
 
 pFB = (100, 60)
 pFA = (50, 50)
-fixPoint = (pFB[0], int(pFA[1]+((pFB[1]-pFA[1])/2)))
+fixPoint = (pFB[0], int(pFA[1] + ((pFB[1] - pFA[1]) / 2)))
 
 Quadrants = Op.meshImg(img)
 img = Quadrants[line][column]
+
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Functions                                                         #
@@ -125,24 +119,30 @@ class MachineController(QWidget):
 
         self.LedR.valueChanged.connect(
             lambda checked: self.SerialMonitor(
-                Ff.sendGCODE(arduino,"M150 R{0} U{1} B{2}".format(self.LedR.value(), self.LedG.value(), self.LedB.value()), echo='True')
+                Fast.sendGCODE(arduino,
+                             "M150 R{0} U{1} B{2}".format(self.LedR.value(), self.LedG.value(), self.LedB.value()),
+                             echo='True')
             )
         )
 
         self.LedG.valueChanged.connect(
             lambda checked: self.SerialMonitor(
-                Ff.sendGCODE(arduino,"M150 R{0} U{1} B{2}".format(self.LedR.value(), self.LedG.value(), self.LedB.value()), echo='True')
+                Fast.sendGCODE(arduino,
+                             "M150 R{0} U{1} B{2}".format(self.LedR.value(), self.LedG.value(), self.LedB.value()),
+                             echo='True')
             )
         )
 
         self.LedB.valueChanged.connect(
             lambda checked: self.SerialMonitor(
-                Ff.sendGCODE(arduino, "M150 R{0} U{1} B{2}".format(self.LedR.value(), self.LedG.value(), self.LedB.value()), echo='True')
+                Fast.sendGCODE(arduino,
+                             "M150 R{0} U{1} B{2}".format(self.LedR.value(), self.LedG.value(), self.LedB.value()),
+                             echo='True')
             )
         )
 
         self.Serial_Send.clicked.connect(
-            lambda checked: self.SerialMonitor(Ff.sendGCODE(arduino, (self.Serial_In.text()).upper(), echo=True))
+            lambda checked: self.SerialMonitor(Fast.sendGCODE(arduino, (self.Serial_In.text()).upper(), echo=True))
         )
 
         self.X.clicked.connect(
@@ -171,18 +171,19 @@ class MachineController(QWidget):
         )
 
     def takePicture(self):
-           cv2.imwrite(str(self.PhotoPath.text()), img)
+        cv2.imwrite(str(self.PhotoPath.text()), img)
 
     def moveMachine(self, value):
         control = {"X": self.XN, "Y": self.YN, "Z": self.ZN, "E": self.EN}
         if str(value.objectName()).isupper():
             Func = lambda fd, dm: 'G0 ' + str(value.objectName()) + str(dm) + ' F' + str(fd)
-            control[str(value.objectName())].display(control[str(value.objectName())].value()+self.dstMov.value())
+            control[str(value.objectName())].display(control[str(value.objectName())].value() + self.dstMov.value())
         else:
-            Func = lambda fd, dm: 'G0 ' + str(value.objectName()).upper()+'-' + str(dm) + ' F' + str(fd)
-            control[str(value.objectName()).upper()].display(control[str(value.objectName()).upper()].value()-self.dstMov.value())
+            Func = lambda fd, dm: 'G0 ' + str(value.objectName()).upper() + '-' + str(dm) + ' F' + str(fd)
+            control[str(value.objectName()).upper()].display(
+                control[str(value.objectName()).upper()].value() - self.dstMov.value())
         self.Serial_In.setText(Func(self.FRt.value(), self.dstMov.value()))
-        self.SerialMonitor(Ff.sendGCODE(arduino, Func(self.FRt.value(), self.dstMov.value()), echo=True))
+        self.SerialMonitor(Fast.sendGCODE(arduino, Func(self.FRt.value(), self.dstMov.value()), echo=True))
 
     def onClicked(self, marker):
         global cap, marker_s, img
@@ -216,10 +217,10 @@ class MachineController(QWidget):
 
     def SerialMonitor(self, gcode):
         retorno = ""
-        prefix = '\n' + "(send) " + (self.Serial_In.text()).upper() + ('\n'*2)
+        prefix = '\n' + "(send) " + (self.Serial_In.text()).upper() + ('\n' * 2)
         for linha in gcode:
             retorno = retorno + linha + '\n'
-        self.Serial_Out.setText(prefix+retorno)
+        self.Serial_Out.setText(prefix + retorno)
 
     def displayImage(self, img, window=1):
         qformat = QImage.Format_Indexed8
@@ -256,7 +257,7 @@ class JsonTree(QWidget):
         self.load.clicked.connect(self.loadpath)
 
     def TrewView(self):
-        self.view.setColumnWidth(0, int(self.label.width()/2))
+        self.view.setColumnWidth(0, int(self.label.width() / 2))
         self.vt.addWidget(self.view)
 
     def saveData(self):
@@ -286,7 +287,7 @@ class MainWindow(QMainWindow):
         self.window3 = PopUp()
 
         # Variaveis internas da classe principal referente a orientação da modo de identificação.
-        self.janela = "Edge"
+        self.janela = bProcess
         self.TabIndex = 1
 
         # Associação dos gatilhos à funções internas e/ou externas.
@@ -298,8 +299,8 @@ class MainWindow(QMainWindow):
         self.actionJson_Editor.triggered.connect(lambda checked: self.toggle_window(self.window1))
         self.actionMachine.triggered.connect(lambda checked: self.toggle_window(self.window2))
         self.actionCam.triggered.connect(lambda checked: self.toggle_window(self.window3))
-        self.IndexCA.clicked.connect(lambda checked: self.Photo(0))
-        self.IndexCB.clicked.connect(lambda checked: self.Photo(1))
+        self.IndexCA.clicked.connect(lambda checked: self.Photo(aProcess))
+        self.IndexCB.clicked.connect(lambda checked: self.Photo("Screw"))
         self.Start.clicked.connect(
             lambda checked: self.onClicked(True)
         )
@@ -313,22 +314,37 @@ class MainWindow(QMainWindow):
 
     # Tira uma foto com a camera desejada e salva o id da ultima camera utilizada.
     def Photo(self, id, release=True):
+        camera_name = (configData["Filtros"]["HSV"][str(configData["Cameras"][id]["Settings"]["id"])]["Application"])
+        cant_read_cam_message = f"Camera do processo {camera_name} não pode ser lida."
         global cap, img, nominalIndex
-        cap = cv2.VideoCapture(id, cv2.CAP_DSHOW)
-        _, img = cap.read()
+        try:
+            if cap.isOpened(): cap.release()
+        except AttributeError:
+            pass
+        cap = cv2.VideoCapture(configData["Cameras"][id]["Settings"]["id"], cv2.CAP_DSHOW)
+        __, imgtemp = cap.read()
+        try:
+            if __ and cv2.countNonZero(cv2.cvtColor(imgtemp, cv2.COLOR_BGR2GRAY)) > 5000:
+                _, img = cap.read()
+            else:
+                print(f"{Fast.ColorPrint.ERROR}{cant_read_cam_message}")
+                print(f"{Fast.ColorPrint.WARNING}Verifique as conexões USB"'\n')
+        except cv2.error:
+            print(f"{Fast.ColorPrint.ERROR}{cant_read_cam_message}")
+            print(f"{Fast.ColorPrint.WARNING}Verifique as conexões USB"'\n')
         if release and not self.LiveS.isChecked():
             cap.release()
-        nominalIndex = id
+        nominalIndex = configData["Cameras"][id]["Settings"]["id"]
 
     # Vinculado os gatilhos "Next" e "Prev", altera o valor do modo atual
     def EditIndex(self, parm):
         if parm == '-':
             if self.TabIndex == 0:
-                self.TabIndex = len(Tabs)-1
+                self.TabIndex = len(Tabs) - 1
             else:
                 self.TabIndex = self.TabIndex - 1
         else:
-            if self.TabIndex == len(Tabs)-1:
+            if self.TabIndex == len(Tabs) - 1:
                 self.TabIndex = 0
             else:
                 self.TabIndex = self.TabIndex + 1
@@ -360,13 +376,21 @@ class MainWindow(QMainWindow):
     # Executa o código de identificação com base no modo atual
     def onClicked(self, FDs):
         global cap, img, nominalIndex
-
+        chr_k = img
+        last = self.janela
         # Verifica se deve acionar a camera em modo permanente.
+
         if self.LiveS.isChecked():
             self.Photo(nominalIndex, release=False)
 
         while True:
             # Atualiza a imagem em tempo real, se necessário.
+            if last != self.janela:
+                if self.LiveS.isChecked():
+                    if cap.isOpened(): cap.release()
+                    nominalIndex = "Screw" if self.janela == "Screw" or self.janela == bProcess else aProcess
+                    self.Photo(nominalIndex, release=False)
+                    last = self.janela
             if self.LiveS.isChecked():
                 _, img = cap.read()
 
@@ -374,9 +398,10 @@ class MainWindow(QMainWindow):
             if self.janela == "Normal":
                 # Desenha apenas uma marcação no centro da imagem, para orientação e ajustes rápidos.
                 cv2.drawMarker(img, (int(img.shape[1] / 2), int(img.shape[0] / 2)), (255, 0, 255), thickness=2)
+                chr_k = img
 
-            # Caso o modo seja "Hole"
-            if self.janela == "Hole":
+            # Caso o modo seja aProcess
+            if self.janela == aProcess:
 
                 # Coleta os valores de configuração e cria um filtro personalizado
                 X1, X2, X3, X4 = self.A1.value(), self.A2.value(), self.A3.value(), self.A4.value()
@@ -410,7 +435,8 @@ class MainWindow(QMainWindow):
 
                     cv2.line(chr_k, (int(Circle['center'][0]), fixPoint[1]), fixPoint, (0, 0, 255), thickness=2)
 
-                    distance_to_fix = (round((Circle['center'][0] - fixPoint[0]), 3), round((Circle['center'][1] - fixPoint[1]), 3))
+                    distance_to_fix = (
+                        round((Circle['center'][0] - fixPoint[0]), 3), round((Circle['center'][1] - fixPoint[1]), 3))
                     cv2.putText(chr_k, str(distance_to_fix[1]),
                                 (int(Circle['center'][0]), int(Circle['center'][1] / 2)),
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
@@ -418,10 +444,8 @@ class MainWindow(QMainWindow):
                                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
                     distances.append([distance_to_fix])
 
-
-
-            # Caso o modo seja "Screw" ou "Edge", referentes ao processo de identificação do parafuso.
-            if self.janela == "Screw" or self.janela == "Edge":
+            # Caso o modo seja "Screw" ou bProcess, referentes ao processo de identificação do parafuso.
+            if self.janela == "Screw" or self.janela == bProcess:
 
                 # Define e coleta e define dados da imagem a ser processada
                 Image = imgAnalyse = img
@@ -429,8 +453,8 @@ class MainWindow(QMainWindow):
                 height = int(Image.shape[0])
                 offset_screw = 0.00
 
-                #  Caso seja o Processo "Edge" (primeira etapa)
-                if self.janela == "Edge":
+                #  Caso seja o Processo bProcess (primeira etapa)
+                if self.janela == bProcess:
                     edge_analyze = imgAnalyse[0:height, 0:int(width * 0.25)]
                     chr_k = imgAnalyse
 
@@ -459,7 +483,7 @@ class MainWindow(QMainWindow):
                         cv2.drawContours(chr_k, [info_edge['contour']], -1, (70, 255, 20), 3)
 
                         # Se for a primeira etapa, redefine a imagem de analize com base nos valores encontrados
-                        if self.janela == "Edge":
+                        if self.janela == bProcess:
                             point_a = tuple(info_edge['contour'][0])
                             edge_analyze = imgAnalyse[point_a[1]: height, 0:width]
 
@@ -469,10 +493,10 @@ class MainWindow(QMainWindow):
                             cv2.putText(chr_k, str(offset_screw), (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1,
                                         (255, 255, 255), thickness=3)
 
-                # Exibe a Imagem
-                self.displayImage(chr_k, 1)
-                cv2.waitKey(1)
-                self.PreSaveData()
+            # Exibe a Imagem
+            self.displayImage(chr_k, 1)
+            cv2.waitKey(1)
+            self.PreSaveData()
 
     def ShowProcess(self, color=False):
         global cap, marker_s, img
@@ -543,6 +567,7 @@ class PopUp(QDialog):
 
     def quit_trigger(self, exit_code=200):
         sys.exit(exit_code)
+
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                  Code Execution                                                      #
