@@ -841,6 +841,9 @@ p, li { white-space: pre-wrap; }
     <property name="text">
      <string>Enviar</string>
     </property>
+    <property name="shortcut">
+     <string>Return</string>
+    </property>
    </widget>
   </widget>
   <widget class="QLabel" name="imgLabel">
