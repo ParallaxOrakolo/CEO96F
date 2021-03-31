@@ -302,6 +302,21 @@ class MainWindow(QMainWindow):
         self.actionJson_Editor.triggered.connect(lambda checked: self.toggle_window(self.window1))
         self.actionMachine.triggered.connect(lambda checked: self.toggle_window(self.window2))
         self.actionCam.triggered.connect(lambda checked: self.toggle_window(self.window3))
+
+        self.Sliders = []
+        Cam_Prop = configData["Cameras"]["Hole"]["Properties"]
+        for prop in Cam_Prop:
+            self.Sliders.append(getattr(self, prop))
+
+        # Atualização dos valores de configuração com base no modo atual.
+        self.LoadData()
+
+        for prop in range(len(self.Sliders)):
+            # self.Sliders[prop].setValue(Cam_Prop[self.Sliders[prop].objectName()])
+            self.Sliders[prop].valueChanged.connect(
+                lambda value=self.Sliders[prop], name=self.Sliders[prop].objectName(): self.setProperties(name, value)
+            )
+
         self.IndexCA.clicked.connect(lambda checked: self.Photo(aProcess))
         self.IndexCB.clicked.connect(lambda checked: self.Photo(cProcess))
         self.Start.clicked.connect(
@@ -312,32 +327,42 @@ class MainWindow(QMainWindow):
             lambda checked: self.onClicked(False)
         )
 
-        # Atualização dos valores de configuração com base no modo atual.
-        self.LoadData()
+
+
+    def setProperties(self, a, b):
+        global cap
+        try:
+            cap.set(getattr(cv2, 'CAP_PROP_' + a), b)
+        except AttributeError:
+            print(f"{Fast.ColorPrint.ERROR}O atributo {a[0]+a[1::].lower()} não pode ser definido para {b}.")
+            print(f"{Fast.ColorPrint.WARNING}O novo valor do atributo {a[0]+a[1::].lower()} não sera salvo."'\n')
+            pass
+
 
     # Tira uma foto com a camera desejada e salva o id da ultima camera utilizada.
     def Photo(self, id, release=True):
-        camera_name = (configData["Filtros"]["HSV"][str(configData["Cameras"][id]["Settings"]["id"])]["Application"])
-        cant_read_cam_message = f"Camera do processo {camera_name} não pode ser lida."
-        global cap, img, nominalIndex
-        try:
-            if cap.isOpened(): cap.release()
-        except AttributeError:
-            pass
-        cap = cv2.VideoCapture(configData["Cameras"][id]["Settings"]["id"], cv2.CAP_DSHOW)
-        __, imgtemp = cap.read()
-        try:
-            if __ and cv2.countNonZero(cv2.cvtColor(imgtemp, cv2.COLOR_BGR2GRAY)) > 5000:
-                _, img = cap.read()
-            else:
+        if not isinstance(id, int):
+            camera_name = (configData["Filtros"]["HSV"][str(configData["Cameras"][id]["Settings"]["id"])]["Application"])
+            cant_read_cam_message = f"Camera do processo {camera_name} não pode ser lida."
+            global cap, img, nominalIndex
+            try:
+                if cap.isOpened(): cap.release()
+            except AttributeError:
+                pass
+            cap = cv2.VideoCapture(configData["Cameras"][id]["Settings"]["id"], cv2.CAP_DSHOW)
+            __, imgtemp = cap.read()
+            try:
+                if __ and cv2.countNonZero(cv2.cvtColor(imgtemp, cv2.COLOR_BGR2GRAY)) > 5000:
+                    _, img = cap.read()
+                else:
+                    print(f"{Fast.ColorPrint.ERROR}{cant_read_cam_message}")
+                    print(f"{Fast.ColorPrint.WARNING}Verifique as conexões USB"'\n')
+            except cv2.error:
                 print(f"{Fast.ColorPrint.ERROR}{cant_read_cam_message}")
                 print(f"{Fast.ColorPrint.WARNING}Verifique as conexões USB"'\n')
-        except cv2.error:
-            print(f"{Fast.ColorPrint.ERROR}{cant_read_cam_message}")
-            print(f"{Fast.ColorPrint.WARNING}Verifique as conexões USB"'\n')
-        if release and not self.LiveS.isChecked():
-            cap.release()
-        nominalIndex = configData["Cameras"][id]["Settings"]["id"]
+            if release and not self.LiveS.isChecked():
+                cap.release()
+            nominalIndex = configData["Cameras"][id]["Settings"]["id"]
 
     # Vinculado os gatilhos "Next" e "Prev", altera o valor do modo atual
     def EditIndex(self, parm):
@@ -357,6 +382,9 @@ class MainWindow(QMainWindow):
     # Atualiza os valores de configuração com base no modo atual.
     def LoadData(self):
         if self.janela != zProcess:
+            for slider in self.Sliders:
+                slider.setValue(int(configData["Cameras"][self.janela]["Properties"][slider.objectName()]))
+
             self.h_min.setValue(configData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][0])
             self.s_min.setValue(configData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][1])
             self.v_min.setValue(configData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][2])
@@ -369,6 +397,9 @@ class MainWindow(QMainWindow):
     # Salva de forma temporaria quaiser alterações nos valores de configuração
     def PreSaveData(self):
         if self.janela != zProcess:
+            for slider in self.Sliders:
+                tempData["Cameras"][self.janela]["Properties"][slider.objectName()] = slider.value()
+
             tempData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][0] = self.h_min.value()
             tempData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][1] = self.s_min.value()
             tempData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][2] = self.v_min.value()
@@ -526,8 +557,8 @@ class MainWindow(QMainWindow):
 
     def displayImage(self, imgs, window=1):
         qformat = QImage.Format_Indexed8
-        # if self.janela == zProcess:
-        #     imgs = cv2.resize(imgs, None, fx=0.50, fy=0.50)
+        if self.janela == zProcess and not self.LiveS.isChecked():
+            imgs = cv2.resize(imgs, None, fx=0.25, fy=0.25)
         if len(imgs.shape) == 3:
             if (imgs.shape[2]) == 4:
                 qformat = QImage.Format_RGBA888
@@ -541,7 +572,32 @@ class MainWindow(QMainWindow):
     def quit_trigger(self):
         if tempData != configData:
             self.toggle_window(self.window3)
+            # for jan in Tabs:
+            #     self.janela = jan
+            #     if self.janela != zProcess:
+            #         print('~~' * 30)
+            #         for slider in self.Sliders:
+            #             print(self.janela, slider.objectName(),
+            #                   tempData["Cameras"][self.janela]["Properties"][slider.objectName()])
+            #         print('~~' * 15)
+            #         for slider in self.Sliders:
+            #             print(self.janela, slider.objectName(),
+            #                   configData["Cameras"][self.janela]["Properties"][slider.objectName()])
+            # sys.exit(500)
         else:
+            # for jan in Tabs:
+            #     self.janela = jan
+            #     if self.janela != zProcess:
+            #         print('~~'*30)
+            #         print("TempData")
+            #         for slider in self.Sliders:
+            #             print(self.janela, slider.objectName(),
+            #                   tempData["Cameras"][self.janela]["Properties"][slider.objectName()])
+            #         print('~~' * 15)
+            #         print("dataConfig")
+            #         for slider in self.Sliders:
+            #             print(self.janela, slider.objectName(),
+            #                   configData["Cameras"][self.janela]["Properties"][slider.objectName()])
             sys.exit(200)
 
     def toggle_window(self, window):
