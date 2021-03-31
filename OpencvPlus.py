@@ -3,9 +3,8 @@ import numpy as np
 import math
 
 
-# Vector Manipulation
-
-def order_points_old(pts):  # Função que Organiza todos os box points em ordem crescente
+# Organiza todos os valores de uma matriz bidimensional em ordem crescente.
+def order_points_old(pts):
     rect = np.zeros((4, 2), dtype="float32")
     s = pts.sum(axis=1)
     rect[0] = pts[np.argmin(s)]
@@ -16,24 +15,24 @@ def order_points_old(pts):  # Função que Organiza todos os box points em ordem
     return rect
 
 
+# Concatena uma lista de mascaras.
 def loopBitwiseOr(vetor):
     resposta = []
     for n in range(int(len(vetor) / 2)):
         valor = cv2.bitwise_or(vetor[n + n], vetor[n * 2 + 1])
-        # print("Somando:", vetor[n+n], vetor[n*2+1])
         resposta.append(valor)
     if len(vetor) % 2 == 1:
         resposta.append(vetor[len(vetor) - 1])
     return resposta
 
 
+# Extrai os valores de um grupo de vetores.
 def extractHSValue(HSVector, key):  # Função que extrai e orgazina alguns valores dentro de um vetor
     data = HSVector[key]
     return np.array([int(data[0]), int(data[1]), int(data[2])])
 
 
-# Image manipulation
-
+# Procura por contornos com área pré determinada, e retorna um dicionário com vários informações uteis.
 def findContoursPlus(image, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_SIMPLE, AreaMin_A=100, AreaMax_A=00,
                      AreaMin_B=100, AreaMax_B=00):
     cnts2, hierarchy = cv2.findContours(image, mode=mode, method=method)
@@ -93,16 +92,19 @@ def findContoursPlus(image, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_SIMPLE, 
         return [], []
 
 
+# Cria uma mascara HSV apartir de um range pré-determinado.
 def HSVMask(img, lower, upper, invert=False):
     return cv2.inRange(cv2.cvtColor(img, cv2.COLOR_BGR2HSV), lower, upper)
 
 
+# Reduz ruídos os ruidos da mascara.
 def refineMask(maskToRefine, kerenelA=(3, 3), kernelB=(2, 2)):
     return cv2.morphologyEx(cv2.morphologyEx(maskToRefine, cv2.MORPH_CLOSE, (np.ones(kerenelA, np.uint8))),
                             cv2.MORPH_OPEN,
                             (np.ones(kernelB, np.uint8)))
 
 
+# Recorta uma imagem em uma matriz de 'n' retangulos iguais.
 def meshImg(img, nRows=3, mCols=3):
     rois = []
     for i in range(0, nRows):
@@ -117,6 +119,7 @@ def meshImg(img, nRows=3, mCols=3):
     return rois
 
 
+# Concatena Horizontal ou verticalmente mais de uma imagem.
 def concatImg(imgMeshed, index, p1, p2, **orientation):
     pc = [x for x in range(p1, p2 + 1)]
     img = np.zeros(2)
@@ -135,6 +138,7 @@ def concatImg(imgMeshed, index, p1, p2, **orientation):
     return img
 
 
+# Tira uma foto
 def takeSnapshot(cameraID):  # Função que lê e retorna a imagem presente na camera
     if type(cameraID) != cv2.VideoCapture:
         image_status, image = (cv2.VideoCapture(cameraID, cv2.CAP_DSHOW)).read()
