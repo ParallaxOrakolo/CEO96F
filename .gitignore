@@ -1,6 +1,6 @@
 .gitignore
 .gitattributes
-Log
+Log/api.log
 .idea
 Images
 Ignore
