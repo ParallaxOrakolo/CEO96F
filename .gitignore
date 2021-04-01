@@ -1,7 +1,7 @@
 .gitignore
 .gitattributes
+Log/api.log
 .idea
 Images
 Ignore
 __pycache__/
-Log/api.log
