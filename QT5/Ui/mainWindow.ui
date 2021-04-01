@@ -230,7 +230,7 @@ font: 8pt &quot;MS Shell Dlg 2&quot;;
 color: rgb(255, 255, 255);</string>
     </property>
     <property name="currentIndex">
-     <number>1</number>
+     <number>0</number>
     </property>
     <widget class="QWidget" name="CameraP">
      <property name="geometry">
@@ -264,7 +264,7 @@ color: rgb(255, 255, 255);</string>
           </widget>
          </item>
          <item>
-          <widget class="QSlider" name="brilho">
+          <widget class="QSlider" name="BRIGHTNESS">
            <property name="minimum">
             <number>-64</number>
            </property>
@@ -291,7 +291,7 @@ color: rgb(255, 255, 255);</string>
           </widget>
          </item>
          <item>
-          <widget class="QSlider" name="contrast">
+          <widget class="QSlider" name="CONTRAST">
            <property name="maximum">
             <number>100</number>
            </property>
@@ -315,7 +315,7 @@ color: rgb(255, 255, 255);</string>
           </widget>
          </item>
          <item>
-          <widget class="QSlider" name="matiz">
+          <widget class="QSlider" name="HUE">
            <property name="minimum">
             <number>-180</number>
            </property>
@@ -342,7 +342,7 @@ color: rgb(255, 255, 255);</string>
           </widget>
          </item>
          <item>
-          <widget class="QSlider" name="saturacao">
+          <widget class="QSlider" name="SATURATION">
            <property name="maximum">
             <number>100</number>
            </property>
@@ -390,7 +390,7 @@ color: rgb(255, 255, 255);</string>
           </widget>
          </item>
          <item>
-          <widget class="QSlider" name="gama">
+          <widget class="QSlider" name="GAMMA">
            <property name="minimum">
             <number>100</number>
            </property>
@@ -441,7 +441,7 @@ color: rgb(255, 255, 255);</string>
           </widget>
          </item>
          <item>
-          <widget class="QSlider" name="luzfundo">
+          <widget class="QSlider" name="BACKLIGHT">
            <property name="maximum">
             <number>2</number>
            </property>
@@ -462,7 +462,7 @@ color: rgb(255, 255, 255);</string>
           </widget>
          </item>
          <item>
-          <widget class="QSlider" name="ganho">
+          <widget class="QSlider" name="GAIN">
            <property name="maximum">
             <number>128</number>
            </property>
@@ -486,7 +486,7 @@ color: rgb(255, 255, 255);</string>
           </widget>
          </item>
          <item>
-          <widget class="QSlider" name="exposicao">
+          <widget class="QSlider" name="EXPOSURE">
            <property name="minimum">
             <number>-8</number>
            </property>
@@ -511,8 +511,8 @@ color: rgb(255, 255, 255);</string>
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>253</width>
-       <height>349</height>
+       <width>96</width>
+       <height>26</height>
       </rect>
      </property>
      <attribute name="label">
@@ -808,7 +808,7 @@ background-color: rgba(42, 79, 106);
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="SavePaineis">
+   <widget class="QPushButton" name="SaveActualConfig">
     <property name="enabled">
      <bool>true</bool>
     </property>
