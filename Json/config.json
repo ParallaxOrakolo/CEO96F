@@ -50,6 +50,7 @@
     },
     "Debugs": {
         "all": false,
+        "logs": true,
         "print": false,
         "pictures": false,
         "markings": false,
@@ -98,7 +99,7 @@
                 "frame_width": 720
             },
             "Properties": {
-                "BRIGHTNESS": 26,
+                "BRIGHTNESS": 10,
                 "SATURATION": 64,
                 "BACKLIGHT": 0,
                 "EXPOSURE": -4,

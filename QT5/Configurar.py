@@ -1,34 +1,28 @@
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Imports                                                           #
 
-# Todo:                              Verificar quais não estão mais sendo usados.                                      #
 
 # Importa os Widgets necessários.
 from PyQt5.QtWidgets import (
     QApplication,
-    QVBoxLayout,
     QMainWindow,
-    QPushButton,
     QWidget,
-    QDialog,
-    QAction,
-    QLabel
+    QDialog
 )
 
 # Importa algumas partes de certos módulos.
+from Log.Config.logger_settings import api_logger
+from timeit import default_timer as now
 from PyQt5.QtGui import QImage, QPixmap
-from PyQt5.QtCore import pyqtSlot
+from unidecode import unidecode
 from PyQt5.uic import loadUi
 from JsonMod import JsonMod
-from random import randint
 from PyQt5 import QtCore
-from time import sleep
 
 # Importa os principais módulos.
 import FastFunctions as Fast
 import OpencvPlus as Op
 import numpy as np
-import serial
 import json
 import sys
 import cv2
@@ -38,6 +32,10 @@ import os
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Variables                                                         #
 
+# Marca o inicio do código
+inicio = now()
+api_logger.info(unidecode("Programa Iniciado."))
+
 # Cria Comunicação Serial
 arduino = Fast.SerialConnect(name='Ramps 1.4')
 
@@ -46,7 +44,7 @@ imgAnalysePath = "../Images/P_ (3).jpg"
 ConfigDataPath = "../Json/config.json"
 blockImagePath = "Images/block.png"
 
-# Utilização de alguns diretorios fixos com base na locazilação atual do código.
+# Utilização de alguns diretorios fixos com base na localização atual do código.
 jsonpath = os.path.normpath(os.path.join(os.path.dirname(__file__), "json-data.json"))
 photoPath = os.path.normpath(os.path.join(os.path.dirname(__file__), imgAnalysePath))
 img = cv2.imread(photoPath)
@@ -73,6 +71,20 @@ Tabs = []
 for Tab in configData['Mask_Parameters']:
     Tabs.append(Tab)
 Tabs.append(zProcess)
+
+# Definição dos modos de Debug/Logs
+# Todo Deixar dinamico para adição de algum outro debug.
+DebugTypes = configData['Debugs']
+if DebugTypes["all"]:
+    DebugPrint = DebugPictures = DebugRT = DebugMarkings = Log = True
+    DebugControls = False
+else:
+    DebugControls = DebugTypes["testControls"]
+    DebugMarkings = DebugTypes["markings"]
+    DebugPictures = DebugTypes["pictures"]
+    DebugPrint = DebugTypes["print"]
+    DebugRT = DebugTypes["realTime"]
+    Log = DebugTypes["logs"]
 
 # Criação de variaveis globais
 marker_s = False
@@ -368,17 +380,23 @@ class MainWindow(QMainWindow):
         try:
             cap.set(getattr(cv2, 'CAP_PROP_' + a), b)
         except AttributeError:
-            print(f"{Fast.ColorPrint.ERROR}O atributo {a[0]+a[1::].lower()} não pode ser definido para {b}.")
-            print(f"{Fast.ColorPrint.WARNING}O novo valor do atributo {a[0]+a[1::].lower()} não sera salvo."'\n')
+            Error = f'O atributo {a[0]+a[1::].lower()} não pode ser definido para {b}.'
+            Warning = f'O novo valor do atributo {a[0]+a[1::].lower()} não sera salvo.'
+            print(f"{Fast.ColorPrint.ERROR}{Error}")
+            print(f"{Fast.ColorPrint.WARNING}{Warning}"'\n')
             pass
 
     # Tira uma foto com a camera desejada e salva o id da ultima camera utilizada.
     def Photo(self, id, release=True):
         if not isinstance(id, int):
+
             # Define o nome da camera com base no processo que é utilizada.
             camera_name = (configData["Filtros"]["HSV"][str(configData["Cameras"][id]["Settings"]["id"])]["Application"])
             # Define a mensagem de erro
+
             cant_read_cam_message = f"Camera do processo {camera_name} não pode ser lida."
+
+            default_action = 'Verifique as conexões USB'
 
             global cap, img, nominalIndex
 
@@ -400,10 +418,13 @@ class MainWindow(QMainWindow):
             # Avisa que a camera não pode ser aberta, ou encontra-se obstruida.
                 else:
                     print(f"{Fast.ColorPrint.ERROR}{cant_read_cam_message}")
-                    print(f"{Fast.ColorPrint.WARNING}Verifique as conexões USB"'\n')
+                    print(f"{Fast.ColorPrint.WARNING}{default_action}"'\n')
+                    if Log:
+                        api_logger.warning(unidecode(cant_read_cam_message))
+                        api_logger.info(unidecode(default_action))
             except cv2.error:
                 print(f"{Fast.ColorPrint.ERROR}{cant_read_cam_message}")
-                print(f"{Fast.ColorPrint.WARNING}Verifique as conexões USB"'\n')
+                print(f"{Fast.ColorPrint.WARNING}{default_action}"'\n')
 
             # Verifica se não está em modo stream e se deve fechar a conexão com a mesma.
             if release and not self.LiveS.isChecked():
@@ -615,7 +636,7 @@ class MainWindow(QMainWindow):
                     for info_edge in edge:
                         cv2.drawContours(chr_k, [info_edge['contour']], -1, (70, 255, 20), 3)
 
-                        # Se for a primeira etapa, redefine a imagem de analize com base nos valores encontrados
+                        # Se for a primeira etapa, redefine a imagem de analise com base nos valores encontrados
                         if self.janela == bProcess:
                             point_a = tuple(info_edge['contour'][0])
                             edge_analyze = imgAnalyse[point_a[1]: height, 0:width]
@@ -654,32 +675,8 @@ class MainWindow(QMainWindow):
         Processo = False
         if tempData != configData:
             self.toggle_window(self.window3)
-            # for jan in Tabs:
-            #     self.janela = jan
-            #     if self.janela != zProcess:
-            #         print('~~' * 30)
-            #         for slider in self.Sliders:
-            #             print(self.janela, slider.objectName(),
-            #                   tempData["Cameras"][self.janela]["Properties"][slider.objectName()])
-            #         print('~~' * 15)
-            #         for slider in self.Sliders:
-            #             print(self.janela, slider.objectName(),
-            #                   configData["Cameras"][self.janela]["Properties"][slider.objectName()])
-            # sys.exit(500)
         else:
-            # for jan in Tabs:
-            #     self.janela = jan
-            #     if self.janela != zProcess:
-            #         print('~~'*30)
-            #         print("TempData")
-            #         for slider in self.Sliders:
-            #             print(self.janela, slider.objectName(),
-            #                   tempData["Cameras"][self.janela]["Properties"][slider.objectName()])
-            #         print('~~' * 15)
-            #         print("dataConfig")
-            #         for slider in self.Sliders:
-            #             print(self.janela, slider.objectName(),
-            #                   configData["Cameras"][self.janela]["Properties"][slider.objectName()])
+            api_logger.info(f"Programa finalizado com o codigo [200] | Tempo online [{round(now() - inicio, 3)}s]")
             sys.exit(200)
 
     # Troca entre as janelas existentes.
@@ -715,11 +712,19 @@ class PopUp(QDialog):
             print(f"{Fast.ColorPrint.BLUE}[TEMP_FILE]: {tempData}{Fast.ColorPrint.ENDC}"'\n')
             print(f"{Fast.ColorPrint.ERROR}Falha encontrada:")
             print(f"{Fast.ColorPrint.ERROR}{erroGrave}")
+            if Log:
+                api_logger.fatal(str(erroGrave))
+                api_logger.info(unidecode("As edições não foram salvas. Entre em contato com a manutenção."))
+                api_logger.warning(unidecode(f"[TEMP_FILE]: {tempData}"))
         if exit_C:
+            api_logger.warning("As informacoes do arquivo temporario foram salvas.")
             self.quit_trigger(exit_C)
 
     # Sai da aplicação e mantem os arquivos originais.
     def quit_trigger(self, exit_code=200):
+        if exit_code == 199:
+            api_logger.warning("As informacoes do arquivo temporario nao foram salvas.")
+        api_logger.info(f"Programa finalizado com o codigo [{exit_code}] | Tempo online [{round(now() - inicio, 3)}s]")
         sys.exit(exit_code)
 
 
