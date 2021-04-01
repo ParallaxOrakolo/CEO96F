@@ -27,6 +27,7 @@ def loopBitwiseOr(vetor):
 
 
 # Extrai os valores de um grupo de vetores.
+# FixMe: Mudar de lower[100,20,50] ~~> lower{"h_min":100, "s_min":20, "v_min":50}
 def extractHSValue(HSVector, key):  # Função que extrai e orgazina alguns valores dentro de um vetor
     data = HSVector[key]
     return np.array([int(data[0]), int(data[1]), int(data[2])])

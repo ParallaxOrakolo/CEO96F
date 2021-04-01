@@ -28,7 +28,6 @@ import sys
 import cv2
 import os
 
-
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Variables                                                         #
 
@@ -142,24 +141,24 @@ class MachineController(QWidget):
         self.LedR.valueChanged.connect(
             lambda checked: self.SerialMonitor(
                 Fast.sendGCODE(arduino,
-                             "M150 R{0} U{1} B{2}".format(self.LedR.value(), self.LedG.value(), self.LedB.value()),
-                             echo='True')
+                               "M150 R{0} U{1} B{2}".format(self.LedR.value(), self.LedG.value(), self.LedB.value()),
+                               echo='True')
             )
         )
 
         self.LedG.valueChanged.connect(
             lambda checked: self.SerialMonitor(
                 Fast.sendGCODE(arduino,
-                             "M150 R{0} U{1} B{2}".format(self.LedR.value(), self.LedG.value(), self.LedB.value()),
-                             echo='True')
+                               "M150 R{0} U{1} B{2}".format(self.LedR.value(), self.LedG.value(), self.LedB.value()),
+                               echo='True')
             )
         )
 
         self.LedB.valueChanged.connect(
             lambda checked: self.SerialMonitor(
                 Fast.sendGCODE(arduino,
-                             "M150 R{0} U{1} B{2}".format(self.LedR.value(), self.LedG.value(), self.LedB.value()),
-                             echo='True')
+                               "M150 R{0} U{1} B{2}".format(self.LedR.value(), self.LedG.value(), self.LedB.value()),
+                               echo='True')
             )
         )
 
@@ -335,23 +334,45 @@ class MainWindow(QMainWindow):
         self.Next.clicked.connect(lambda checked: self.EditIndex('+'))
         self.Prev.clicked.connect(lambda checked: self.EditIndex('-'))
 
-        # Cria uma lista com todos os slides de configuração da camera, com base no arquivo de configuração.
+        # Cria Listas com os slides/spinBox de configuração, com base no arquivo config.json e na Interface feita.
         self.Sliders = []
         Cam_Prop = configData["Cameras"]["Hole"]["Properties"]
         for prop in Cam_Prop:
             self.Sliders.append(getattr(self, prop))
 
+        self.HSVSliders = []
+        minSliders = configData["Filtros"]["HSV"]["0"]["Valores"]["lower"]
+        maxSliders = configData["Filtros"]["HSV"]["0"]["Valores"]["upper"]
+        for s_min, s_max in zip(minSliders, maxSliders):
+            self.HSVSliders.append(getattr(self, s_min))
+            self.HSVSliders.append(getattr(self, s_max))
+
+        self.Areas = []
+        AreaData = configData["Mask_Parameters"]["Hole"]
+        for area in AreaData:
+            self.Areas.append(getattr(self, area))
+
         # Atualização dos valores de configuração com base no modo atual.
         self.LoadData()
 
-        # Conecta cada slider de configuração da camera à função que realiza a configuração, passando os valores certos.
+        # Conecta todos os sliders/spinBox's de de configuração as suas respectivas funções e a função de salvar temp.
         for prop in range(len(self.Sliders)):
             self.Sliders[prop].valueChanged.connect(
                 lambda value=self.Sliders[prop], name=self.Sliders[prop].objectName(): self.setProperties(name, value)
             )
 
             self.Sliders[prop].sliderReleased.connect(
-               self.PreSaveData
+                self.PreSaveData
+            )
+
+        for sliderName in range(len(self.HSVSliders)):
+            self.HSVSliders[sliderName].sliderReleased.connect(
+                self.PreSaveData
+            )
+
+        for area in range(len(self.Areas)):
+            self.Areas[area].valueChanged.connect(
+                self.PreSaveData
             )
 
         # Conecta as caixas de seleção das cameras à função que altera a instância da camera com base no processo.
@@ -375,8 +396,8 @@ class MainWindow(QMainWindow):
         try:
             cap.set(getattr(cv2, 'CAP_PROP_' + a), b)
         except AttributeError:
-            Error = f'O atributo {a[0]+a[1::].lower()} não pode ser definido para {b}.'
-            Warning = f'O novo valor do atributo {a[0]+a[1::].lower()} não sera salvo.'
+            Error = f'O atributo {a[0] + a[1::].lower()} não pode ser definido para {b}.'
+            Warning = f'O novo valor do atributo {a[0] + a[1::].lower()} não sera salvo.'
             print(f"{Fast.ColorPrint.ERROR}{Error}")
             print(f"{Fast.ColorPrint.WARNING}{Warning}"'\n')
             pass
@@ -386,7 +407,8 @@ class MainWindow(QMainWindow):
         if not isinstance(id, int):
 
             # Define o nome da camera com base no processo que é utilizada.
-            camera_name = (configData["Filtros"]["HSV"][str(configData["Cameras"][id]["Settings"]["id"])]["Application"])
+            camera_name = (
+                configData["Filtros"]["HSV"][str(configData["Cameras"][id]["Settings"]["id"])]["Application"])
             # Define a mensagem de erro
 
             cant_read_cam_message = f"Camera do processo {camera_name} não pode ser lida."
@@ -410,7 +432,7 @@ class MainWindow(QMainWindow):
                 if __ and cv2.countNonZero(cv2.cvtColor(imgtemp, cv2.COLOR_BGR2GRAY)) > 5000:
                     _, img = cap.read()
 
-            # Avisa que a camera não pode ser aberta, ou encontra-se obstruida.
+                # Avisa que a camera não pode ser aberta, ou encontra-se obstruida.
                 else:
                     print(f"{Fast.ColorPrint.ERROR}{cant_read_cam_message}")
                     print(f"{Fast.ColorPrint.WARNING}{default_action}"'\n')
@@ -454,32 +476,34 @@ class MainWindow(QMainWindow):
     # Atualiza os valores de configuração com base no modo atual.
     def LoadData(self):
         if self.janela != zProcess:
+            print("Carregou")
             for slider in self.Sliders:
                 slider.setValue(int(configData["Cameras"][self.janela]["Properties"][slider.objectName()]))
 
-            self.h_min.setValue(configData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][0])
-            self.s_min.setValue(configData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][1])
-            self.v_min.setValue(configData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][2])
-            self.h_max.setValue(configData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['upper'][0])
-            self.s_max.setValue(configData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['upper'][1])
-            self.v_max.setValue(configData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['upper'][2])
-            self.A1.setValue(configData["Mask_Parameters"][self.janela]["areaMin"])
-            self.A2.setValue(configData["Mask_Parameters"][self.janela]["areaMax"])
+            for HSVSlider in self.HSVSliders:
+                key = 'lower' if 'min' in HSVSlider.objectName() else 'upper'
+                HSVSlider.setValue(configData['Filtros']['HSV'][str(self.TabIndex)]
+                                   ['Valores'][key][HSVSlider.objectName()])
+
+            for areaSlider in self.Areas:
+                areaSlider.setValue(configData["Mask_Parameters"][self.janela][areaSlider.objectName()])
+            # self.areaMin.setValue(configData["Mask_Parameters"][self.janela]["areaMin"])
+            # self.areaMax.setValue(configData["Mask_Parameters"][self.janela]["areaMax"])
 
     # Salva de forma temporaria quaisquer alterações nos valores de configuração
     def PreSaveData(self):
+        print("Salvou")
         if self.janela != zProcess:
             for slider in self.Sliders:
                 tempData["Cameras"][self.janela]["Properties"][slider.objectName()] = slider.value()
 
-            tempData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][0] = self.h_min.value()
-            tempData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][1] = self.s_min.value()
-            tempData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['lower'][2] = self.v_min.value()
-            tempData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['upper'][0] = self.h_max.value()
-            tempData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['upper'][1] = self.s_max.value()
-            tempData['Filtros']['HSV'][str(self.TabIndex)]['Valores']['upper'][2] = self.v_max.value()
-            tempData["Mask_Parameters"][self.janela]["areaMin"] = int(self.A1.value())
-            tempData["Mask_Parameters"][self.janela]["areaMax"] = int(self.A2.value())
+            print("Salvando")
+            for HSVSlider in self.HSVSliders:
+                tempData['Filtros']['HSV'][str(self.TabIndex)][
+                    'Valores']['lower'][HSVSlider.objectName()] = HSVSlider.value()
+
+            tempData["Mask_Parameters"][self.janela]["areaMin"] = int(self.areaMin.value())
+            tempData["Mask_Parameters"][self.janela]["areaMax"] = int(self.areaMax.value())
 
     # Executa o código de identificação com base no modo atual
     def onClicked(self, FDs):
@@ -526,7 +550,7 @@ class MainWindow(QMainWindow):
             if self.janela == aProcess:
 
                 # Coleta os valores de configuração e cria um filtro personalizado
-                X1, X2, X3, X4 = self.A1.value(), self.A2.value(), self.A3.value(), self.A4.value()
+                X1, X2, X3, X4 = self.areaMin.value(), self.areaMax.value(), self.A3.value(), self.A4.value()
                 imgAnalyse = img
                 lower = np.array([
                     self.h_min.value(),
@@ -547,7 +571,6 @@ class MainWindow(QMainWindow):
 
                 # Para cada marcação encontrada, traça marcas de orientação a sua volta.
                 for Circle in edge:
-
                     # Desenha um circulo em volta do centro do contorno encontrado.
                     cv2.circle(chr_k, (
                         int(Circle['center'][0]),
@@ -623,8 +646,8 @@ class MainWindow(QMainWindow):
                 chr_k = cv2.bitwise_and(edge_analyze, edge_analyze, mask=msk)
 
                 # Utliza-se do filtro criado para encontrar a borda de comparação de altura do parafuso
-                edge, null = Op.findContoursPlus(msk, AreaMin_A=self.A1.value(),
-                                                 AreaMax_A=self.A2.value())
+                edge, null = Op.findContoursPlus(msk, AreaMin_A=self.areaMin.value(),
+                                                 AreaMax_A=self.areaMax.value())
 
                 # De acordo com o contorno encontrado, faz a marcação correspondente.
                 if edge:
@@ -645,9 +668,6 @@ class MainWindow(QMainWindow):
             # Exibe a Imagem
             self.displayImage(chr_k, 1)
             cv2.waitKey(1)
-
-            # Todo: Salvar de forma temporária somente quando algum valor mudar.
-            # self.PreSaveData()
 
     # Função conversão e exibição as imagem de np.array(B,G,R) para jpg(R,G,B)
     def displayImage(self, imgs, window=1):

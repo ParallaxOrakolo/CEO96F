@@ -511,8 +511,8 @@ color: rgb(255, 255, 255);</string>
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>96</width>
-       <height>26</height>
+       <width>253</width>
+       <height>349</height>
       </rect>
      </property>
      <attribute name="label">
@@ -904,7 +904,7 @@ background-color: rgba(42, 79, 106);
      <number>-1</number>
     </property>
    </widget>
-   <widget class="QSpinBox" name="A1">
+   <widget class="QSpinBox" name="areaMin">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -923,7 +923,7 @@ background-color: rgba(42, 79, 106);
      <number>100</number>
     </property>
    </widget>
-   <widget class="QSpinBox" name="A2">
+   <widget class="QSpinBox" name="areaMax">
     <property name="geometry">
      <rect>
       <x>10</x>
@@ -949,7 +949,7 @@ background-color: rgba(42, 79, 106);
      </rect>
     </property>
    </widget>
-   <widget class="QSpinBox" name="A3">
+   <widget class="QSpinBox" name="perimeter">
     <property name="geometry">
      <rect>
       <x>10</x>

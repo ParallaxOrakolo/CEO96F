@@ -4,46 +4,46 @@
             "0": {
                 "Application": "Hole",
                 "Valores": {
-                    "lower": [
-                        78,
-                        59,
-                        6
-                    ],
-                    "upper": [
-                        84,
-                        255,
-                        124
-                    ]
+                    "lower": {
+                        "h_min":78,
+                        "s_min":59,
+                        "v_min":6
+                    },
+                    "upper": {
+                        "h_max":84,
+                        "s_max":255,
+                        "v_max":124
+                    }
                 }
             },
             "1": {
                 "Application": "Edge",
                 "Valores": {
-                    "lower": [
-                        13,
-                        3,
-                        119
-                    ],
-                    "upper": [
-                        128,
-                        40,
-                        241
-                    ]
+                    "lower": {
+                        "h_min":13,
+                        "s_min":3,
+                        "v_min":119
+                    },
+                    "upper": {
+                        "h_max":128,
+                        "s_max":40,
+                        "v_max":241
+                    }
                 }
             },
             "2": {
                 "Application": "Screw",
                 "Valores": {
-                    "lower": [
-                        0,
-                        4,
-                        38
-                    ],
-                    "upper": [
-                        42,
-                        93,
-                        246
-                    ]
+                    "lower": {
+                        "h_min":0,
+                        "s_min":4,
+                        "v_min":38
+                    },
+                    "upper": {
+                        "h_max":42,
+                        "s_max":93,
+                        "v_max":246
+                    }
                 }
             }
         }
@@ -64,10 +64,12 @@
             "areaMax": 4500
         },
         "Edge": {
+            "perimeter": 0,
             "areaMin": 15000,
             "areaMax": 50000
         },
         "Screw": {
+            "perimeter": 0,
             "areaMin": 10002,
             "areaMax": 20169
         }
