@@ -73,18 +73,13 @@ for Tab in configData['Mask_Parameters']:
 Tabs.append(zProcess)
 
 # Definição dos modos de Debug/Logs
-# Todo Deixar dinamico para adição de algum outro debug.
 DebugTypes = configData['Debugs']
 if DebugTypes["all"]:
-    DebugPrint = DebugPictures = DebugRT = DebugMarkings = Log = True
-    DebugControls = False
+    for db in DebugTypes:
+        locals()['D_' + str(db)] = True
 else:
-    DebugControls = DebugTypes["testControls"]
-    DebugMarkings = DebugTypes["markings"]
-    DebugPictures = DebugTypes["pictures"]
-    DebugPrint = DebugTypes["print"]
-    DebugRT = DebugTypes["realTime"]
-    Log = DebugTypes["logs"]
+    for db in DebugTypes:
+        locals()['D_' + str(db)] = DebugTypes[db]
 
 # Criação de variaveis globais
 marker_s = False
@@ -419,7 +414,7 @@ class MainWindow(QMainWindow):
                 else:
                     print(f"{Fast.ColorPrint.ERROR}{cant_read_cam_message}")
                     print(f"{Fast.ColorPrint.WARNING}{default_action}"'\n')
-                    if Log:
+                    if locals()['D_logs']:
                         api_logger.warning(unidecode(cant_read_cam_message))
                         api_logger.info(unidecode(default_action))
             except cv2.error:
@@ -712,7 +707,7 @@ class PopUp(QDialog):
             print(f"{Fast.ColorPrint.BLUE}[TEMP_FILE]: {tempData}{Fast.ColorPrint.ENDC}"'\n')
             print(f"{Fast.ColorPrint.ERROR}Falha encontrada:")
             print(f"{Fast.ColorPrint.ERROR}{erroGrave}")
-            if Log:
+            if locals()['D_logs']:
                 api_logger.fatal(str(erroGrave))
                 api_logger.info(unidecode("As edições não foram salvas. Entre em contato com a manutenção."))
                 api_logger.warning(unidecode(f"[TEMP_FILE]: {tempData}"))
