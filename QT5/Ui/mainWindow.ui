@@ -511,8 +511,8 @@ color: rgb(255, 255, 255);</string>
       <rect>
        <x>0</x>
        <y>0</y>
-       <width>253</width>
-       <height>349</height>
+       <width>96</width>
+       <height>26</height>
       </rect>
      </property>
      <attribute name="label">
@@ -808,7 +808,7 @@ background-color: rgba(42, 79, 106);
      <bool>false</bool>
     </property>
    </widget>
-   <widget class="QPushButton" name="SavePaineis">
+   <widget class="QPushButton" name="SaveActualConfig">
     <property name="enabled">
      <bool>true</bool>
     </property>

@@ -66,6 +66,7 @@ cProcess = configData["Filtros"]["HSV"]["2"]["Application"]
 zProcess = "Normal"
 
 nominalIndex = aProcess
+Processo = True
 
 # Definição dos modos/janelas do processo
 Tabs = []
@@ -316,14 +317,16 @@ class MainWindow(QMainWindow):
         self.janela = Tabs[self.TabIndex]
 
         # Associação dos gatilhos à funções internas e/ou externas.
-        self.LiveS.clicked.connect(self.onClicked)
-        self.Next.clicked.connect(lambda checked: self.EditIndex('+'))
-        self.Prev.clicked.connect(lambda checked: self.EditIndex('-'))
+        self.SaveActualConfig.clicked.connect(self.PreSaveData)
         self.actionSair.triggered.connect(self.quit_trigger)
         self.Stop.clicked.connect(self.quit_trigger)
+        self.LiveS.clicked.connect(self.onClicked)
+
         self.actionJson_Editor.triggered.connect(lambda checked: self.toggle_window(self.window1))
         self.actionMachine.triggered.connect(lambda checked: self.toggle_window(self.window2))
         self.actionCam.triggered.connect(lambda checked: self.toggle_window(self.window3))
+        self.Next.clicked.connect(lambda checked: self.EditIndex('+'))
+        self.Prev.clicked.connect(lambda checked: self.EditIndex('-'))
 
         # Cria uma lista com todos os slides de configuração da camera, com base no arquivo de configuração.
         self.Sliders = []
@@ -449,7 +452,6 @@ class MainWindow(QMainWindow):
 
     # Salva de forma temporaria quaisquer alterações nos valores de configuração
     def PreSaveData(self):
-        print("Salvando")
         if self.janela != zProcess:
             for slider in self.Sliders:
                 tempData["Cameras"][self.janela]["Properties"][slider.objectName()] = slider.value()
@@ -465,23 +467,25 @@ class MainWindow(QMainWindow):
 
     # Executa o código de identificação com base no modo atual
     def onClicked(self, FDs):
-        global cap, img, nominalIndex
-        last = self.janela
+        global cap, img, nominalIndex, Processo
+        Processo = FDs
+        if Processo:
+            last = self.janela
 
-        # Verifica se deve acionar a camera em modo permanente.
-        if self.LiveS.isChecked():
-            global cap
-            # Tenta desconectar caso já exista uma conexão na variavel "cap".
-            try:
-                cap.release()
-            except AttributeError:
-                pass
+            # Verifica se deve acionar a camera em modo permanente.
+            if self.LiveS.isChecked():
+                global cap
+                # Tenta desconectar caso já exista uma conexão na variavel "cap".
+                try:
+                    cap.release()
+                except AttributeError:
+                    pass
 
-            # Cria uma nova instância de camera na variável cap de modo permanente.
-            self.Photo(nominalIndex, release=False)
+                # Cria uma nova instância de camera na variável cap de modo permanente.
+                self.Photo(nominalIndex, release=False)
 
-        # Mantem o processo rodando.
-        while True:
+            # Mantem o processo rodando.
+        while Processo:
 
             # Atualiza a imagem em tempo real, se necessário.
             if self.LiveS.isChecked():
@@ -646,6 +650,8 @@ class MainWindow(QMainWindow):
 
     # Sai do aplicativo, e em caso de mudanças pergunta se deseja salva-las
     def quit_trigger(self):
+        global Processo
+        Processo = False
         if tempData != configData:
             self.toggle_window(self.window3)
             # for jan in Tabs:
