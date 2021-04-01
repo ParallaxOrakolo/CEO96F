@@ -476,7 +476,6 @@ class MainWindow(QMainWindow):
     # Atualiza os valores de configuração com base no modo atual.
     def LoadData(self):
         if self.janela != zProcess:
-            print("Carregou")
             for slider in self.Sliders:
                 slider.setValue(int(configData["Cameras"][self.janela]["Properties"][slider.objectName()]))
 
@@ -492,12 +491,10 @@ class MainWindow(QMainWindow):
 
     # Salva de forma temporaria quaisquer alterações nos valores de configuração
     def PreSaveData(self):
-        print("Salvou")
         if self.janela != zProcess:
             for slider in self.Sliders:
                 tempData["Cameras"][self.janela]["Properties"][slider.objectName()] = slider.value()
 
-            print("Salvando")
             for HSVSlider in self.HSVSliders:
                 tempData['Filtros']['HSV'][str(self.TabIndex)][
                     'Valores']['lower'][HSVSlider.objectName()] = HSVSlider.value()
