@@ -75,11 +75,13 @@ Tabs.append(zProcess)
 DebugTypes = configData['Debugs']
 if DebugTypes["all"]:
     for db in DebugTypes:
-        locals()['D_' + str(db)] = True
+        globals()['D_' + str(db)] = True
 else:
     for db in DebugTypes:
-        locals()['D_' + str(db)] = DebugTypes[db]
+        globals()['D_' + str(db)] = DebugTypes[db]
 
+if globals()['D_logs']:
+    print("Logs OK")
 # Criação de variaveis globais
 marker_s = False
 cap = False
@@ -436,7 +438,7 @@ class MainWindow(QMainWindow):
                 else:
                     print(f"{Fast.ColorPrint.ERROR}{cant_read_cam_message}")
                     print(f"{Fast.ColorPrint.WARNING}{default_action}"'\n')
-                    if locals()['D_logs']:
+                    if globals()['D_logs']:
                         api_logger.warning(unidecode(cant_read_cam_message))
                         api_logger.info(unidecode(default_action))
             except cv2.error:
@@ -547,7 +549,7 @@ class MainWindow(QMainWindow):
             if self.janela == aProcess:
 
                 # Coleta os valores de configuração e cria um filtro personalizado
-                X1, X2, X3, X4 = self.areaMin.value(), self.areaMax.value(), self.A3.value(), self.A4.value()
+                X1, X2, X3, X4 = self.areaMin.value(), self.areaMax.value(), self.perimeter.value(), self.A4.value()
                 imgAnalyse = img
                 lower = np.array([
                     self.h_min.value(),
@@ -724,7 +726,7 @@ class PopUp(QDialog):
             print(f"{Fast.ColorPrint.BLUE}[TEMP_FILE]: {tempData}{Fast.ColorPrint.ENDC}"'\n')
             print(f"{Fast.ColorPrint.ERROR}Falha encontrada:")
             print(f"{Fast.ColorPrint.ERROR}{erroGrave}")
-            if locals()['D_logs']:
+            if globals()['D_logs']:
                 api_logger.fatal(str(erroGrave))
                 api_logger.info(unidecode("As edições não foram salvas. Entre em contato com a manutenção."))
                 api_logger.warning(unidecode(f"[TEMP_FILE]: {tempData}"))
