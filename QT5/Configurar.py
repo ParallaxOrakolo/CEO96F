@@ -80,8 +80,6 @@ else:
     for db in DebugTypes:
         globals()['D_' + str(db)] = DebugTypes[db]
 
-if globals()['D_logs']:
-    print("Logs OK")
 # Criação de variaveis globais
 marker_s = False
 cap = False
@@ -401,7 +399,9 @@ class MainWindow(QMainWindow):
             Error = f'O atributo {a[0] + a[1::].lower()} não pode ser definido para {b}.'
             Warning = f'O novo valor do atributo {a[0] + a[1::].lower()} não sera salvo.'
             print(f"{Fast.ColorPrint.ERROR}{Error}")
-            print(f"{Fast.ColorPrint.WARNING}{Warning}"'\n')
+            print(f"{Fast.ColorPrint.WARNING}{Warning}")
+            print(f'{Fast.ColorPrint.HINT}Verifique se as cameras estão conectadas, e foram iniciadas.'
+                  f'{Fast.ColorPrint.ENDC}''\n')
             pass
 
     # Tira uma foto com a camera desejada e salva o id da ultima camera utilizada.
@@ -493,13 +493,19 @@ class MainWindow(QMainWindow):
 
     # Salva de forma temporaria quaisquer alterações nos valores de configuração
     def PreSaveData(self):
+
+        # Para cada Slider Existente, Verifica se o valor atual é diferente do original, e salva caso positivo.
         if self.janela != zProcess:
             for slider in self.Sliders:
-                tempData["Cameras"][self.janela]["Properties"][slider.objectName()] = slider.value()
+                if slider.value() != int(configData["Cameras"][self.janela]["Properties"][slider.objectName()]):
+                    tempData["Cameras"][self.janela]["Properties"][slider.objectName()] = slider.value()
 
             for HSVSlider in self.HSVSliders:
-                tempData['Filtros']['HSV'][str(self.TabIndex)][
-                    'Valores']['lower'][HSVSlider.objectName()] = HSVSlider.value()
+                key = 'lower' if 'min' in HSVSlider.objectName() else 'upper'
+                if HSVSlider.value() != configData['Filtros']['HSV'][str(self.TabIndex)]['Valores'][key][
+                   HSVSlider.objectName()]:
+                    tempData['Filtros']['HSV'][str(self.TabIndex)][
+                        'Valores'][key][HSVSlider.objectName()] = HSVSlider.value()
 
             tempData["Mask_Parameters"][self.janela]["areaMin"] = int(self.areaMin.value())
             tempData["Mask_Parameters"][self.janela]["areaMax"] = int(self.areaMax.value())

@@ -15,7 +15,7 @@ class ColorPrint:
 
     WARNING = '\033[93m'+'[Aviso]: '+'\033[0m'
     ERROR =   '\033[91m'+'[Erro]:  '+'\033[0m'
-
+    HINT =    '\033[96m'+'[Dica]:  '+'\033[0m'
     UNDERLINE = '\033[4m'
     HEADER = '\033[95m'
     BOLD = '\033[1m'
