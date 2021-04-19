@@ -230,7 +230,7 @@ font: 8pt &quot;MS Shell Dlg 2&quot;;
 color: rgb(255, 255, 255);</string>
     </property>
     <property name="currentIndex">
-     <number>0</number>
+     <number>1</number>
     </property>
     <widget class="QWidget" name="CameraP">
      <property name="geometry">
@@ -989,7 +989,7 @@ background-color: rgba(42, 79, 106);
 }</string>
     </property>
     <property name="text">
-     <string>Foto</string>
+     <string>Carregar</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="PhotoPath">

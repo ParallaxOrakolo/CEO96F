@@ -93,9 +93,14 @@ pFB = (100, 60)
 pFA = (50, 50)
 fixPoint = (pFB[0], int(pFA[1] + ((pFB[1] - pFA[1]) / 2)))
 
+
 # Corte da Imagem na área de interesse central
-Quadrants = Op.meshImg(img)
-img = Quadrants[line][column]
+def ret_Mesh(img, line, colum):
+    Quadrants = Op.meshImg(img)
+    return Quadrants[line][column]
+
+
+img = ret_Mesh(img, line, column)
 
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
@@ -212,10 +217,7 @@ class MachineController(QWidget):
     def onClicked(self, marker):
         global cap, marker_s, img
         if marker:
-            if marker_s:
-                marker_s = False
-            else:
-                marker_s = True
+            marker_s = False if marker_s else True
         elif not cap:
             cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
             cap.set(3, 1280)
@@ -312,7 +314,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
         loadUi("Ui/mainWindow.ui", self)
-
+        self.PhotoPath.setText(os.path.normpath(os.path.join(os.path.dirname(__file__), '../Images/')))
         # Associando as classes de outras janelas a um objeto correspondente.
         self.window1 = JsonTree()
         self.window2 = MachineController()
@@ -388,6 +390,13 @@ class MainWindow(QMainWindow):
         self.Stop.clicked.connect(
             lambda checked: self.onClicked(False)
         )
+
+        self.Snapshot.clicked.connect(self.takePicture)
+
+    def takePicture(self):
+        global img
+        if os.path.isfile(self.PhotoPath.text()):
+            img = cv2.imread(self.PhotoPath.text())
 
     # Todo: Deixa a função setProperties estática para usa-la em outras janelas.
     # Atualiza os propriedades da camera (brilho, contraste, exposição e etc).
@@ -756,7 +765,7 @@ app = QApplication(sys.argv)
 
 # Correlação da Janela Principal com a primeira janela a ser exibida
 w = MainWindow()
-w.showMaximized()
+w.showFullScreen()
 
 # Para a execução do aplicativo caso o mesmo retorne algum código de erro.
 sys.exit(app.exec_())
