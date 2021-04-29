@@ -28,7 +28,7 @@ import platform
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Variables                                                         #
 
-sys.path.append(os.path.normpath(os.path.join(os.path.dirname(__file__), "../"))) if platform.system() == "Linux" else None
+sys.path.append((os.path.normpath(os.path.join(os.path.dirname(__file__), "../"))+"/")) if platform.system() == "Linux" else None
 from Log.Config.logger_settings import api_logger
 
 # Marca o inicio do código
