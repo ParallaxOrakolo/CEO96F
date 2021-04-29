@@ -1,8 +1,5 @@
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Imports                                                           #
-import os
-print(os.path.normpath(os.path.join(os.path.dirname(__file__), "../")))
-exit()
 # Importa os Widgets necessários.
 from PyQt5.QtWidgets import (
     QApplication,
@@ -12,7 +9,6 @@ from PyQt5.QtWidgets import (
 )
 
 # Importa algumas partes de certos módulos.
-from Log.Config.logger_settings import api_logger
 from timeit import default_timer as now
 from PyQt5.QtGui import QImage, QPixmap
 from unidecode import unidecode
@@ -28,9 +24,12 @@ import json
 import sys
 import cv2
 import os
-
+import platform
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Variables                                                         #
+
+sys.path.append(os.path.normpath(os.path.join(os.path.dirname(__file__), "../"))) if platform.system() == "Linux" else None
+from Log.Config.logger_settings import api_logger
 
 # Marca o inicio do código
 inicio = now()

@@ -5,3 +5,4 @@ Log/api.log
 Images
 Ignore
 __pycache__/
+.git/
