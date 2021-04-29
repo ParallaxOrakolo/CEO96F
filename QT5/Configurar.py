@@ -1,5 +1,10 @@
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Imports                                                           #
+import os
+import sys
+import platform
+sys.path.append((os.path.normpath(os.path.join(os.path.dirname(__file__), "../"))+"/")) if platform.system() == "Linux" else None
+
 # Importa os Widgets necessários.
 from PyQt5.QtWidgets import (
     QApplication,
@@ -21,14 +26,10 @@ import FastFunctions as Fast
 import OpencvPlus as Op
 import numpy as np
 import json
-import sys
 import cv2
-import os
-import platform
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Variables                                                         #
 
-sys.path.append((os.path.normpath(os.path.join(os.path.dirname(__file__), "../"))+"/")) if platform.system() == "Linux" else None
 from Log.Config.logger_settings import api_logger
 
 # Marca o inicio do código
