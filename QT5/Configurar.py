@@ -1,7 +1,8 @@
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Imports                                                           #
-
-
+import os
+print(os.path.normpath(os.path.join(os.path.dirname(__file__), "../")))
+exit()
 # Importa os Widgets necessários.
 from PyQt5.QtWidgets import (
     QApplication,
