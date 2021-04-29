@@ -34,8 +34,8 @@ from Log.Config.logger_settings import api_logger
 
 # Marca o inicio do código
 inicio = now()
+SO = platform.system()
 api_logger.info(unidecode("Programa Iniciado."))
-
 # Cria Comunicação Serial
 arduino = Fast.SerialConnect(name='Ramps 1.4')
 
@@ -220,7 +220,7 @@ class MachineController(QWidget):
         if marker:
             marker_s = False if marker_s else True
         elif not cap:
-            cap = cv2.VideoCapture(0, cv2.CAP_DSHOW)
+            cap = cv2.VideoCapture(configData["Cameras"]["Hole"]["Settings"][SO]["id"], cv2.CAP_DSHOW)
             cap.set(3, 1280)
             cap.set(4, 720)
             self.LigarC.setText("Desligar câmera")
@@ -439,7 +439,7 @@ class MainWindow(QMainWindow):
                 pass
 
             # Cria instância uma das multiplas cameras com base no processo a ser utilizado.
-            cap = cv2.VideoCapture(configData["Cameras"][id]["Settings"]["id"], cv2.CAP_DSHOW)
+            cap = cv2.VideoCapture(configData["Cameras"][id]["Settings"][SO]["id"], cv2.CAP_DSHOW)
             __, imgtemp = cap.read()
 
             # Verifica se a camera foi aberta, e se a mesma não encontra-se coberta e/ou sem imagem.

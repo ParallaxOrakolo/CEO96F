@@ -77,7 +77,8 @@
     "Cameras": {
         "Hole": {
             "Settings": {
-                "id": 0,
+                "Linux":{"id": "/dev/video0"},
+                "Windows":{"id": 0},
                 "scale": 0.04276480601654536,
                 "frame_height": 1280,
                 "frame_width": 720
@@ -95,7 +96,8 @@
         },
         "Edge": {
             "Settings": {
-                "id": 1,
+                "Linux":{"id": "/dev/video2"},
+                "Windows":{"id": 1},
                 "scale": 0.04276480601654536,
                 "frame_height": 1280,
                 "frame_width": 720
@@ -113,7 +115,8 @@
         },
         "Screw": {
             "Settings": {
-                "id": 1,
+                "Linux":{"id": "/dev/video2"},
+                "Windows":{"id": 1},
                 "scale": 0.04276480601654536,
                 "frame_height": 1280,
                 "frame_width": 720
