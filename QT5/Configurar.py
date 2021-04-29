@@ -95,7 +95,7 @@ fixPoint = (pFB[0], int(pFA[1] + ((pFB[1] - pFA[1]) / 2)))
 
 
 # Corte da Imagem na área de interesse central
-def ret_Mesh(img, line, colum):
+def ret_Mesh(img, line, column):
     Quadrants = Op.meshImg(img)
     return Quadrants[line][column]
 
@@ -316,9 +316,10 @@ class MainWindow(QMainWindow):
         loadUi("Ui/mainWindow.ui", self)
         self.PhotoPath.setText(os.path.normpath(os.path.join(os.path.dirname(__file__), '../Images/')))
         # Associando as classes de outras janelas a um objeto correspondente.
-        self.window1 = JsonTree()
-        self.window2 = MachineController()
-        self.window3 = PopUp()
+        self.JsonWindow = JsonTree()
+        self.ControllerWindow = MachineController()
+        self.PopUpWindow = PopUp()
+        # self.PopUpWindow.PopUp_Text('Deseja sair?')  # Edição do texto apresentado, acionado por outra classe.
 
         # Variaveis internas da classe principal referente a orientação da modo de identificação.
         self.TabIndex = 1
@@ -330,9 +331,9 @@ class MainWindow(QMainWindow):
         self.Stop.clicked.connect(self.quit_trigger)
         self.LiveS.clicked.connect(self.onClicked)
 
-        self.actionJson_Editor.triggered.connect(lambda checked: self.toggle_window(self.window1))
-        self.actionMachine.triggered.connect(lambda checked: self.toggle_window(self.window2))
-        self.actionCam.triggered.connect(lambda checked: self.toggle_window(self.window3))
+        self.actionJson_Editor.triggered.connect(lambda checked: self.toggle_window(self.JsonWindow))
+        self.actionMachine.triggered.connect(lambda checked: self.toggle_window(self.ControllerWindow))
+        self.actionCam.triggered.connect(lambda checked: self.toggle_window(self.PopUpWindow))
         self.Next.clicked.connect(lambda checked: self.EditIndex('+'))
         self.Prev.clicked.connect(lambda checked: self.EditIndex('-'))
 
@@ -397,6 +398,8 @@ class MainWindow(QMainWindow):
         global img
         if os.path.isfile(self.PhotoPath.text()):
             img = cv2.imread(self.PhotoPath.text())
+        else:
+            print("Caminho inválido")
 
     # Todo: Deixa a função setProperties estática para usa-la em outras janelas.
     # Atualiza os propriedades da camera (brilho, contraste, exposição e etc).
@@ -703,7 +706,7 @@ class MainWindow(QMainWindow):
         global Processo
         Processo = False
         if tempData != configData:
-            self.toggle_window(self.window3)
+            self.toggle_window(self.PopUpWindow)
         else:
             api_logger.info(f"Programa finalizado com o codigo [200] | Tempo online [{round(now() - inicio, 3)}s]")
             sys.exit(200)
@@ -714,7 +717,7 @@ class MainWindow(QMainWindow):
             window.hide()
 
         else:
-            if window.windowTitle() == self.window2.windowTitle():
+            if window.windowTitle() == self.ControllerWindow.windowTitle():
                 window.showFullScreen()
             else:
                 window.show()
@@ -755,6 +758,9 @@ class PopUp(QDialog):
             api_logger.warning("As informacoes do arquivo temporario nao foram salvas.")
         api_logger.info(f"Programa finalizado com o codigo [{exit_code}] | Tempo online [{round(now() - inicio, 3)}s]")
         sys.exit(exit_code)
+
+    def PopUp_Text(self, texto):
+        self.Texto.setText(str(texto))
 
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
