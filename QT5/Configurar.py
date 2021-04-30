@@ -525,6 +525,7 @@ class MainWindow(QMainWindow):
 
     # Executa o código de identificação com base no modo atual
     def onClicked(self, FDs):
+        print("Clickei", FDs)
         global cap, img, nominalIndex, Processo
         Processo = FDs
         if Processo:
@@ -544,7 +545,6 @@ class MainWindow(QMainWindow):
 
             # Mantem o processo rodando.
         while Processo:
-
             # Atualiza a imagem em tempo real, se necessário.
             if self.LiveS.isChecked():
                 if last != self.janela:
@@ -560,13 +560,14 @@ class MainWindow(QMainWindow):
 
             # Caso o modo seja "Normal"
             if self.janela == zProcess:
+                print("Z")
                 # Desenha apenas uma marcação no centro da imagem, para orientação e ajustes rápidos.
                 cv2.drawMarker(img, (int(img.shape[1] / 2), int(img.shape[0] / 2)), (255, 0, 255), thickness=2)
                 chr_k = img
 
             # Caso o modo seja aProcess
             if self.janela == aProcess:
-
+                print("A")
                 # Coleta os valores de configuração e cria um filtro personalizado
                 X1, X2, X3, X4 = self.areaMin.value(), self.areaMax.value(), self.perimeter.value(), self.A4.value()
                 imgAnalyse = img
@@ -636,7 +637,7 @@ class MainWindow(QMainWindow):
 
             # Caso o modo seja cProcess ou bProcess, referentes ao processo de identificação do parafuso.
             if self.janela == cProcess or self.janela == bProcess:
-
+                #print("C/B")
                 # Coleta e define dados da imagem a ser processada
                 Image = imgAnalyse = img
                 width = int(Image.shape[1])
@@ -669,6 +670,7 @@ class MainWindow(QMainWindow):
 
                 # De acordo com o contorno encontrado, faz a marcação correspondente.
                 if edge:
+
                     for info_edge in edge:
                         cv2.drawContours(chr_k, [info_edge['contour']], -1, (70, 255, 20), 3)
 
@@ -683,7 +685,6 @@ class MainWindow(QMainWindow):
                             cv2.putText(chr_k, str(offset_screw), (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1,
                                         (255, 255, 255), thickness=3)
 
-            # Exibe a Imagem
             self.displayImage(chr_k, 1)
             cv2.waitKey(1)
 
@@ -719,7 +720,7 @@ class MainWindow(QMainWindow):
 
         else:
             if window.windowTitle() == self.ControllerWindow.windowTitle():
-                window.showFullScreen()
+                window.show()#FullScreen()
             else:
                 window.show()
 
@@ -772,7 +773,7 @@ app = QApplication(sys.argv)
 
 # Correlação da Janela Principal com a primeira janela a ser exibida
 w = MainWindow()
-w.showFullScreen()
+w.show()#FullScreen()
 
 # Para a execução do aplicativo caso o mesmo retorne algum código de erro.
 sys.exit(app.exec_())
