@@ -5,3 +5,5 @@ Log/api.log
 Images
 Ignore
 __pycache__/
+/Camera Calib/RawData/
+/Camera Calib/ValidateData/
