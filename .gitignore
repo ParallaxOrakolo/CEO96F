@@ -1,10 +1,10 @@
 .gitignore
 .gitattributes
-Log/api.log
+src/_engine/Log/api.log
 .idea
-Images
-Ignore
+src/_engine/Images
+src/_engine/Ignore
 __pycache__/
-/Camera Calib/RawData/
-/Camera Calib/ValidateData/
+/src/_engine/Camera Calib/RawData/
+/src/_engine/Camera Calib/ValidateData/
 /node_modules

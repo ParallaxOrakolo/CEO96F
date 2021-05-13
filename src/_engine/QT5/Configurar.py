@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import (
 )
 
 # Importa algumas partes de certos módulos.
-from Log.Config.logger_settings import api_logger
+from src._engine.Log.Config.logger_settings import api_logger
 from timeit import default_timer as now
 from PyQt5.QtGui import QImage, QPixmap
 from unidecode import unidecode
@@ -20,8 +20,7 @@ from JsonMod import JsonMod
 from PyQt5 import QtCore
 
 # Importa os principais módulos.
-import FastFunctions as Fast
-import OpencvPlus as Op
+from src._engine import FastFunctions as Fast, OpencvPlus as Op
 import numpy as np
 import json
 import sys

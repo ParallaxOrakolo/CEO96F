@@ -85,9 +85,9 @@ def camPreview(previewName, camID):
         rval = False
 
     while rval:                                   # Verifica e camera ta 'ok'
-        # cv2.imshow(previewName, frame)            # Exibe
         rval, frame = cam.read()                  # Atualiza
         globals()[f'frame{previewName}'] = frame  # Exporta
+        cv2.imshow(previewName, frame)  # Exibe
         key = cv2.waitKey(1)  # Espera
         # yield frame
 
