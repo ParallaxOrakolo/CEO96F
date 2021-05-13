@@ -113,7 +113,9 @@ def findHole(imgAnalyse, minArea, maxArea, c_perimeter):
         globals()[values] = np.array(Op.extractHSValue(HSValues, values))
 
     mask = Op.refineMask(Op.HSVMask(imgAnalyse, lower, upper))
+    cv2.imshow("Mask", mask)
     chr_k = cv2.bitwise_and(imgAnalyse, imgAnalyse, mask=mask)
+    cv2.imshow("CHR", chr_k)
     distances = []
     edge = findCircle(mask, minArea, maxArea, c_perimeter)
     for Circle in edge:
@@ -183,4 +185,6 @@ Tabs = [mainConfig['Mask_Parameters']['Edge'], mainConfig['Mask_Parameters']['Sc
 
 T0A = timeit.default_timer()
 Resultados = [findHole(Image, areaMin, areaMax, perimeter), findScrew(Image, Tabs)]
+cv2.imshow("Imagem", Resultados[0][1])
+cv2.waitKey(0)
 print("Tempo de Execução:", round(timeit.default_timer()-T0A, 3))

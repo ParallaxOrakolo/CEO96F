@@ -5,14 +5,14 @@
                 "Application": "Hole",
                 "Valores": {
                     "lower": {
-                        "h_min":78,
-                        "s_min":59,
-                        "v_min":6
+                        "h_min": 78,
+                        "s_min": 59,
+                        "v_min": 6
                     },
                     "upper": {
-                        "h_max":84,
-                        "s_max":255,
-                        "v_max":124
+                        "h_max": 84,
+                        "s_max": 255,
+                        "v_max": 124
                     }
                 }
             },
@@ -20,14 +20,14 @@
                 "Application": "Edge",
                 "Valores": {
                     "lower": {
-                        "h_min":13,
-                        "s_min":3,
-                        "v_min":119
+                        "h_min": 27,
+                        "s_min": 4,
+                        "v_min": 122
                     },
                     "upper": {
-                        "h_max":128,
-                        "s_max":40,
-                        "v_max":241
+                        "h_max": 152,
+                        "s_max": 74,
+                        "v_max": 248
                     }
                 }
             },
@@ -35,14 +35,14 @@
                 "Application": "Screw",
                 "Valores": {
                     "lower": {
-                        "h_min":0,
-                        "s_min":4,
-                        "v_min":38
+                        "h_min": 0,
+                        "s_min": 0,
+                        "v_min": 0
                     },
                     "upper": {
-                        "h_max":42,
-                        "s_max":93,
-                        "v_max":246
+                        "h_max": 99,
+                        "s_max": 126,
+                        "v_max": 255
                     }
                 }
             }
