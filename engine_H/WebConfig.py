@@ -32,7 +32,7 @@ class CamThread(threading.Thread):
         self.camID = camID
         self._running = True
 
-        self.mainConfig = Fast.readJson('Json/config.json')
+        self.mainConfig = fullJson
         self.HSVJson = self.mainConfig['Filtros']['HSV']
         self.Processos = ['Edge', 'Screw']
         self.HSVjsonIndex = 0
@@ -200,6 +200,7 @@ def shutdown_server():
 
 if __name__ == "__main__":
     app = Flask(__name__)
+    fullJson = Fast.readJson('Json/config.json')
 
     thread1 = CamThread("1", 1)
     thread0 = CamThread("0", 0)
@@ -222,11 +223,14 @@ if __name__ == "__main__":
         return 'Server shutting down...'
 
 
-    @app.route('/config', methods=['GET'])
-    def all_courses():
+    @app.route('/config', methods=['GET', 'POST'])
+    def all_data():
+        if request.method == 'POST':
+            post_data = request.get_json()
+            print(post_data)
         return jsonify({
             'status': 'success',
-            'Config': Fast.readJson('Json/config.json')
+            'Config': fullJson
         })
 
     @app.route('/<valor>/<id>')

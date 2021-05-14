@@ -1,8 +1,9 @@
 <template>
   <v-app>
-    <NavBar/>
+    <snack-bar v-if="!isConnected"></snack-bar>
+    <NavBar />
     <v-main>
-      <router-view/>
+      <router-view />
       <!-- <Home/> -->
     </v-main>
   </v-app>
@@ -11,34 +12,44 @@
 <script>
 //import Home from "./views/Home";
 import NavBar from "./components/NavBar";
- 
+import { mapState } from "vuex";
+import SnackBar from "./components/SnackBar.vue";
 
 export default {
   name: "App",
 
   components: {
-
     //Home,
-    NavBar
+    NavBar,
+    SnackBar,
   },
 
-  data: () => ({
-    //
-  }),
+
+  created() {
+    if (this.$workbox) {
+      this.$workbox.addEventListener("waiting", () => {
+        this.showUpdateUI = true;
+      });
+    }
+  },
+
+  computed: {
+    ...mapState(["isConnected"]),
+  },
+
 };
 </script>
 
 <style lang="scss">
-
 ::-webkit-scrollbar {
-    display: none;
+  display: none;
 }
 
-html, body {
-   width: 100%;
-   height: 100%;
-   margin: 0;
-   padding: 0;
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
 }
-
 </style>

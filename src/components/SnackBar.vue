@@ -1,15 +1,36 @@
 <template>
-  <v-snackbar v-model="isConnected" :vertical="vertical">
-    <template v-slot:action="{ attrs }">
-      <v-btn color="pink" text v-bind="attrs" @click="snackbar = false">
-        Close
-      </v-btn>
-    </template>
-  </v-snackbar>
+  <v-alert
+    text
+    border="bottom"
+    class="alert"
+    colored-border
+    type="error"
+    elevation="12"
+    prominent
+    
+  >
+    <v-row align="center">
+      <v-col class="">
+        <!-- <v-icon color="red" medium class="mr-6">mdi-lan-disconnect</v-icon
+        > -->
+        {{ connectionStatus }}
+      </v-col>
+      <v-col class="shrink">
+        <v-btn
+          small
+          class="mr-6"
+          @click="startConnection()"
+          :loading="isConnecting"
+          >Reconectar</v-btn
+        >
+      </v-col>
+    </v-row>
+  </v-alert>
 </template>
 
 <script>
-import { mapState } from "vuex";
+// import { mapState } from "vuex";
+import { mapActions, mapState } from "vuex";
 
 export default {
   name: "SnackBar",
@@ -21,17 +42,26 @@ export default {
   }),
 
   methods: {
-    IsVisible() {
-
-      this.snackbar = true;
-    },
+    ...mapActions(["startConnection"]),
   },
 
   computed: {
-    ...mapState(["isConnected"]),
+    ...mapState(["isConnecting", "connectionStatus"]),
   },
 };
 </script>
 
 <style scoped lang="scss">
+.alert {
+  margin: 80px;
+
+  .v-alert__icon.v-icon {
+    /* margin: 0 auto; */
+    /* font-size: 25px; */
+    /* display: block; */
+    padding-top: 27px;
+}
+}
+
+
 </style>

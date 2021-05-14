@@ -6,6 +6,7 @@ Vue.use(Vuex);
 
 var wsConnection = constants;
 
+//lista de coisas q eu posso pedir pro back
 export const actions = {
   START_AUTOCHECK: "startAutoCheck",
   SCAN_CONNECTORS: "scanConnectors",
@@ -13,8 +14,10 @@ export const actions = {
   PAUSE_PROCESS: "pauseProcess",
   STOP_PROCESS: "stopProcess",
   RESTART_PROCESS: "restartProcess",
-
+  SEND_GCODE: "sendGcode",
   STOP_REASON_RESPONSE: "stopReasonsResponse",
+  LOG_REQUEST: "LogRequest",
+  SERIAL_MONITOR: "serialMonitor"
 };
 
 const store = new Vuex.Store({
@@ -31,7 +34,7 @@ const store = new Vuex.Store({
     },
 
     localTimer: {
-      currentSeconds: null, 
+      currentSeconds: null,
       minutes: null,
       seconds: null,
     },
@@ -44,34 +47,84 @@ const store = new Vuex.Store({
     idVar: null,
 
     connectionStatus: null,
+    connectionStatusList:{
+      connecting: "Tentando se conectar ao servidor...",
+      connected: "Conectando com sucesso!",
+      closed: "A conexão foi encerrada!",
+      error: "Não conseguimos conectar ao servidor!, certifique-se que ele está ligado",
+    },
 
     ws_message: {
       command: "",
       parameter: "",
     },
 
-    stopReasons: [],
-
-    statistics: {
-      version: {
-        back: "",
-        front: "0.1.0", //fazer sistema para pegar automaticamente
-      },
-    },
-
+    isConnecting : false,
     isConnected: true,
     autoCheckComplete: false,
     scanConnectorsComplete: false,
+
+    log: [],
+
+    serialMonitor: [
+      // {hour: 1611539081 ,sent: true, message:["ok","eaee","M117"]},
+    ],
+
+    configuration: {
+      informations: {
+        ip: "192.168.1.38",
+        connectionId: 123456,
+        port: 5021,
+        userList: [null],
+        version: {
+          backend: "0",
+          frontend: "0", //fazer sistema para pegar automaticamente
+          marlin: "0",
+        },
+        machine: {
+          limits: {
+            xMin: null,
+            yMin: null,
+            zMin: null,
+            aMin: null,
+            bMin: null,
+            xMax: null,
+            yMax: null,
+            zMax: null,
+            aMax: null,
+            bMax: null,
+          },
+          maxFeedrate: {
+            xMax: null,
+            yMax: null,
+            zMax: null,
+            aMax: null,
+            bMax: null,
+          },
+        },
+      },
+      statistics: {
+        stopReasons: [],
+        stopReasonsList: [],
+      },
+    },
   },
 
   //função em cima desses dados
   mutations: {
     START_CONNECTION: (state) => {
       console.log("Starting connection to WebSocket Server");
+      state.isConnecting = true;
+      state.connectionStatus = state.connectionStatusList.connecting;
+      wsConnection = new WebSocket(
+        "ws://" +
+          state.configuration.informations.ip +
+          ":" +
+          state.configuration.informations.port +
+          "?id=" +
+          state.configuration.informations.connectionId 
 
-      // wsConnection = new WebSocket("ws://192.168.100.99:443");
-      wsConnection = new WebSocket("ws://192.168.1.38:5021");
-      // ws://localhost:8765
+      );
 
       wsConnection.onmessage = function(event) {
         console.log(event.data);
@@ -84,22 +137,25 @@ const store = new Vuex.Store({
 
       wsConnection.onopen = function() {
         console.log("Successfully connected to websocket server...");
-        state.connectionStatus = "Conectando com sucesso!";
-        state.isConnected = true
+        state.connectionStatus = state.connectionStatusList.connected;
+        state.isConnected = true;
         // wsConnection.send(actions.START_AUTOCHECK);
-        store.commit("SEND_MESSAGE", {command: actions.START_AUTOCHECK})
-        
+        store.commit("SEND_MESSAGE", { command: actions.START_AUTOCHECK });
+        state.isConnecting = false;
       };
 
       wsConnection.onclose = function() {
         console.log("Closed websocket server connection...");
-        state.connectionStatus = "A conexão foi interrompida";
-        state.isConnected = false
+        state.connectionStatus = state.connectionStatusList.closed;
+        state.isConnected = false;
+        state.isConnecting = false;
       };
 
       wsConnection.onerror = function() {
-        console.log("Erro in connection");
+        console.log("Não foi possivel se conecar com o servidor");
+        state.connectionStatus = state.connectionStatusList.error;
         state.isConnected = "";
+        state.isConnecting = false;
       };
 
       // state.connection.send("connected")
@@ -148,6 +204,21 @@ const store = new Vuex.Store({
           // code block
           break;
 
+        case actions.SERIAL_MONITOR + "_response":
+          //confere se a ultimo intem da lista é uma msg recebida, se sim.. 
+          var lastArrayItem = state.serialMonitor[state.serialMonitor.length -1]
+
+          if( lastArrayItem.sent == false){
+            lastArrayItem.message.push( message.parameter )
+          }else{
+            state.serialMonitor.push({hour: Math.floor(Date.now() / 1000), sent: false, message: [message.parameter]})
+          }
+
+          // state = Object.assign(state, message.parameter);
+          console.log("Update Serial Monitor Received");
+          // code block
+          break;
+
         default:
           console.log("default");
         // code block
@@ -156,16 +227,10 @@ const store = new Vuex.Store({
 
     SCAN_COMPLETE_CHANGE: (state) => (state.scanConnectorsComplete = false),
 
-    SEND_MESSAGE2(state, payload) {
-      state.message = payload;
-      wsConnection.send(payload);
-      // console.log("Enviado:" + payload)
-    },
-
     SEND_MESSAGE: (state, payload) => {
       // console.log("Enviado: " + payload);
       state.ws_message.command = payload.command;
-      state.ws_message.parameter = payload.parameter ;
+      state.ws_message.parameter = payload.parameter;
       wsConnection.send(JSON.stringify(state.ws_message));
       console.log("Enviado: " + JSON.stringify(state.ws_message));
     },
@@ -253,8 +318,7 @@ const store = new Vuex.Store({
     stop: (context) => context.commit("STOP"),
 
     // sendMessage: ({ commit }, { command, parameter }) => commit("SEND_MESSAGE", { command, parameter }),
-   
   },
-})
+});
 
 export { store };

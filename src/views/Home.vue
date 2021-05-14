@@ -2,7 +2,7 @@
   <section class="content d-flex align-center flex-column">
     <div class="start">
       <h1 class>
-        Certifique-se que os conectores e os painéis estão bem posicionados
+        Certifique-se que os conectores e os painéis estejam bem posicionados
       </h1>
       <router-link to="/scan">
         <v-btn
@@ -54,7 +54,7 @@ export default {
     place-items: center;
 
     h1 {
-      width: 400px;
+      width: 450px;
       font-size: 2em;
     }
 

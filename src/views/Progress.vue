@@ -71,6 +71,7 @@
 
       <!-- reasons -->
       <v-overlay :z-index="zIndex" :value="overlay" :opacity="opacity">
+        <h1 color="white" class="mb-16">Por favor selecione o motivo da parada</h1>
         <v-btn
           v-for="(reason, index) in state.stopReasons"
           :key="index"
@@ -119,7 +120,6 @@ export default {
   data: () => ({
     actions,
     buttomClicked: false,
-
     overlay: false,
     zIndex: 9,
     opacity: 1,

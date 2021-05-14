@@ -15,17 +15,21 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "python-shell": "^2.0.1",
+    "register-service-worker": "^1.7.1",
     "socket.io": "^2.3.0",
     "socket.io-client": "^2.3.0",
+    "vee-validate": "^3.4.5",
     "vue": "^2.6.11",
     "vue-router": "^3.4.3",
     "vue-socket.io": "^3.0.10",
+    "vue-the-mask": "^0.11.1",
     "vuetify": "^2.2.11",
     "vuex": "^3.5.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "~4.5.0",
     "@vue/cli-plugin-eslint": "~4.5.0",
+    "@vue/cli-plugin-pwa": "^4.5.9",
     "@vue/cli-service": "~4.5.0",
     "babel-eslint": "^10.1.0",
     "electron": "^9.0.0",
@@ -51,7 +55,8 @@
       "eslint:recommended"
     ],
     "parserOptions": {
-      "parser": "babel-eslint"
+      "parser": "babel-eslint",
+      "allowModifiers": true
     },
     "rules": {}
   },
