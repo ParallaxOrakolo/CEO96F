@@ -6,6 +6,11 @@ import threading
 import socket
 import cv2
 
+import asyncio
+import socket
+import websockets
+import json
+
 
 
 """
@@ -60,7 +65,7 @@ class CamThread(threading.Thread):
 
     def frameScrew(self):
         while True:
-            _, frame = findScrew(globals()['frame'+self.previewName], self.HSVJson, self.mainConfig, self.Processos)
+            _, frame = findScrew(globals()['frame'+self.previewName], fullJson['Filtros']['HSV'], fullJson, self.Processos)
             yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
                    + cv2.imencode('.JPEG', frame,
                                   [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
@@ -73,6 +78,18 @@ class CamThread(threading.Thread):
                    + cv2.imencode('.JPEG', frame,
                                   [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
                    + b'\r\n')
+
+class AppThread(threading.Thread):
+    def __init__(self, app_ip, app_port):
+        threading.Thread.__init__(self)
+        self.ip = app_ip
+        self.port = app_port
+        self._running = True
+
+    def run(self):
+        print("rodando....")
+        app.run(host=self.ip, port=self.port, debug=True, threaded=True, use_reloader=False)
+        print("parou!")
 
 
 def camPreview(previewName, camID):
@@ -201,11 +218,27 @@ def shutdown_server():
 if __name__ == "__main__":
     app = Flask(__name__)
     fullJson = Fast.readJson('Json/config.json')
+    
+    commandList =['runApp', 'startCameraStream']
+    offSetIp = 0    
+    portFront = 5000
+    portBack = 5050
+    prefix = socket.gethostbyname(socket.gethostname()).split('.')
+    ip = '.'.join(['.'.join(prefix[:len(prefix) - 1]), str(int(prefix[len(prefix) - 1]) + offSetIp)])
 
+    
     thread1 = CamThread("1", 1)
     thread0 = CamThread("0", 0)
     thread1.start()
     thread0.start()
+    while True:
+        try:
+            if type(globals()['frame1']) ==  np.ndarray:
+                break
+        except KeyError:
+            continue
+
+    appTh = AppThread(ip, portBack)
 
     @app.route('/')
     def homepage():
@@ -213,8 +246,9 @@ if __name__ == "__main__":
 
     @app.route('/exit', methods=['GET'])
     def shutdown():
+        print("Pediu pra parar.")
         shutdown_server()
-
+    
         print("Esperando Threads Serem Finalizadas")
         thread0.join()
         thread1.join()
@@ -238,27 +272,57 @@ if __name__ == "__main__":
         return Response(getattr(globals()['thread'+str(id)], "frame"+valor)(),
                         mimetype='multipart/x-mixed-replace; boundary=frame')
 
-    #
-    # @app.route('/0')
-    # def video_feed0():
-    #     return Response(thread0.frame(), mimetype='multipart/x-mixed-replace; boundary=frame')
+   
 
-    # Fica preso até a camera ser iniciada
-    # e uma imagem existir em uma das variaveis globais
+    async def startCameraStream():
+        appTh.start()
+        print("Transmissão de vídeo iniciada.")
 
-    while True:
-        try:
-            if type(globals()['frame1']) ==  np.ndarray:
-                break
-        except KeyError:
-            continue
+    async def updateFilter(zipped):
+        for xx in fullJson["Filtros"]["HSV"]:
+            if zipped['process'] in fullJson["Filtros"]["HSV"][xx]["Application"]:
+                # fullJson["Filtros"]["HSV"][xx]["Valores"]["lower"][zipped[1].key()] = [zipped[1]]
+                 min = list(zipped.keys())[1]
+                 max = list(zipped.keys())[2]
+                 print(fullJson["Filtros"]["HSV"][xx]["Valores"]["lower"][min], '-> ',zipped[min])
+                 print(fullJson["Filtros"]["HSV"][xx]["Valores"]["upper"][max], '-> ',zipped[max])
+                 fullJson["Filtros"]["HSV"][xx]["Valores"]["lower"][min] = zipped[min]
+                 fullJson["Filtros"]["HSV"][xx]["Valores"]["lower"][max] = zipped[max]
+                
+                
 
-    offSetIp = 0
-    port = 5050
-    prefix = socket.gethostbyname(socket.gethostname()).split('.')
-    ip = '.'.join(['.'.join(prefix[:len(prefix) - 1]), str(int(prefix[len(prefix) - 1]) + offSetIp)])
+    async def sendGcode(obj):
+        print("Gcode:"+ obj)
+        return
 
-    app.run(host=ip, port=port, debug=True, threaded=True, use_reloader=False)
+    async def actions(message):
+        command = message["command"]
+        if command in commandList:
+            run = eval(command+'()')
+            await run
+
+        elif command == "sendGcode":
+            await sendGcode(message["parameter"])
+
+        elif command =="updateFilter":
+            print("Aqui")
+            await updateFilter(message["parameter"])
+    async def echo(websocket, path):
+        global ws_connection
+        ws_connection = websocket
+        async for message in ws_connection:
+            print(json.loads(message))
+            await actions(json.loads(message))
+
+
+    asyncio.get_event_loop().run_until_complete(
+        websockets.serve(echo, ip, portFront))
+
+    print(f"server iniciado em {ip}:{portFront}")
+
+    asyncio.get_event_loop().run_forever()
+
+    
 
 
 

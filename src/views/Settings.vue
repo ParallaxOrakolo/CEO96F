@@ -8,6 +8,7 @@
     <div id="app">
       <v-expansion-panels multiple>
         <Infos />
+        <CameraConfig/>
         <Controls />
         <Advanced-settings />
         <Statistics />
@@ -22,9 +23,10 @@ import Infos from "../components/settings/Infos";
 import AdvancedSettings from "../components/settings/AdvancedSettings";
 import Statistics from "../components/settings/Statistics.vue";
 import Controls from "../components/settings/Controls.vue";
+import CameraConfig from "../components/settings/CameraConfig.vue"
 
 export default {
-  components: { AdvancedSettings, Infos, Statistics, Controls },
+  components: { AdvancedSettings, Infos, Statistics, Controls, CameraConfig },
   name: "settings",
   methods: {
     sendMessage: function (message) {

@@ -17,7 +17,9 @@ export const actions = {
   SEND_GCODE: "sendGcode",
   STOP_REASON_RESPONSE: "stopReasonsResponse",
   LOG_REQUEST: "LogRequest",
-  SERIAL_MONITOR: "serialMonitor"
+  SERIAL_MONITOR: "serialMonitor",
+  START_CAMERA_STREAM:"startCameraStream",
+  UPDATE_FILTER:"updateFilter"
 };
 
 const store = new Vuex.Store({
@@ -72,9 +74,9 @@ const store = new Vuex.Store({
 
     configuration: {
       informations: {
-        ip: "192.168.1.38",
+        ip: "192.168.1.98",
         connectionId: 123456,
-        port: 5021,
+        port: 5000,
         userList: [null],
         version: {
           backend: "0",
@@ -120,9 +122,9 @@ const store = new Vuex.Store({
         "ws://" +
           state.configuration.informations.ip +
           ":" +
-          state.configuration.informations.port +
-          "?id=" +
-          state.configuration.informations.connectionId 
+          state.configuration.informations.port// +
+          //"?id=" +
+          //state.configuration.informations.connectionId 
 
       );
 
@@ -140,7 +142,7 @@ const store = new Vuex.Store({
         state.connectionStatus = state.connectionStatusList.connected;
         state.isConnected = true;
         // wsConnection.send(actions.START_AUTOCHECK);
-        store.commit("SEND_MESSAGE", { command: actions.START_AUTOCHECK });
+        store.commit("SEND_MESSAGE", { command: actions.START_CAMERA_STREAM});
         state.isConnecting = false;
       };
 
