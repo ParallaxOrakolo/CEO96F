@@ -1,6 +1,7 @@
 .gitignore
 .gitattributes
 .idea/
+.vscode/
 
 engine_H/Camera Calib/RawData/
 engine_H/Camera Calib/ValidateData/
