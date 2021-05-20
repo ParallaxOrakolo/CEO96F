@@ -1,6 +1,7 @@
 <template>
   <v-expansion-panel>
-    <v-expansion-panel-header>Camera </v-expansion-panel-header>
+    <v-expansion-panel-header
+    >Camera </v-expansion-panel-header>
     <v-expansion-panel-content>
       <!-- <v-divider></v-divider>
 <SerialMonitor></SerialMonitor> -->
@@ -12,7 +13,7 @@
                 <v-img
                   
                   :width="cam_width"
-                  :src="`http://192.168.1.98:5050/${radios}`"
+                  :src="`http://192.168.1.31:5050/${radios}`"
                 ></v-img>
                 <v-slider
                   v-model="cam_width"
@@ -41,7 +42,7 @@
                     ></v-radio>
                     <v-radio
                       label="Edge-1"
-                      value="Screw/1"
+                      value="Edge/1"
                       @click="process='Edge'"
                     ></v-radio>
                     <v-divider class="mx-4" vertical></v-divider>
@@ -58,6 +59,25 @@
 
         <v-col class="pa-2 col-md-3">
             <template>
+              <v-btn
+                
+                class="ma-1"
+                color="success"
+                plain
+                @click="() => {SEND_MESSAGE({command: actions.SAVE_JSON});}"
+              >
+                Salvar
+              </v-btn>
+
+              <v-btn
+                
+                class="ma-1"
+                color="grey darken-1"
+                plain
+                @click="radios ='exit'"
+              >
+                Parar Transmissão
+              </v-btn>
               <v-card flat color="transparent">
                 <v-subheader>HUE</v-subheader>
                 <v-card-text>
@@ -123,7 +143,7 @@
                                 () => {
                                   SEND_MESSAGE({
                                     command: actions.UPDATE_FILTER,
-                                    parameter: {'process':process,'s_min':s_range[0],'v_max':s_range[1]},
+                                    parameter: {'process':process,'s_min':s_range[0],'s_max':s_range[1]},
                                   });
                                 }
                               "
@@ -209,79 +229,6 @@
       </v-row>
       <v-divider></v-divider>
       <!-- seção 2 -->
-      <v-row no-gutters>
-        <v-col class="pa-2 col col-6 d-flex align-start flex-column">
-          <v-switch
-            v-model="led"
-            inset
-            color="success"
-            label="Led Camera"
-            @click="
-              () => {
-                SEND_MESSAGE({
-                  command: actions.SEND_GCODE,
-                  parameter: this.led ? 'M150 R' + this.ledRGB.rgba.r + ' I' + this.ledRGB.rgba.g + ' B' + this.ledRGB.rgba.b: 'M150 R0 I0 B0' ,
-                });
-              }
-            "
-          ></v-switch>
-          <v-color-picker
-            v-model="ledRGB"
-            v-on:mouseup="() => {
-                SEND_MESSAGE({
-                  command: actions.SEND_GCODE,
-                  parameter: this.led ? 'M150 R' + this.ledRGB.rgba.r + ' I' + this.ledRGB.rgba.g + ' B' + this.ledRGB.rgba.b: 'M150 R0 I0 B0' ,
-                });
-              }"
-                hide-canvas
-
-            dot-size="32"
-            hide-mode-switch
-            hide-sliders
-            mode="rgba"
-            swatches-max-height="200"
-            
-          ></v-color-picker>
-        </v-col>
-
-        <v-col class="pa-2 col-md-3 col">
-          <v-subheader > Passo(mm) </v-subheader>
-          <v-slider
-            v-model="distance"
-            :tick-labels="distancesLabels"
-            :max="3"
-            step="1"
-            ticks="always"
-            tick-size="4"
-          ></v-slider>
-          <v-divider></v-divider>
-
-          <v-subheader class="pl-0"> Velocidade </v-subheader>
-
-          <v-slider
-            v-model="speed"
-            class="align-center"
-            :max="this.configuration.informations.machine.maxFeedrate.xyMax"
-            min="0"
-            hide-details
-          >
-            <template v-slot:append>
-              <v-text-field
-                filled
-                dense
-                rounded
-                v-model="speed"
-                class="mt-0 pt-0"
-                hide-details
-                single-line
-                type="number"
-                style="width: 100px"
-              ></v-text-field>
-            </template>
-          </v-slider>
-        </v-col>
-      </v-row>
-      <v-divider></v-divider>
       <SerialMonitor></SerialMonitor>
       <!-- 
     <v-btn elevation="2" fab dark x-large color="blue">
@@ -336,6 +283,8 @@ export default {
       radios: 'Normal/0',
       process:'Normal',
       cam_width:720,
+      // loadingb1: false,
+      // loadingb2: false
     };
   },
 
@@ -418,8 +367,15 @@ export default {
       msg = msg.concat(" F" + this.speed);
 
       return msg;
-    },
+    }    
+      // async loads(datas){
+      //   this.data = true
+      //   await new Promise(resolve => setTimeout(resolve, 1000))
+      //   this.datas = false
+      // },
   },
+
+  
 
   computed: {
     ...mapState(["configuration"]),
