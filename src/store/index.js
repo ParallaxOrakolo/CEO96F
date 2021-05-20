@@ -19,7 +19,8 @@ export const actions = {
   LOG_REQUEST: "LogRequest",
   SERIAL_MONITOR: "serialMonitor",
   START_CAMERA_STREAM:"startCameraStream",
-  UPDATE_FILTER:"updateFilter"
+  UPDATE_FILTER:"updateFilter",
+  SAVE_JSON:"saveJson"
 };
 
 const store = new Vuex.Store({
@@ -74,7 +75,7 @@ const store = new Vuex.Store({
 
     configuration: {
       informations: {
-        ip: "192.168.1.98",
+        ip: "192.168.1.31",
         connectionId: 123456,
         port: 5000,
         userList: [null],
