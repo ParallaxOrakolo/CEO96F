@@ -1,22 +1,22 @@
 {
     "Filtros": {
         "HSV": {
-            "0": {
+            "Hole": {
                 "Application": "Hole",
                 "Valores": {
                     "lower": {
-                        "h_min": 78,
-                        "s_min": 59,
-                        "v_min": 6
+                        "h_min": 0,
+                        "s_min": 0,
+                        "v_min": 215
                     },
                     "upper": {
-                        "h_max": 84,
-                        "s_max": 255,
-                        "v_max": 124
+                        "h_max": 232,
+                        "s_max": 52,
+                        "v_max": 255
                     }
                 }
             },
-            "1": {
+            "Edge":{
                 "Application": "Edge",
                 "Valores": {
                     "lower": {
@@ -31,7 +31,7 @@
                     }
                 }
             },
-            "2": {
+            "Screw": {
                 "Application": "Screw",
                 "Valores": {
                     "lower": {
@@ -42,6 +42,21 @@
                     "upper": {
                         "h_max": 99,
                         "s_max": 126,
+                        "v_max": 255
+                    }
+                }
+            },
+            "Normal":{
+                "Application": "Normal",
+                "Valores": {
+                    "lower": {
+                        "h_min": 0,
+                        "s_min": 0,
+                        "v_min": 0
+                    },
+                    "upper": {
+                        "h_max": 255,
+                        "s_max": 255,
                         "v_max": 255
                     }
                 }
@@ -60,8 +75,8 @@
     "Mask_Parameters": {
         "Hole": {
             "perimeter": 5,
-            "areaMin": 3500,
-            "areaMax": 4500
+            "areaMin": 1500,
+            "areaMax": 2500
         },
         "Edge": {
             "perimeter": 0,
@@ -72,6 +87,11 @@
             "perimeter": 0,
             "areaMin": 10002,
             "areaMax": 20169
+        },
+        "Normal": {
+            "perimeter": 0,
+            "areaMin": 0,
+            "areaMax": 1
         }
     },
     "Cameras": {

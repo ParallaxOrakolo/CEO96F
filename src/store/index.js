@@ -8,19 +8,20 @@ var wsConnection = constants;
 
 //lista de coisas q eu posso pedir pro back
 export const actions = {
+  STOP_REASON_RESPONSE: "stopReasonsResponse",
+  START_CAMERA_STREAM: "startCameraStream",
   START_AUTOCHECK: "startAutoCheck",
   SCAN_CONNECTORS: "scanConnectors",
+  RESTART_PROCESS: "restartProcess",
+  SERIAL_MONITOR: "serialMonitor",
+  UPDATE_FILTER: "updateFilter",
   START_PROCESS: "startProcess",
   PAUSE_PROCESS: "pauseProcess",
+  UPDATE_SLIDER:"updateSlider",
   STOP_PROCESS: "stopProcess",
-  RESTART_PROCESS: "restartProcess",
-  SEND_GCODE: "sendGcode",
-  STOP_REASON_RESPONSE: "stopReasonsResponse",
   LOG_REQUEST: "LogRequest",
-  SERIAL_MONITOR: "serialMonitor",
-  START_CAMERA_STREAM:"startCameraStream",
-  UPDATE_FILTER:"updateFilter",
-  SAVE_JSON:"saveJson"
+  SEND_GCODE: "sendGcode",
+  SAVE_JSON: "saveJson"
 };
 
 const store = new Vuex.Store({
@@ -50,7 +51,7 @@ const store = new Vuex.Store({
     idVar: null,
 
     connectionStatus: null,
-    connectionStatusList:{
+    connectionStatusList: {
       connecting: "Tentando se conectar ao servidor...",
       connected: "Conectando com sucesso!",
       closed: "A conexão foi encerrada!",
@@ -62,7 +63,7 @@ const store = new Vuex.Store({
       parameter: "",
     },
 
-    isConnecting : false,
+    isConnecting: false,
     isConnected: true,
     autoCheckComplete: false,
     scanConnectorsComplete: false,
@@ -75,7 +76,7 @@ const store = new Vuex.Store({
 
     configuration: {
       informations: {
-        ip: "192.168.1.31",
+        ip: "192.168.1.20",
         connectionId: 123456,
         port: 5000,
         userList: [null],
@@ -110,6 +111,14 @@ const store = new Vuex.Store({
         stopReasons: [],
         stopReasonsList: [],
       },
+      camera: {
+        process: null,
+
+        hue: [2, 50],
+        sat: [0, 250],
+        val: [30, 50]
+
+      }
     },
   },
 
@@ -121,15 +130,15 @@ const store = new Vuex.Store({
       state.connectionStatus = state.connectionStatusList.connecting;
       wsConnection = new WebSocket(
         "ws://" +
-          state.configuration.informations.ip +
-          ":" +
-          state.configuration.informations.port// +
-          //"?id=" +
-          //state.configuration.informations.connectionId 
+        state.configuration.informations.ip +
+        ":" +
+        state.configuration.informations.port// +
+        //"?id=" +
+        //state.configuration.informations.connectionId 
 
       );
 
-      wsConnection.onmessage = function(event) {
+      wsConnection.onmessage = function (event) {
         console.log(event.data);
         // state.message = JSON.parse(event.data);
         // state.message = JSON.parse(event.data);
@@ -138,23 +147,23 @@ const store = new Vuex.Store({
         // state = Object.assign(state, JSON.parse(event.data)); //unifica os objetos
       };
 
-      wsConnection.onopen = function() {
+      wsConnection.onopen = function () {
         console.log("Successfully connected to websocket server...");
         state.connectionStatus = state.connectionStatusList.connected;
         state.isConnected = true;
         // wsConnection.send(actions.START_AUTOCHECK);
-        store.commit("SEND_MESSAGE", { command: actions.START_CAMERA_STREAM});
+        store.commit("SEND_MESSAGE", { command: actions.START_AUTOCHECK });
         state.isConnecting = false;
       };
 
-      wsConnection.onclose = function() {
+      wsConnection.onclose = function () {
         console.log("Closed websocket server connection...");
         state.connectionStatus = state.connectionStatusList.closed;
         state.isConnected = false;
         state.isConnecting = false;
       };
 
-      wsConnection.onerror = function() {
+      wsConnection.onerror = function () {
         console.log("Não foi possivel se conecar com o servidor");
         state.connectionStatus = state.connectionStatusList.error;
         state.isConnected = "";
@@ -204,17 +213,18 @@ const store = new Vuex.Store({
         case "update":
           state = Object.assign(state, message.parameter);
           console.log("update");
+          console.log(state.configuration)
           // code block
           break;
 
         case actions.SERIAL_MONITOR + "_response":
           //confere se a ultimo intem da lista é uma msg recebida, se sim.. 
-          var lastArrayItem = state.serialMonitor[state.serialMonitor.length -1]
+          var lastArrayItem = state.serialMonitor[state.serialMonitor.length - 1]
 
-          if( lastArrayItem.sent == false){
-            lastArrayItem.message.push( message.parameter )
-          }else{
-            state.serialMonitor.push({hour: Math.floor(Date.now() / 1000), sent: false, message: [message.parameter]})
+          if (lastArrayItem.sent == false) {
+            lastArrayItem.message.push(message.parameter)
+          } else {
+            state.serialMonitor.push({ hour: Math.floor(Date.now() / 1000), sent: false, message: [message.parameter] })
           }
 
           // state = Object.assign(state, message.parameter);
@@ -267,7 +277,7 @@ const store = new Vuex.Store({
 
           state.progress = Math.floor(
             (state.localTimer.currentSeconds * 100) /
-              state.operation.timeSeconds
+            state.operation.timeSeconds
           );
 
           //se o tempo for zero, interronpe o loop
@@ -303,9 +313,9 @@ const store = new Vuex.Store({
   getters: {
     operation: (state) => state.operation,
     minutes: (state) =>
-      (state.localTimer.minutes = Math.floor(
-        state.localTimer.currentSeconds / 60
-      )),
+    (state.localTimer.minutes = Math.floor(
+      state.localTimer.currentSeconds / 60
+    )),
     seconds: (state) =>
       (state.localTimer.seconds = state.localTimer.currentSeconds % 60),
     progress: (state) => 100 - state.progress,

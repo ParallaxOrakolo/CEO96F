@@ -33,7 +33,7 @@ configuration = {
     "configuration":{
         
         "informations": {
-        "ip":"192.168.1.38",
+        "ip":"129.168.1.20",
         "connectionId" : 123456,
         "port":5021, 
         "version": {

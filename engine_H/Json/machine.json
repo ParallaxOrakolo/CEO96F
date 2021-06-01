@@ -1,0 +1,47 @@
+{
+"configuration": {
+        "informations": {
+            "ip": "192.168.1.20",
+            "connectionId": 123456,
+            "port": 5000,
+            "userList": [null],
+            "version": {
+                "backend": "0",
+                "frontend": "0",
+                "marlin": "0"
+            },
+            "machine": {
+                "limits": {
+                    "xMin": null,
+                    "yMin": null,
+                    "zMin": null,
+                    "aMin": null,
+                    "bMin": null,
+                    "xMax": null,
+                    "yMax": null,
+                    "zMax": null,
+                    "aMax": null,
+                    "bMax": null
+                },
+                "maxFeedrate": {
+                    "xMax": null,
+                    "yMax": null,
+                    "zMax": null,
+                    "aMax": null,
+                    "bMax": null                }
+            }
+        },
+        "statistics": {
+            "stopReasons": [null],
+            "stopReasonsList": [null]
+        },
+        "camera": {
+            "process": "Hole",
+
+            "hue": [26, 55],
+            "sat": [70, 240],
+            "val": [80, 150]
+
+        }
+    }
+}

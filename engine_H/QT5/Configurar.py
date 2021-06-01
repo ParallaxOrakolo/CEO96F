@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import (
 )
 
 # Importa algumas partes de certos módulos.
-from src._engine.Log.Config.logger_settings import api_logger
+#from engine_H.Log.Config.logger_settings import #api_loggers
 from timeit import default_timer as now
 from PyQt5.QtGui import QImage, QPixmap
 from unidecode import unidecode
@@ -20,7 +20,7 @@ from JsonMod import JsonMod
 from PyQt5 import QtCore
 
 # Importa os principais módulos.
-from src._engine import FastFunctions as Fast, OpencvPlus as Op
+from engine_H import FastFunctions as Fast, OpencvPlus as Op
 import numpy as np
 import json
 import sys
@@ -32,8 +32,8 @@ import os
 
 # Marca o inicio do código
 inicio = now()
-api_logger.info(unidecode("Programa Iniciado."))
-
+#api_logger.info(unidecode("Programa Iniciado."))
+ 
 # Cria Comunicação Serial
 arduino = Fast.SerialConnect(name='Ramps 1.4')
 
@@ -449,9 +449,9 @@ class MainWindow(QMainWindow):
                 else:
                     print(f"{Fast.ColorPrint.ERROR}{cant_read_cam_message}")
                     print(f"{Fast.ColorPrint.WARNING}{default_action}"'\n')
-                    if globals()['D_logs']:
-                        api_logger.warning(unidecode(cant_read_cam_message))
-                        api_logger.info(unidecode(default_action))
+                    ##if globals()['D_logs']:
+                        #api_logger.warning(unidecode(cant_read_cam_message))
+                        #api_logger.info(unidecode(default_action))
             except cv2.error:
                 print(f"{Fast.ColorPrint.ERROR}{cant_read_cam_message}")
                 print(f"{Fast.ColorPrint.WARNING}{default_action}"'\n')
@@ -707,7 +707,7 @@ class MainWindow(QMainWindow):
         if tempData != configData:
             self.toggle_window(self.PopUpWindow)
         else:
-            api_logger.info(f"Programa finalizado com o codigo [200] | Tempo online [{round(now() - inicio, 3)}s]")
+            #api_logger.info(f"Programa finalizado com o codigo [200] | Tempo online [{round(now() - inicio, 3)}s]")
             sys.exit(200)
 
     # Troca entre as janelas existentes.
@@ -743,20 +743,20 @@ class PopUp(QDialog):
             print(f"{Fast.ColorPrint.BLUE}[TEMP_FILE]: {tempData}{Fast.ColorPrint.ENDC}"'\n')
             print(f"{Fast.ColorPrint.ERROR}Falha encontrada:")
             print(f"{Fast.ColorPrint.ERROR}{erroGrave}")
-            if globals()['D_logs']:
-                api_logger.fatal(str(erroGrave))
-                api_logger.info(unidecode("As edições não foram salvas. Entre em contato com a manutenção."))
-                api_logger.warning(unidecode(f"[TEMP_FILE]: {tempData}"))
+            #if globals()['D_logs']:
+                #api_logger.fatal(str(erroGrave))
+                #api_logger.info(unidecode("As edições não foram salvas. Entre em contato com a manutenção."))
+                #api_logger.warning(unidecode(f"[TEMP_FILE]: {tempData}"))
         if exit_C:
-            api_logger.warning("As informacoes do arquivo temporario foram salvas.")
+            #api_logger.warning("As informacoes do arquivo temporario foram salvas.")
             self.quit_trigger(exit_C)
 
     # Sai da aplicação e mantem os arquivos originais.
     def quit_trigger(self, exit_code=200):
         if exit_code == 199:
-            api_logger.warning("As informacoes do arquivo temporario nao foram salvas.")
-        api_logger.info(f"Programa finalizado com o codigo [{exit_code}] | Tempo online [{round(now() - inicio, 3)}s]")
-        sys.exit(exit_code)
+            #api_logger.warning("As informacoes do arquivo temporario nao foram salvas.")
+        #api_logger.info(f"Programa finalizado com o codigo [{exit_code}] | Tempo online [{round(now() - inicio, 3)}s]")
+            sys.exit(exit_code)
 
     def PopUp_Text(self, texto):
         self.Texto.setText(str(texto))

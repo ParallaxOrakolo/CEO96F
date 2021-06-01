@@ -1,230 +1,256 @@
 <template>
   <v-expansion-panel>
-    <v-expansion-panel-header
-    >Camera </v-expansion-panel-header>
+    <v-expansion-panel-header>Camera </v-expansion-panel-header>
     <v-expansion-panel-content>
       <!-- <v-divider></v-divider>
 <SerialMonitor></SerialMonitor> -->
-      <v-row no-gutters >
+      <v-row no-gutters>
         <!-- <v-col cols="1"> </v-col> -->
         <v-col class="pa-2" cols="7">
-        <template>
+          <template>
             <div class="d-flex flex-column justify-space-between align-center">
-                <v-img
-                  
-                  :width="cam_width"
-                  :src="`http://192.168.1.31:5050/${radios}`"
-                ></v-img>
-                <v-slider
-                  v-model="cam_width"
-                  class="align-self-stretch"
-                  min="200"
-                  max="720"
-                  step="1"
-                ></v-slider>
-                <p>{{ process || 'Algo' }}</p>
-                <v-radio-group v-model="radios" mandatory row >
-                    <v-radio
-                      label="N-0"
-                      value="Normal/0"
-                      @click="process='Normal'"
-                    ></v-radio>
-                    <v-radio
-                      label="N-1"
-                      value="Normal/1"
-                      @click="process='Normal'"
-                    ></v-radio>
-                    <v-divider class="mx-4" vertical></v-divider>
-                    <v-radio
-                      label="S-1"
-                      value="Screw/1"
-                      @click="process='Screw'"
-                    ></v-radio>
-                    <v-radio
-                      label="Edge-1"
-                      value="Edge/1"
-                      @click="process='Edge'"
-                    ></v-radio>
-                    <v-divider class="mx-4" vertical></v-divider>
-                    <v-radio
-                      label="H-0"
-                      value="Hole/0"
-                      @click="process='Hole'"
-                    ></v-radio>
-                </v-radio-group>
-
+              <v-img
+                :width="cam_width"
+                :src="`http://192.168.1.20:5050/${radios}`"
+              ></v-img>
+              <v-slider
+                v-model="cam_width"
+                class="align-self-stretch"
+                min="200"
+                max="720"
+                step="1"
+              ></v-slider>
+              <p>{{ process || "Algo" }}</p>
+              <v-radio-group v-model="radios" mandatory row>
+                <v-radio
+                  label="N-0"
+                  value="Normal/0"
+                  @click="process = 'Normal';
+                  SEND_MESSAGE({ command: actions.UPDATE_SLIDER, parameter:process});"
+                ></v-radio>
+                <v-radio
+                  label="N-1"
+                  value="Normal/1"
+                  @click="process = 'Normal';
+                  SEND_MESSAGE({ command: actions.UPDATE_SLIDER, parameter:process});"
+                ></v-radio>
+                <v-divider class="mx-4" vertical></v-divider>
+                <v-radio
+                  label="S-1"
+                  value="Screw/1"
+                  @click="process = 'Screw';
+                  SEND_MESSAGE({ command: actions.UPDATE_SLIDER, parameter:process});"
+                ></v-radio>
+                <v-radio
+                  label="Edge-1"
+                  value="Edge/1"
+                  @click="process = 'Edge';
+                  SEND_MESSAGE({ command: actions.UPDATE_SLIDER, parameter:process});"
+                ></v-radio>
+                <v-divider class="mx-4" vertical></v-divider>
+                <v-radio
+                  label="H-0"
+                  value="Hole/0"
+                  @click="process = 'Hole';
+                  SEND_MESSAGE({ command: actions.UPDATE_SLIDER, parameter:process});"
+                ></v-radio>
+              </v-radio-group>
             </div>
-        </template>
+          </template>
         </v-col>
 
         <v-col class="pa-2 col-md-3">
-            <template>
-              <v-btn
-                
-                class="ma-1"
-                color="success"
-                plain
-                @click="() => {SEND_MESSAGE({command: actions.SAVE_JSON});}"
-              >
-                Salvar
-              </v-btn>
+          <template>
+            <v-btn
+              class="ma-1"
+              color="success"
+              plain
+              @click="
+                () => {
+                  SEND_MESSAGE({ command: actions.SAVE_JSON });
+                }
+              "
+            >
+              Salvar
+            </v-btn>
 
-              <v-btn
-                
-                class="ma-1"
-                color="grey darken-1"
-                plain
-                @click="radios ='exit'"
-              >
-                Parar Transmissão
-              </v-btn>
-              <v-card flat color="transparent">
-                <v-subheader>HUE</v-subheader>
-                <v-card-text>
-                  <v-row>
-                    <v-col class="px-4">
-                      <v-range-slider
-                        v-model="h_range"
-                        :max="h_max"
-                        :min="h_min"
-                        hide-details
-                        class="align-center"
-                        @change="
-                                () => {
-                                  SEND_MESSAGE({
-                                    command: actions.UPDATE_FILTER,
-                                    parameter: {'process':process,'h_min':h_range[0],'h_max':h_range[1]},
-                                  });
-                                }
-                              "
-                      >
-                        <template v-slot:prepend>
-                          <v-text-field
-                            :value="h_range[0]"
-                            class="mt-0 pt-0"
-                            hide-details
-                            single-line
-                            type="number"
-                            style="width: 60px"
-                            @change="
-                                    $set(h_range, 0, $event)
-                            "
-                          ></v-text-field>
-                        </template>
-                        <template v-slot:append>
-                          <v-text-field
-                            :value="h_range[1]"
-                            class="mt-0 pt-0"
-                            hide-details
-                            single-line
-                            type="number"
-                            style="width: 60px"
-                            @change="$set(h_range, 1, $event)"
-                          ></v-text-field>
-                        </template>
-                      </v-range-slider>
-                    </v-col>
-                  </v-row>
-                </v-card-text>
-              </v-card>
-              <v-divider></v-divider>
-              <v-card flat color="transparent">
-                <v-subheader>Saturation</v-subheader>
-                <v-card-text>
-                  <v-row>
-                    <v-col class="px-4">
-                      <v-range-slider
-                        v-model="s_range"
-                        :max="s_max"
-                        :min="s_min"
-                        hide-details
-                        class="align-center"
-                        @change="
-                                () => {
-                                  SEND_MESSAGE({
-                                    command: actions.UPDATE_FILTER,
-                                    parameter: {'process':process,'s_min':s_range[0],'s_max':s_range[1]},
-                                  });
-                                }
-                              "
-                         
-                      >
-                        <template v-slot:prepend>
-                          <v-text-field
-                            :value="s_range[0]"
-                            class="mt-0 pt-0"
-                            hide-details
-                            single-line
-                            type="number"
-                            style="width: 60px"
-                            @change="$set(s_range, 0, $event)"
-                          ></v-text-field>
-                        </template>
-                        <template v-slot:append>
-                          <v-text-field
-                            :value="s_range[1]"
-                            class="mt-0 pt-0"
-                            hide-details
-                            single-line
-                            type="number"
-                            style="width: 60px"
-                            @change="$set(s_range, 1, $event)"
-                          ></v-text-field>
-                        </template>
-                      </v-range-slider>
-                    </v-col>
-                  </v-row>
-                </v-card-text>
-              </v-card>
-              <v-divider></v-divider>
-              <v-card flat color="transparent">
-                <v-subheader>Valor</v-subheader>
-                <v-card-text>
-                  <v-row>
-                    <v-col class="px-4">
-                      <v-range-slider
-                        v-model="v_range"
-                        :max="v_max"
-                        :min="v_min"
-                        hide-details
-                        class="align-center"
-                         @change="
-                                () => {
-                                  SEND_MESSAGE({
-                                    command: actions.UPDATE_FILTER,
-                                    parameter: {'process':process,'v_min':v_range[0],'v_max':v_range[1]},
-                                  });
-                                }
-                              "
-                      >
-                        <template v-slot:prepend>
-                          <v-text-field
-                            :value="v_range[0]"
-                            class="mt-0 pt-0"
-                            hide-details
-                            single-line
-                            type="number"
-                            style="width: 60px"
-                            @change="$set(v_range, 0, $event)"
-                          ></v-text-field>
-                        </template>
-                        <template v-slot:append>
-                          <v-text-field
-                            :value="v_range[1]"
-                            class="mt-0 pt-0"
-                            hide-details
-                            single-line
-                            type="number"
-                            style="width: 60px"
-                            @change="$set(v_range, 1, $event)"
-                          ></v-text-field>
-                        </template>
-                      </v-range-slider>
-                    </v-col>
-                  </v-row>
-                </v-card-text>
-              </v-card>
-            </template>
+            <v-btn
+              class="ma-1"
+              color="grey darken-1"
+              plain
+              @click="radios = 'exit'"
+            >
+              Parar Transmissão
+            </v-btn>
+
+            <v-btn
+              class="ma-1"
+              color="grey darken-1"
+              plain
+              @click="
+                () => {
+                  getFilter();
+                }
+              "
+            >
+              Iniciar Transmissão
+            </v-btn>
+            <v-card flat color="transparent">
+              <v-subheader>HUE</v-subheader>
+              <v-card-text>
+                <v-row>
+                  <v-col class="px-4">
+                    <v-range-slider
+                      v-model="configuration.camera.hue"
+                      :max="slid_max"
+                      :min="slid_min"
+                      hide-details
+                      class="align-center"
+                      @change="
+                        () => {
+                          SEND_MESSAGE({
+                            command: actions.UPDATE_FILTER,
+                            parameter: {
+                              process: process,
+                              h_min: configuration.camera.hue[0],
+                              h_max: configuration.camera.hue[1],
+                            },
+                          });
+                        }
+                      "
+                    >
+                      <template v-slot:prepend>
+                        <v-text-field
+                          :value="configuration.camera.hue[0]"
+                          class="mt-0 pt-0"
+                          hide-details
+                          single-line
+                          type="number"
+                          style="width: 60px"
+                          @change="$set(configuration.camera.hue, 0, $event)"
+                        ></v-text-field>
+                      </template>
+                      <template v-slot:append>
+                        <v-text-field
+                          :value="configuration.camera.hue[1]"
+                          class="mt-0 pt-0"
+                          hide-details
+                          single-line
+                          type="number"
+                          style="width: 60px"
+                          @change="$set(configuration.camera.hue, 1, $event)"
+                        ></v-text-field>
+                      </template>
+                    </v-range-slider>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
+            <v-divider></v-divider>
+            <v-card flat color="transparent">
+              <v-subheader>Saturation</v-subheader>
+              <v-card-text>
+                <v-row>
+                  <v-col class="px-4">
+                    <v-range-slider
+                      v-model="configuration.camera.sat"
+                      :max="slid_max"
+                      :min="slid_min"
+                      hide-details
+                      class="align-center"
+                      @change="
+                        () => {
+                          SEND_MESSAGE({
+                            command: actions.UPDATE_FILTER,
+                            parameter: {
+                              process: process,
+                              s_min: configuration.camera.sat[0],
+                              s_max: configuration.camera.sat[1],
+                            },
+                          });
+                        }
+                      "
+                    >
+                      <template v-slot:prepend>
+                        <v-text-field
+                          :value="configuration.camera.sat[0]"
+                          class="mt-0 pt-0"
+                          hide-details
+                          single-line
+                          type="number"
+                          style="width: 60px"
+                          @change="$set(configuration.camera.sat, 0, $event)"
+                        ></v-text-field>
+                      </template>
+                      <template v-slot:append>
+                        <v-text-field
+                          :value="configuration.camera.sat[1]"
+                          class="mt-0 pt-0"
+                          hide-details
+                          single-line
+                          type="number"
+                          style="width: 60px"
+                          @change="$set(configuration.camera.sat, 1, $event)"
+                        ></v-text-field>
+                      </template>
+                    </v-range-slider>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
+            <v-divider></v-divider>
+            <v-card flat color="transparent">
+              <v-subheader>Valor</v-subheader>
+              <v-card-text>
+                <v-row>
+                  <v-col class="px-4">
+                    <v-range-slider
+                      v-model="configuration.camera.val"
+                      :max="slid_max"
+                      :min="slid_min"
+                      hide-details
+                      class="align-center"
+                      @change="
+                        () => {
+                          SEND_MESSAGE({
+                            command: actions.UPDATE_FILTER,
+                            parameter: {
+                              process: process,
+                              v_min: configuration.camera.val[0],
+                              v_max: configuration.camera.val[1],
+                            },
+                          });
+                        }
+                      "
+                    >
+                      <template v-slot:prepend>
+                        <v-text-field
+                          :value="configuration.camera.val[0]"
+                          class="mt-0 pt-0"
+                          hide-details
+                          single-line
+                          type="number"
+                          style="width: 60px"
+                          @change="$set(configuration.camera.val, 0, $event)"
+                        ></v-text-field>
+                      </template>
+                      <template v-slot:append>
+                        <v-text-field
+                          :value="configuration.camera.val[1]"
+                          class="mt-0 pt-0"
+                          hide-details
+                          single-line
+                          type="number"
+                          style="width: 60px"
+                          @change="$set(configuration.camera.val, 1, $event)"
+                        ></v-text-field>
+                      </template>
+                    </v-range-slider>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
+          </template>
         </v-col>
       </v-row>
       <v-divider></v-divider>
@@ -244,10 +270,10 @@
 
 <script>
 import { mapState, mapMutations } from "vuex";
-import { actions } from "../../store/index";
+import { actions } from "../../store/index.js";
 import SerialMonitor from "../SerialMonitor.vue";
-// const json = require('engine_H/Json/config.json');
-
+import json from "../../../engine_H/Json/config.json";
+// const json = require('../../../engine_H/Json/config.json');
 export default {
   components: { SerialMonitor },
   name: "CameraConfig",
@@ -268,21 +294,14 @@ export default {
 
       lastBValue: 0,
       lastZAValue: 0,
+      json_Data: json,
+      radios: "Normal/0",
+      process: "Normal",
 
-      h_min: 0,
-      h_max: 255,
-      h_range: [50, 70],
+      slid_min: 0,
+      slid_max: 255,
+      cam_width: 720,
 
-      s_min: 0,
-      s_max: 255,
-      s_range: [10, 100],
-
-      v_min: 0,
-      v_max: 255,
-      v_range: [20, 100],
-      radios: 'Normal/0',
-      process:'Normal',
-      cam_width:720,
       // loadingb1: false,
       // loadingb2: false
     };
@@ -367,15 +386,13 @@ export default {
       msg = msg.concat(" F" + this.speed);
 
       return msg;
-    }    
-      // async loads(datas){
-      //   this.data = true
-      //   await new Promise(resolve => setTimeout(resolve, 1000))
-      //   this.datas = false
-      // },
-  },
+    },
 
-  
+    getFilter() {
+      var camera = this.configuration.camera;
+      console.log(camera);
+    },
+  },
 
   computed: {
     ...mapState(["configuration"]),
