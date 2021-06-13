@@ -12,23 +12,23 @@
             },
             "machine": {
                 "limits": {
-                    "xMin": null,
-                    "yMin": null,
-                    "zMin": null,
-                    "aMin": null,
-                    "bMin": null,
-                    "xMax": null,
-                    "yMax": null,
-                    "zMax": null,
-                    "aMax": null,
-                    "bMax": null
+                    "xMin": 0,
+                    "yMin": 0,
+                    "zMin": 0,
+                    "aMin": 0,
+                    "bMin": 0,
+                    "xMax": 250,
+                    "yMax": 45,
+                    "zMax": 150,
+                    "aMax": 360,
+                    "bMax": 360
                 },
                 "maxFeedrate": {
-                    "xMax": null,
-                    "yMax": null,
-                    "zMax": null,
-                    "aMax": null,
-                    "bMax": null                }
+                    "xMax": 11000,
+                    "yMax": 3000,
+                    "zMax": 1500,
+                    "aMax": 50000,
+                    "bMax": 50000                }
             }
         },
         "statistics": {

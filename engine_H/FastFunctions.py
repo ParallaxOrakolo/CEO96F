@@ -1,7 +1,18 @@
 from time import sleep
+import numpy as np
 import serial
 import json
 import sys
+
+import string
+from random import choice
+
+def randomString(tamanho=20):
+    valores = string.ascii_letters + string.digits
+    word = ''
+    for i in range(tamanho):
+        word += choice(valores)
+    return word
 
 
 # Define cores e Tags para tratamento de exceções.
@@ -20,6 +31,11 @@ class ColorPrint:
     HEADER = '\033[95m'
     BOLD = '\033[1m'
 
+# Cria uma imagem de cor solida com qualquer tamanho,, padrão 600x900 azul
+def backGround(h=600, w=900, c=0):
+    bgk = np.zeros([h, w, 3], np.uint8)
+    bgk[:, :, c] = np.zeros([h, w]) + 255
+    return bgk
 
 # Abre e lê um json no caminho solicitado.
 def readJson(json_to_read):
@@ -82,6 +98,27 @@ def sendGCODE(serial, command, **kargs):
     else:
         return ["Comando não enviado..."]
 
+
+def M114(serial, where=[("X:", " Y:"), ("Y:", " Z:"), ("Z:", " E:"), ("E:", " Count")]):
+    for _ in range(2):
+        Echo = (sendGCODE(serial, "M114", echo=True))[0]
+    try:
+        Pos = []
+        for get in where:
+            left, right = get[0], get[1]
+            Pos.append(float(Echo[Echo.index(left)+len(left):Echo.index(right)]))
+        return dict(zip(['X', 'Y', 'Z', 'E'], Pos))
+    except ValueError:
+        print("Recebi:", Echo)
+        return Echo
+
+def M400(arduino, pattern='', **kwargs):
+    echoMessge, echoCaugth = " ", ['x', 'X']
+    while echoMessge not in echoCaugth:
+        echoMessge = pattern+'_'+randomString()
+        echoCaugth = sendGCODE(arduino, "M400",  echo=True)
+        echoCaugth += sendGCODE(arduino, f"M118 {echoMessge}", echo=True)
+        print(echoCaugth)
 
 # Estabelece uma conexão com base em um arquivo de configuração personalizado.
 def SerialConnect(SerialPath='../Json/serial.json', name='arduino'):
