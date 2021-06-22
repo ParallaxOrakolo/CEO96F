@@ -76,7 +76,7 @@ const store = new Vuex.Store({
 
     configuration: {
       informations: {
-        ip: "127.0.0.1",
+        ip: "192.168.1.59",
         connectionId: 123456,
         port: 5000,
         userList: [null],

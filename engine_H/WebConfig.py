@@ -417,7 +417,7 @@ if __name__ == "__main__":
     # ip = '.'.join(['.'.join(prefix[:len(prefix) - 1]),
     #               str(int(prefix[len(prefix) - 1]) + offSetIp)])
 
-    ip = "127.0.0.1"
+    ip = "192.168.1.59"
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Start-Threads                         #
