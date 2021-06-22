@@ -129,13 +129,14 @@ class CamThread(threading.Thread):
         
     def camPreview(self, previewName, camID):
         # Abre a camera com o id passado.
-        cam = cv2.VideoCapture(camID, cv2.CAP_DSHOW)
+        cam = cv2.VideoCapture(camID)
         cam.set(3, 1280)
         cam.set(4, 720)
 
         if cam.isOpened():                            # Verifica se foi aberta
             rval, frame = cam.read()                  # Lê o Status e uma imagem
         else:
+            globals()[f'frame{previewName}'] = cv2.imread(f"../engine_H/Images/{camID}.jpg")
             rval = False
 
         while rval and not self.stopped():                                   # Verifica e camera ta 'ok'
@@ -144,7 +145,10 @@ class CamThread(threading.Thread):
             cv2.imshow(f'frame{previewName}', frame)  # Exporta
             if cv2.waitKey(1) == 27:
                 break
-        cv2.destroyWindow(previewName)
+        try:    
+            cv2.destroyWindow(previewName)
+        except cv2.error:
+            pass
         cam.release()
         print("Saindo da thread", self.previewName)
         return False
@@ -414,16 +418,16 @@ if __name__ == "__main__":
     offSetIp = 0
 
     prefix = socket.gethostbyname(socket.gethostname()).split('.')
-    # ip = '.'.join(['.'.join(prefix[:len(prefix) - 1]),
-    #               str(int(prefix[len(prefix) - 1]) + offSetIp)])
+    ip = '.'.join(['.'.join(prefix[:len(prefix) - 1]),
+                  str(int(prefix[len(prefix) - 1]) + offSetIp)])
 
-    ip = "192.168.1.59"
+
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Start-Threads                         #
 
-    thread1 = CamThread("1", 1)
-    thread0 = CamThread("0", 0)
+    thread1 = CamThread("1", fullJson["Cameras"]["Screw"]["Settings"]["id"])
+    thread0 = CamThread("0", fullJson["Cameras"]["Hole"]["Settings"]["id"])
     appTh = AppThread(ip, portBack)
     
 
@@ -506,6 +510,10 @@ if __name__ == "__main__":
             asyncio.get_event_loop().run_forever()
         except KeyboardInterrupt:
             print("Fechando conexão com webscokets na base da força")
+            try:
+                cv2.destroyAllWindows()
+            except cv2.error:
+                pass
             exit(200)
     
     else:
@@ -559,8 +567,8 @@ if __name__ == "__main__":
                 break
 
         # Finaliza as threads.
-        cv2.destroyWindow("A")
-        cv2.destroyWindow("B")
+        # cv2.destroyWindow("A")
+        # cv2.destroyWindow("B")
 
         # Resultados = [findHole(Image, areaMin, areaMax, perimeter, HSVValues_Hole, fixPoint),
         #               findScrew(Image, HSVJson, mainConfig, Processos)]

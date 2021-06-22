@@ -11,7 +11,7 @@
             <div class="d-flex flex-column justify-space-between align-center">
               <v-img
                 :width="cam_width"
-                :src="`http://192.168.1.59:5050/${radios}`"
+                :src="`http://192.168.1.57:5050/${radios}`"
               ></v-img>
               <v-slider
                 v-model="cam_width"
@@ -273,7 +273,6 @@ import { mapState, mapMutations } from "vuex";
 import { actions } from "../../store/index.js";
 import SerialMonitor from "../SerialMonitor.vue";
 import json from "../../../engine_H/Json/config.json";
-// const json = require('../../../engine_H/Json/config.json');
 export default {
   components: { SerialMonitor },
   name: "CameraConfig",
