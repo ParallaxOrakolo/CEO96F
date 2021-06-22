@@ -112,6 +112,7 @@ def M114(serial, where=[("X:", " Y:"), ("Y:", " Z:"), ("Z:", " E:"), ("E:", " Co
         print("Recebi:", Echo)
         return Echo
 
+
 def M119(serial, cut=": "):
     pos=[]
     key=[]
@@ -123,11 +124,13 @@ def M119(serial, cut=": "):
         key.append(info[0:info.index(cut)])
     return dict(zip(key, pos))
 
+
 def G28(serial, axis='E', endStop='filament', status='open', steps=5, speed=50000):
     sendGCODE(serial, "G91")
     while M119(serial)[endStop] == status:
         sendGCODE(serial, f"G0 {axis}{steps} F{speed}")
     sendGCODE(serial, "G90")
+
 
 def M400(arduino, pattern='', **kwargs):
     echoMessge, echoCaugth = " ", ['x', 'X']
