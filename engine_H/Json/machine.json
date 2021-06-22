@@ -26,9 +26,10 @@
                 "maxFeedrate": {
                     "xMax": 11000,
                     "yMax": 3000,
-                    "zMax": 1500,
+                    "zMax": 11000,
                     "aMax": 50000,
-                    "bMax": 50000                }
+                    "bMax": 50000
+                }
             }
         },
         "statistics": {

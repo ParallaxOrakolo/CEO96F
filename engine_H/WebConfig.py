@@ -1,3 +1,9 @@
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+# Nota: Use Crtl + Shift + -    para colapsar todo o código e facilitar a visualização.
+#
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+#                                                    Imports                                                           #
+
 from flask import Flask, Response, request, jsonify
 import FastFunctions as Fast
 import OpencvPlus as Op
@@ -13,22 +19,75 @@ import json
 
 import timeit
 
-"""
-# Clico de Configuração
-    # Extrai os valores do JSON
-    # Estabelece conexão com o Mega
-    # Alinha os motores
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+#                                                      JSON                                                            #
 
-# Ciclo Continuo
-    #  Ciclo que mexe o motor de Pega. ( Vai, Estica, Retrai, Volta )  # Posições Fixas
-    #  4x Analisa/Salva/Roda
-    #  4X Corrige com base nas informações armazenadas
-    #  inverte o array
-    #  4x MexeP/Posição, Desce Parafusando uma quantidade fixa
-    #  -> 'N'x /Analisa/Corrige/Parafusa no sentido Contrario
-    #  -> Roda
-"""
+ws_message = {
+    "command": "",
+    "parameter": ""
+}
 
+"""
+    def frameNormal(self):
+    while not self.stopped() and self.Procs['Normal']:
+        yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
+                + cv2.imencode('.JPEG', globals()['frame'+self.previewName],
+                                [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
+                + b'\r\n')
+    print("Quebrou Normal")
+
+    def frameScrew(self):
+        while not self.stopped() and self.Procs['Normal']:
+            _, frame = findScrew(
+                self. imgTeste, fullJson['Filtros']['HSV'], fullJson, self.Processos)
+            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
+                   + cv2.imencode('.JPEG', frame,
+                                  [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
+                   + b'\r\n')
+        print("Quebrou Screw")
+
+    def frameEdge(self):
+        while not self.stopped() and self.Procs['Edge']:
+            _, frame = findScrew(
+                self. imgTeste, fullJson['Filtros']['HSV'], fullJson, self.Processos, aba=0)
+            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
+                   + cv2.imencode('.JPEG', frame,
+                                  [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
+                   + b'\r\n')
+        print("Quebrou Edge")
+
+
+
+    def frameScrew(self):
+        while True:
+            _, frame = findScrew(globals()[
+                                 'frame'+self.previewName], fullJson['Filtros']['HSV'], fullJson, self.Processos)
+            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
+                   + cv2.imencode('.JPEG', frame,
+                                  [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
+                   + b'\r\n')
+
+    def frameEdge(self):
+        while True:
+            _, frame = findScrew(globals()[
+                                 'frame'+self.previewName], fullJson['Filtros']['HSV'], fullJson, self.Processos, aba=0)
+            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
+                   + cv2.imencode('.JPEG', frame,
+                                  [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
+                   + b'\r\n')
+
+    def frameHole(self):
+        while not self.stopped() and self.Procs['Hole']:
+            _, frame = findHole(globals()['frame' + self.previewName], self.areaMin,
+                                self.areaMax, self.perimeter, self.HSVValues_Hole, self.fixPoint)
+            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
+                   + cv2.imencode('.JPEG', frame,
+                                  [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
+                   + b'\r\n')
+        print("Quebrou Hole")
+"""
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+#                                                      Class                                                           #
 
 class CamThread(threading.Thread):
     def __init__(self, previewName, camID):
@@ -117,68 +176,6 @@ class CamThread(threading.Thread):
                        + b'\r\n')
         print("Fechando Vizualizção")
 
-
-"""
-    def frameNormal(self):
-    while not self.stopped() and self.Procs['Normal']:
-        yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
-                + cv2.imencode('.JPEG', globals()['frame'+self.previewName],
-                                [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
-                + b'\r\n')
-    print("Quebrou Normal")
-
-    def frameScrew(self):
-        while not self.stopped() and self.Procs['Normal']:
-            _, frame = findScrew(
-                self. imgTeste, fullJson['Filtros']['HSV'], fullJson, self.Processos)
-            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
-                   + cv2.imencode('.JPEG', frame,
-                                  [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
-                   + b'\r\n')
-        print("Quebrou Screw")
-
-    def frameEdge(self):
-        while not self.stopped() and self.Procs['Edge']:
-            _, frame = findScrew(
-                self. imgTeste, fullJson['Filtros']['HSV'], fullJson, self.Processos, aba=0)
-            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
-                   + cv2.imencode('.JPEG', frame,
-                                  [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
-                   + b'\r\n')
-        print("Quebrou Edge")
-
-
-
-    def frameScrew(self):
-        while True:
-            _, frame = findScrew(globals()[
-                                 'frame'+self.previewName], fullJson['Filtros']['HSV'], fullJson, self.Processos)
-            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
-                   + cv2.imencode('.JPEG', frame,
-                                  [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
-                   + b'\r\n')
-
-    def frameEdge(self):
-        while True:
-            _, frame = findScrew(globals()[
-                                 'frame'+self.previewName], fullJson['Filtros']['HSV'], fullJson, self.Processos, aba=0)
-            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
-                   + cv2.imencode('.JPEG', frame,
-                                  [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
-                   + b'\r\n')
-
-    def frameHole(self):
-        while not self.stopped() and self.Procs['Hole']:
-            _, frame = findHole(globals()['frame' + self.previewName], self.areaMin,
-                                self.areaMax, self.perimeter, self.HSVValues_Hole, self.fixPoint)
-            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
-                   + cv2.imencode('.JPEG', frame,
-                                  [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
-                   + b'\r\n')
-        print("Quebrou Hole")
-"""
-
-
 class AppThread(threading.Thread):
     def __init__(self, app_ip, app_port):
         threading.Thread.__init__(self)
@@ -203,6 +200,8 @@ class AppThread(threading.Thread):
     def stopped(self):
         return self._stop_event.is_set()
 
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+#                                                    Functions                                                         #
 
 def findHole(imgAnalyse, minArea, maxArea, c_perimeter, HSValues, fixed_Point):
     if type(imgAnalyse) != np.ndarray:
@@ -319,6 +318,8 @@ def shutdown_server():
         raise RuntimeError('Not running with the Werkzeug Server')
     shutdown_function()
 
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+#                                                 Async-Functions                                                      #
 
 async def updateSlider(processos):
     Config['configuration']['camera']['process'] = processos
@@ -330,6 +331,7 @@ async def updateSlider(processos):
             ]
 
     await sendWsMessage("update", Config)
+
 
 async def funcs():
     pass
@@ -374,12 +376,6 @@ async def saveJson():
     print("salvei")
 
 
-ws_message = {
-    "command": "",
-    "parameter": ""
-}
-
-
 async def sendWsMessage(command, parameter=None):
     global ws_message
     ws_message["command"] = command
@@ -391,25 +387,43 @@ async def sendWsMessage(command, parameter=None):
     print(25*"-")
     print("Enviado: " + cover_msg)
 
+# -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+#                                                       Exec                                                           #
+
 if __name__ == "__main__":
     app = Flask(__name__)
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+    #                        Load-Json                           #
+
     fullJson = Fast.readJson('Json/config.json')
     Config = Fast.readJson('Json/machine.json')
-    # updateSlider('Normal')
+
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+    #                        Variables                           #
 
     StartedStream = False
-    offSetIp = 0
+    AP = True
+
     portFront = 5000
     portBack = 5050
+    offSetIp = 0
+
     prefix = socket.gethostbyname(socket.gethostname()).split('.')
     ip = '.'.join(['.'.join(prefix[:len(prefix) - 1]),
                   str(int(prefix[len(prefix) - 1]) + offSetIp)])
 
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+    #                      Start-Threads                         #
+
     thread1 = CamThread("1", 1)
     thread0 = CamThread("0", 0)
     appTh = AppThread(ip, portBack)
-    AP = True
+    
+
     if AP:
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+    #                          Routes                            #
+
         @app.route('/')
         def homepage():
             return 'App vem Aqui?.'
@@ -437,7 +451,7 @@ if __name__ == "__main__":
                 'Config': fullJson
             })
 
-        @app.route('/<valor>/<id>')
+        @app.route('/<valor>/<id>') 
         def video_feed(valor, id):
             Esse = getattr(globals()['thread'+str(id)], "Procs")
             for processo in Esse:
@@ -446,13 +460,17 @@ if __name__ == "__main__":
             return Response(getattr(globals()['thread'+str(id)], "ViewCam")(),
                             mimetype='multipart/x-mixed-replace; boundary=frame')
 
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+    #                    Inside-Async-Def                        #
+
         async def sendGcode(obj):
+            #Fast.sendGCODE(arduino, str(obj))
             print("Gcode:" + obj)
             return
 
         async def actions(message):
+            # Verifica se afunção requisita existe e executa.
             command = message["command"]
-
             try:
                 funcs = eval(command)
                 try:
@@ -469,6 +487,9 @@ if __name__ == "__main__":
                 print(json.loads(message))
                 await actions(json.loads(message))
 
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+    #                      Server-Start                          #
+
         asyncio.get_event_loop().run_until_complete(
             websockets.serve(echo, ip, portFront))
 
@@ -479,6 +500,7 @@ if __name__ == "__main__":
         except KeyboardInterrupt:
             print("Fechando conexão com webscokets na base da força")
             exit(200)
+    
     else:
         thread1 = CamThread("1", 1)
         thread0 = CamThread("0", 0)
@@ -536,3 +558,4 @@ if __name__ == "__main__":
         # Resultados = [findHole(Image, areaMin, areaMax, perimeter, HSVValues_Hole, fixPoint),
         #               findScrew(Image, HSVJson, mainConfig, Processos)]
         print("Tempo de Execução:", round(timeit.default_timer() - T0A, 3))
+ 

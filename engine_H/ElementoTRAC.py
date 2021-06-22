@@ -10,14 +10,11 @@ def Parafusa(pos, voltas=2, mm=0, servo=0, angulo=0):
         Fast.M400(arduino)
         Fast.sendGCODE(arduino, f'g91')
         Fast.sendGCODE(arduino, f'g38.3 z-{pos} F{zMaxFed}')
-        Fast.M400(arduino)
         Fast.sendGCODE(arduino, f'g0 z-{mm} {zMaxFed}')
-        Fast.M400(arduino)
         Fast.sendGCODE(arduino, f'm280 p{servo} s{angulo}')
-        Fast.M400(arduino)
         Fast.sendGCODE(arduino, f'm43 t s10 l10 w{voltas*50}')
         Fast.sendGCODE(arduino, 'g90')
-        Fast.sendGCODE(arduino, f'g0 z{pos} F{zMaxFed}')
+        Fast.sendGCODE(arduino, f'g0 z{pos} F{2000}')
         Fast.M400(arduino)
 
 import FastFunctions as Fast
@@ -31,6 +28,7 @@ import cv2
 T0A = timeit.default_timer()
 
 arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
+
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Variables                                                         #
 perimeter = [None]
@@ -46,9 +44,9 @@ cap = cv2.VideoCapture(1)
 cap.set(3, 3264)
 cap.set(4, 2448)
 
-cap1 = cv2.VideoCapture(0)
-cap1.set(3, 3264)
-cap1.set(4, 2448)
+# cap1 = cv2.VideoCapture(0)
+# cap1.set(3, 3264)
+# cap1.set(4, 2448)
 
 Read = 'Lateral B.jpg' if not Hole else 'Lateral A.jpg'
 pathImages = 'c:/Users/55419/Trabalho/Parallax/GitRepos/CEO96F/engine_H/Images/'
@@ -111,7 +109,6 @@ def findCircle(circle_Mask, areaMinC, areaMaxC, perimeter_size, blur_Size=3):
 
 
 def findScrew(imgAnalyse, tabs):
-
     if type(imgAnalyse) != np.ndarray:
         print(type(imgAnalyse))
         imgAnalyse = Op.takeSnapshot(imgAnalyse)
@@ -146,49 +143,6 @@ def findScrew(imgAnalyse, tabs):
         else:
             return offset_screw, chr_k
     return offset_screw, chr_k
-
-
-# def findHole(imgAnalyse, minArea, maxArea, c_perimeter, escala_real=0.5):
-
-#     if type(imgAnalyse) != np.ndarray:
-#         print(type(imgAnalyse))
-#         imgAnalyse = Op.takeSnapshot(imgAnalyse)
-
-#     for values in HSValues:
-#         globals()[values] = np.array(Op.extractHSValue(HSValues, values))
-
-#     mask = Op.refineMask(Op.HSVMask(imgAnalyse, lower, upper))
-#     cv2.imshow("Mask", mask)
-#     chr_k = cv2.bitwise_and(imgAnalyse, imgAnalyse, mask=mask)
-#     cv2.imshow("CHR", chr_k)
-#     distances = []
-#     edge = findCircle(mask, minArea, maxArea, c_perimeter)
-#     for Circle in edge:
-#         cv2.circle(chr_k, (int(Circle['center'][0]), int(Circle['center'][1])), int(Circle['radius']),
-#                    (36, 255, 12), 2)
-
-#         cv2.line(chr_k, (int(Circle['center'][0]), int(
-#             Circle['center'][1])), fixPoint, (168, 50, 131))
-
-#         cv2.line(chr_k, (int(Circle['center'][0]), int(Circle['center'][1])),
-#                  (int(Circle['center'][0]), fixPoint[1]), (255, 0, 0))
-
-#         cv2.line(chr_k, (int(Circle['center'][0]),
-#                  fixPoint[1]), fixPoint, (0, 0, 255), thickness=2)
-
-#         distance_to_fix = (round((Circle['center'][0] - fixPoint[0])*(escala_real/(Circle['radius'])), 3), round(
-#             (Circle['center'][1] - fixPoint[1])*(escala_real/Circle['radius']), 3))
-#         cv2.putText(chr_k, str(distance_to_fix[1]), (int(Circle['center'][0]), int(Circle['center'][1] / 2)),
-#                     cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
-#         cv2.putText(chr_k, str(distance_to_fix[0]), (int(Circle['center'][0] / 2), int(fixPoint[1])),
-#                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
-
-#         cv2.putText(chr_k, str(Circle["id"]), (int(Circle["center"][0]), int(Circle["center"][1])),
-#                     cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
-#         distances.append(distance_to_fix)
-#     # cv2.waitKey(1)
-#     # cv2.destroyAllWindows()
-#     return distances, chr_k
 
 
 def findHole(imgAnalyse, minArea, maxArea, c_perimeter, HSValues, fixed_Point, escala_real=5):
@@ -254,8 +208,8 @@ else:
 machineConfig = Fast.readJson('Json/machine.json')
 feedRatePercent = 50/100
 xMaxFed = int(machineConfig["configuration"]["informations"]["machine"]["maxFeedrate"]["xMax"])*feedRatePercent
-yMaxFed = int(machineConfig["configuration"]["informations"]["machine"]["maxFeedrate"]["yMax"])*feedRatePercent
-zMaxFed = int(machineConfig["configuration"]["informations"]["machine"]["maxFeedrate"]["zMax"])*feedRatePercent
+yMaxFed = int(machineConfig["configuration"]["informations"]["machine"]["maxFeedrate"]["yMax"])*0.7
+zMaxFed = int(machineConfig["configuration"]["informations"]["machine"]["maxFeedrate"]["zMax"])
 eMaxFed = int(machineConfig["configuration"]["informations"]["machine"]["maxFeedrate"]["aMax"])*feedRatePercent
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Code-Exec                                                         #
@@ -263,45 +217,38 @@ eMaxFed = int(machineConfig["configuration"]["informations"]["machine"]["maxFeed
 
 Fast.sendGCODE(arduino, "G28 Y")
 Fast.sendGCODE(arduino, "G28 X Z")
-Parafusa(150)
-Fast.sendGCODE(arduino, f"G0 X33 F{xMaxFed}")
-Fast.sendGCODE(arduino, f"G0 Y45 F{yMaxFed}")
+Parafusa(140, mm=5, voltas=20)
+Fast.sendGCODE(arduino, f"G0 X5 F{xMaxFed}")
+Fast.sendGCODE(arduino, f"G0 Y49 F{yMaxFed}")
 Fast.M400(arduino)
 Fast.sendGCODE(arduino, "M42 P31 S255")
 Fast.sendGCODE(arduino, "G4 S1")
 Fast.sendGCODE(arduino, "G28 Y")
-Fast.sendGCODE(arduino, f"G0 X70 F{xMaxFed}")
+Fast.sendGCODE(arduino, f"G0 X80 F{xMaxFed}")
 Fast.sendGCODE(arduino, f"G0 Y9 F{yMaxFed}")
 Fast.M400(arduino)
 Fast.sendGCODE(arduino, "M42 P32 S255")
 Fast.sendGCODE(arduino, "G91")
-#print(Fast.sendGCODE(arduino, "G0 Y5 
-# F500", echo=True))
-# Make a square around the cell.
+for x in range(20):
+    _, Image = cap.read()
+    time.sleep(0.3)
+
 p1 = tuple(map(opr.add, map(opr.mul, (((Quadrants[line][column]).shape[:2])[
            ::-1]), (column, line)), (250, -550)))
 p2 = tuple(map(opr.add, map(opr.mul, ((
     (Quadrants[line-1][column-1]).shape[:2])[::-1]), (column+1, line+1)), (-250, 550)))
 cv2.rectangle(Image, p1, p2, (0, 0, 255), 5)
 
-# cv2.imshow('Image_Original', cv2.resize(Image, None, fx=Escala*0.3, fy=Escala*0.3))
 
 cv2.imshow('Image_Original', cv2.resize(
                 Image, None, fx=Escala*0.3, fy=Escala*0.3))
 cv2.waitKey(0)
 Image = Image[p1[1]:p2[1], p1[0]:p2[0]]
 fixPoint = (int(Image.shape[1]/2), int(Image.shape[0]/2))
-# Image = Quadrants[line][column]
-
-
-# for filterValues in HSValues:
-#     locals()[filterValues] = Op.extractHSValue(HSValues, filterValues)
-#     locals()[filterValues]
 
 for holeValue in HoleValues:
     locals()[holeValue] = HoleValues[holeValue]
 
-# exit()
 Tabs = [mainConfig['Mask_Parameters']['Edge'],
         mainConfig['Mask_Parameters']['Screw']]
 
@@ -368,10 +315,11 @@ if Etapa ==0:
         time.sleep(2)
         cv2.destroyAllWindows
     Fast.sendGCODE(arduino, "M42 P32 S0")
+    Fast.sendGCODE(arduino, "M42 P33 S255")
     print("Tempo de Execução:", round(timeit.default_timer()-T0A, 3))
 
-    Cam = {'X':55, 'Y':12}
-    FuraPos = {'X':222, 'Y':22}
+    Cam = {'X':74.5, 'Y':7.5}
+    FuraPos = {'X':240, 'Y':16}
     CamDiff = {'X':FuraPos['X']-Cam['X'], 'Y':FuraPos['Y']-Cam['Y']}
     PosFinal =[]
     for poss in Pos:
@@ -380,12 +328,15 @@ if Etapa ==0:
 
     Fast.sendGCODE(arduino, 'g90')
     print("Tempo final:", timeit.default_timer() - T0)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
     for poss in PosFinal:
         Fast.sendGCODE(arduino, f"g0 X{poss['X']} E{poss['E']} F{xMaxFed}")
         Fast.sendGCODE(arduino, f"g0 Y{poss['Y']} F{yMaxFed}")
-        Parafusa(150, voltas=8, mm=10)
-        Fast.sendGCODE(arduino, f"g0 Y{1} F{yMaxFed}")
-        Parafusa(150, voltas=1)
+        Parafusa(140, mm=0, voltas=20)
+        Fast.sendGCODE(arduino, f"g0 X{100} F{xMaxFed}")
+        Parafusa(140, mm=0, voltas=20)
 
 cap.release()
-cap1.release()
+Fast.sendGCODE(arduino, "M42 P33 S255")
+# cap1.release()

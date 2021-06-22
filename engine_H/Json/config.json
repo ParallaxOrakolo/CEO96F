@@ -5,14 +5,14 @@
                 "Application": "Hole",
                 "Valores": {
                     "lower": {
-                        "h_min": 57,
-                        "s_min": 35,
-                        "v_min": 0
+                        "h_min": 109,
+                        "s_min": 59,
+                        "v_min": 2
                     },
                     "upper": {
-                        "h_max": 193,
-                        "s_max": 209,
-                        "v_max": 69
+                        "h_max": 145,
+                        "s_max": 255,
+                        "v_max": 36
                     }
                 }
             },
@@ -75,8 +75,8 @@
     "Mask_Parameters": {
         "Hole": {
             "perimeter": 4,
-            "areaMin": 2000,
-            "areaMax": 18000
+            "areaMin": 5000,
+            "areaMax": 15000
         },
         "Edge": {
             "perimeter": 0,

@@ -7,12 +7,12 @@ import sys
 import string
 from random import choice
 
-def randomString(tamanho=20):
+def randomString(tamanho=20, pattern=''):
     valores = string.ascii_letters + string.digits
     word = ''
     for i in range(tamanho):
         word += choice(valores)
-    return word
+    return pattern+word
 
 
 # Define cores e Tags para tratamento de exceções.
@@ -112,13 +112,29 @@ def M114(serial, where=[("X:", " Y:"), ("Y:", " Z:"), ("Z:", " E:"), ("E:", " Co
         print("Recebi:", Echo)
         return Echo
 
+def M119(serial, cut=": "):
+    pos=[]
+    key=[]
+    for _ in range(2):
+        Echo = (sendGCODE(serial, "M119", echo=True))[1:-1]
+        print(Echo)
+    for info in Echo:
+        pos.append(info[info.index(cut)+len(cut):len(info)])
+        key.append(info[0:info.index(cut)])
+    return dict(zip(key, pos))
+
+def G28(serial, axis='E', endStop='filament', status='open', steps=5, speed=50000):
+    sendGCODE(serial, "G91")
+    while M119(serial)[endStop] == status:
+        sendGCODE(serial, f"G0 {axis}{steps} F{speed}")
+    sendGCODE(serial, "G90")
+
 def M400(arduino, pattern='', **kwargs):
     echoMessge, echoCaugth = " ", ['x', 'X']
     while echoMessge not in echoCaugth:
         echoMessge = pattern+'_'+randomString()
         echoCaugth = sendGCODE(arduino, "M400",  echo=True)
         echoCaugth += sendGCODE(arduino, f"M118 {echoMessge}", echo=True)
-        print(echoCaugth)
 
 # Estabelece uma conexão com base em um arquivo de configuração personalizado.
 def SerialConnect(SerialPath='../Json/serial.json', name='arduino'):
