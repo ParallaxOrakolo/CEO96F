@@ -125,11 +125,14 @@ class CamThread(threading.Thread):
 
     def run(self):
         print("Starting " + self.previewName)
-        self.camPreview(self.previewName, self.camID)
-
+        return self.camPreview(self.previewName, self.camID)
+        
     def camPreview(self, previewName, camID):
         # Abre a camera com o id passado.
         cam = cv2.VideoCapture(camID, cv2.CAP_DSHOW)
+        cam.set(3, 1280)
+        cam.set(4, 720)
+
         if cam.isOpened():                            # Verifica se foi aberta
             rval, frame = cam.read()                  # Lê o Status e uma imagem
         else:
@@ -144,6 +147,8 @@ class CamThread(threading.Thread):
         cv2.destroyWindow(previewName)
         cam.release()
         print("Saindo da thread", self.previewName)
+        return False
+
 
     def ViewCam(self):
         while not self.stopped():
@@ -409,8 +414,10 @@ if __name__ == "__main__":
     offSetIp = 0
 
     prefix = socket.gethostbyname(socket.gethostname()).split('.')
-    ip = '.'.join(['.'.join(prefix[:len(prefix) - 1]),
-                  str(int(prefix[len(prefix) - 1]) + offSetIp)])
+    # ip = '.'.join(['.'.join(prefix[:len(prefix) - 1]),
+    #               str(int(prefix[len(prefix) - 1]) + offSetIp)])
+
+    ip = "127.0.0.1"
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Start-Threads                         #

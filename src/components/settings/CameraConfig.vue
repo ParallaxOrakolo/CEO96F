@@ -11,7 +11,7 @@
             <div class="d-flex flex-column justify-space-between align-center">
               <v-img
                 :width="cam_width"
-                :src="`http://192.168.1.20:5050/${radios}`"
+                :src="`http://127.0.0.1:5050/${radios}`"
               ></v-img>
               <v-slider
                 v-model="cam_width"
