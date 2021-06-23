@@ -27,7 +27,10 @@ import time
 import cv2
 T0A = timeit.default_timer()
 
-arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
+
+Cortes = Fast.readJson("../engine_H/Json/HolePoints.json")
+
+_, code, arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Variables                                                         #
@@ -59,9 +62,9 @@ Image = cv2.imread(pathImages + Read)
 Escala = 0.45
 divided = 3
 
-Quadrants = Op.meshImg(Image)
-largura = int(Image.shape[1])
-altura = int(Image.shape[0])
+# Quadrants = Op.meshImg(Image)
+# largura = int(Image.shape[1])
+# altura = int(Image.shape[0])
 # pFB = (100, 60)
 # pFA = (50, 50)
 #fixPoint = (pFB[0], int(pFA[1]+((pFB[1]-pFA[1])/2)))
@@ -172,8 +175,8 @@ def findHole(imgAnalyse, minArea, maxArea, c_perimeter, HSValues, fixed_Point, e
         cv2.line(chr_k, (int(Circle['center'][0]), fixed_Point[1]),
                  fixed_Point, (0, 0, 255), thickness=2)
 
-        distance_to_fix = (round((Circle['center'][0] - fixPoint[0])*(escala_real/(Circle['radius']*2)), 2),
-                           round((Circle['center'][1] - fixPoint[1])*(escala_real/(Circle['radius']*2)), 2))
+        distance_to_fix = (round((Circle['center'][0] - fixed_Point[0])*(escala_real/(Circle['radius']*2)), 2),
+                           round((Circle['center'][1] - fixed_Point[1])*(escala_real/(Circle['radius']*2)), 2))
         cv2.putText(chr_k, str(distance_to_fix[1]), (int(Circle['center'][0]), int(Circle['center'][1] / 2)),
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
         cv2.putText(chr_k, str(distance_to_fix[0]), (int(Circle['center'][0] / 2), int(fixed_Point[1])),
@@ -215,6 +218,99 @@ eMaxFed = int(machineConfig["configuration"]["informations"]["machine"]["maxFeed
 #                                                    Code-Exec                                                         #
 
 
+def Setup_local():
+    for holeValue in HoleValues:
+        globals()[holeValue] = HoleValues[holeValue]
+
+Setup_local()
+
+
+while cv2.waitKey(1) != 27:
+    img = img = cv2.imread("../engine_H/Images/0.jpg")
+    img_draw = img.copy()
+
+    precicao = 0.4
+    dsts = 0
+    Pos = []
+    for lados in range(4):
+        tentavias = 0
+        while tentavias<=3:
+            for Pontos in Cortes:
+                # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+                #            Corta a imagem e faz as marcações               #
+
+                show = img[Pontos["P0"][1]:Pontos["P0"][1] + Pontos["P1"][1],
+                        Pontos["P0"][0]:Pontos["P0"][0] + Pontos["P1"][0]]
+                pa, pb = tuple(Pontos["P0"]),(Pontos["P0"][0]+Pontos["P1"][0],
+                                              Pontos["P0"][1]+Pontos["P1"][1])
+
+                cv2.drawMarker(img_draw, pa, (255, 50, 0), thickness=10)
+                cv2.drawMarker(img_draw, pb, (50, 255, 0), thickness=10)
+                cv2.rectangle(img_draw, pa, pb, (255, 50, 255), 10)
+
+                # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+                #                      Procura os furos                      #
+
+                Resultados, R, per = findHole(show, areaMin, areaMax, perimeter, HSValues, (int((pb[0]-pa[0])/2),int((pb[1]-pa[1])/2)))
+
+                # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+                #                           X-ray                            #
+
+                img_draw[Pontos["P0"][1]:Pontos["P0"][1] + show.shape[0],
+                        Pontos["P0"][0]:Pontos["P0"][0] + show.shape[1]] = R
+
+                cv2.drawMarker(img_draw, (int((pa[0]+pb[0])/2),
+                                          int((pa[1]+pb[1])/2)),
+                                          (255,0,0),
+                                          thickness=5,
+                                          markerSize=50)
+
+                # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+                #                          Exibe                             #
+                cv2.imshow("show", cv2.resize(show, None, fx=0.25, fy=0.25))
+                cv2.imshow("draw", cv2.resize(img_draw, None, fx=0.25, fy=0.25))
+                cv2.waitKey(1)
+
+                # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+                #                     Verifica a distância                   #
+                if Resultados:
+                    MY = Resultados[dsts][0]
+                    MX = Resultados[dsts][1]
+                    MX += (randint(-int(abs(MX)/4),abs(int(MX))))
+                    if abs(MX) > precicao:
+                        #Fast.sendGCODE(arduino, f"G0 X{MX} Y0 F{xMaxFed}", echo=True)
+                        print(f"G0 X{MX} Y0 F{xMaxFed}")
+                        
+                    elif abs(MY) > precicao:
+                        aMY = Ajusta(abs(MY))
+                        aMY *= -1 if MY < 0 else 1
+                        # Fast.sendGCODE(arduino, f"G0 X0 Y{aMY} F{yMaxFed}", echo=True)
+                        print(f"G0 X0 Y{aMY} F{yMaxFed}")
+
+                    # Fast.sendGCODE(arduino, f"G4 S0.3", echo=True)
+                    time.sleep(0.5)
+                    #Fast.M400(arduino)
+                    tentavias+=1
+                    print("Tentativa:", tentavias)
+                    if abs(MY) <= precicao and abs(MX) <= precicao:
+                        Pos.append(Fast.M114(arduino))
+                        if len(Resultados)>1:
+                            if dsts == 0:
+                                dsts += 1
+                            else:
+                                tentavias = 10
+                        else:
+                            tentavias = 10
+        print("Passando pro lado:", lados+1)
+    break      
+
+print(Pos)
+
+
+
+
+
+exit()
 Fast.sendGCODE(arduino, "G28 Y")
 Fast.sendGCODE(arduino, "G28 X Z")
 Parafusa(140, mm=5, voltas=20)

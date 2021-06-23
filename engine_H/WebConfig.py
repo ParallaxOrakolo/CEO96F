@@ -28,63 +28,27 @@ ws_message = {
 }
 
 """
-    def frameNormal(self):
-    while not self.stopped() and self.Procs['Normal']:
-        yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
-                + cv2.imencode('.JPEG', globals()['frame'+self.previewName],
-                                [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
-                + b'\r\n')
-    print("Quebrou Normal")
+    Inicia -> Escuta a conexão.
 
-    def frameScrew(self):
-        while not self.stopped() and self.Procs['Normal']:
-            _, frame = findScrew(
-                self. imgTeste, fullJson['Filtros']['HSV'], fullJson, self.Processos)
-            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
-                   + cv2.imencode('.JPEG', frame,
-                                  [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
-                   + b'\r\n')
-        print("Quebrou Screw")
+    Front incicia ->
+        É a primeria vez?
+            sim: Reseta as posições, incicia as threads.
+            não: Avança pra tela de start?
 
-    def frameEdge(self):
-        while not self.stopped() and self.Procs['Edge']:
-            _, frame = findScrew(
-                self. imgTeste, fullJson['Filtros']['HSV'], fullJson, self.Processos, aba=0)
-            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
-                   + cv2.imencode('.JPEG', frame,
-                                  [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
-                   + b'\r\n')
-        print("Quebrou Edge")
+        Botão de start precionado:
+            "CLP OK?:
+                sim: roda "Processo de identificação (PI)", até o final.
+                PI ok? (6 furos identificados?):
+                    sim: roda "Processo de parafusar (PP)", até o final.
+                         roda "Validação dos parafursos (VP)", até o final.
+                         VP ok? (Tem seis parafusos?):
+                            sim: larga a peça na posição certa
+                            não: larga a peça na posição errada.
+                            Volta pro "CPL OK".
+                    não: Avisa o front. Reseta a maquina.
+                não: Avisa o front. Reseta a maquina.
 
 
-
-    def frameScrew(self):
-        while True:
-            _, frame = findScrew(globals()[
-                                 'frame'+self.previewName], fullJson['Filtros']['HSV'], fullJson, self.Processos)
-            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
-                   + cv2.imencode('.JPEG', frame,
-                                  [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
-                   + b'\r\n')
-
-    def frameEdge(self):
-        while True:
-            _, frame = findScrew(globals()[
-                                 'frame'+self.previewName], fullJson['Filtros']['HSV'], fullJson, self.Processos, aba=0)
-            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
-                   + cv2.imencode('.JPEG', frame,
-                                  [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
-                   + b'\r\n')
-
-    def frameHole(self):
-        while not self.stopped() and self.Procs['Hole']:
-            _, frame = findHole(globals()['frame' + self.previewName], self.areaMin,
-                                self.areaMax, self.perimeter, self.HSVValues_Hole, self.fixPoint)
-            yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
-                   + cv2.imencode('.JPEG', frame,
-                                  [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
-                   + b'\r\n')
-        print("Quebrou Hole")
 """
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                      Class                                                           #
@@ -99,21 +63,18 @@ class CamThread(threading.Thread):
         self.Procs = {"Hole": False, "Edge": False,
                       "Screw": False, "Normal": False}
 
-        self.mainConfig = fullJson
-        self.HSVJson = self.mainConfig['Filtros']['HSV']
+        #self.mainConfig = fullJson
+        #self.HSVJson = self.mainConfig['Filtros']['HSV']
         self.Processos = ['Edge', 'Screw']
-        self.HSVjsonIndex = 'Hole'
+        #self.HSVjsonIndex = 'Hole'
 
-        self.HSVValues_Hole = self.HSVJson[str(self.HSVjsonIndex)]['Valores']
-        self.Process_Values = self.mainConfig['Mask_Parameters']['Hole']
+        #self.HSVValues_Hole = self.HSVJson[str(self.HSVjsonIndex)]['Valores']
+        #self.Process_Values = self.mainConfig['Mask_Parameters']['Hole']
 
         self.pFA = (50, 50)
         self.pFB = (100, 60)
         self.fixPoint = (self.pFB[0], int(
             self.pFA[1] + ((self.pFB[1] - self.pFA[1]) / 2)))
-        # self. imgTeste = (Op.meshImg(cv2.imread(r'.\Images\P_ (3).jpg')))[1][1]
-        for values in self.Process_Values:
-            self.__dict__[values] = self.Process_Values[values]
 
         self._stop_event = threading.Event()
 
@@ -142,7 +103,7 @@ class CamThread(threading.Thread):
         while rval and not self.stopped():                                   # Verifica e camera ta 'ok'
             rval, frame = cam.read()                  # Atualiza
             globals()[f'frame{previewName}'] = frame
-            cv2.imshow(f'frame{previewName}', frame)  # Exporta
+            # cv2.imshow(f'frame{previewName}', frame)  # Exporta
             if cv2.waitKey(1) == 27:
                 break
         try:    
@@ -164,15 +125,28 @@ class CamThread(threading.Thread):
                                       [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
                        + b'\r\n')
             if self.Procs['Screw']:
-                _, frame = findScrew(globals()[
-                                     'frame'+self.previewName], fullJson['Filtros']['HSV'], fullJson, self.Processos)
+                
+                frame, _ = Process_Imagew_Scew(
+                                    globals()['frame'+self.previewName],
+                                    Op.extractHSValue(fullJson['Filtros']['HSV']['Screw']["Valores"], 'lower' ),
+                                    Op.extractHSValue(fullJson['Filtros']['HSV']['Screw']["Valores"], 'upper' ),
+                                    fullJson['Mask_Parameters']['Screw']['areaMin'],
+                                    fullJson['Mask_Parameters']['Screw']['areaMax']
+                                    )
+                # _, frame = findScrew(globals()[
+                #                      'frame'+self.previewName], fullJson['Filtros']['HSV'], fullJson, self.Processos)
                 yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
                        + cv2.imencode('.JPEG', frame,
                                       [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
                        + b'\r\n')
             if self.Procs['Hole']:
-                _, frame = findHole(globals()['frame' + self.previewName], self.areaMin,
-                                    self.areaMax, self.perimeter, self.HSVValues_Hole, self.fixPoint)
+                _, _, _, frame = Process_Image_Hole(
+                    globals()['frame' + self.previewName],
+                    fullJson['Mask_Parameters']['Hole']['areaMin'],
+                    fullJson['Mask_Parameters']['Hole']['areaMax'],
+                    fullJson['Mask_Parameters']['Hole']['perimeter'],
+                    fullJson['Filtros']['HSV']['Hole']['Valores']
+                    )
                 yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
                        + cv2.imencode('.JPEG', frame,
                                       [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
@@ -212,7 +186,7 @@ class AppThread(threading.Thread):
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Functions                                                         #
 
-def findHole(imgAnalyse, minArea, maxArea, c_perimeter, HSValues, fixed_Point):
+def findHole(imgAnalyse, minArea, maxArea, c_perimeter, HSValues, fixed_Point, escala_real=5):
     if type(imgAnalyse) != np.ndarray:
         print(type(imgAnalyse))
         imgAnalyse = Op.takeSnapshot(imgAnalyse)
@@ -238,14 +212,20 @@ def findHole(imgAnalyse, minArea, maxArea, c_perimeter, HSValues, fixed_Point):
         cv2.line(chr_k, (int(Circle['center'][0]), fixed_Point[1]),
                  fixed_Point, (0, 0, 255), thickness=2)
 
-        distance_to_fix = (round((Circle['center'][0] - fixed_Point[0]), 3),
-                           round((Circle['center'][1] - fixed_Point[1]), 3))
+        distance_to_fix = (round((Circle['center'][0] - fixed_Point[0])*(escala_real/(Circle['radius']*2)), 2),
+                           round((Circle['center'][1] - fixed_Point[1])*(escala_real/(Circle['radius']*2)), 2))
         cv2.putText(chr_k, str(distance_to_fix[1]), (int(Circle['center'][0]), int(Circle['center'][1] / 2)),
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
         cv2.putText(chr_k, str(distance_to_fix[0]), (int(Circle['center'][0] / 2), int(fixed_Point[1])),
                     cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
-        distances.append([distance_to_fix])
-    return distances, chr_k
+
+        cv2.putText(chr_k, str(Circle["id"]), (int(Circle["center"][0]), int(Circle["center"][1])),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
+        distances.append(distance_to_fix)
+    try:
+        return distances, chr_k, (Circle['radius']*2)
+    except UnboundLocalError:
+        return distances, chr_k, (0)
 
 
 def findCircle(circle_Mask, areaMinC, areaMaxC, perimeter_size, blur_Size=3):
@@ -258,13 +238,16 @@ def findCircle(circle_Mask, areaMinC, areaMaxC, perimeter_size, blur_Size=3):
     edges = cv2.findContours(
         opening, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     edges = edges[0] if len(edges) == 2 else edges[1]
+    ids = 0
     for c in edges:
         peri = cv2.arcLength(c, True)
         approx = cv2.approxPolyDP(c, 0.04 * peri, True)
         area = cv2.contourArea(c)
-        if len(approx) > perimeter_size and areaMinC < area < areaMaxC:
+        if len(approx) >= perimeter_size and areaMinC < area < areaMaxC:
             ((x, y), r) = cv2.minEnclosingCircle(c)
-            circle_info.append({"center": (x, y), "radius": r})
+            if r >= 50 and r<=80:
+                circle_info.append({"center": (x, y), "radius": r, "id": ids})
+                ids += 1
     return circle_info
 
 
@@ -321,6 +304,174 @@ def findScrew(imgAnalyse, FiltrosHSV, MainJson, processos, bh=0.3, **kwargs):
     return offset_screw, chr_k
 
 
+def NLinearRegression(x):
+    return round((0.0059*(x**2)) + (0.2741*x) + (0.6205), 2)
+
+def HomingAll():
+    Fast.sendGCODE(arduino, "G28 Y")
+    Fast.sendGCODE(arduino, "G28 X Z")
+    Parafusa(140, mm=5, voltas=20)
+
+def verificaCLP():
+    return True
+
+def Parafusa(pos, voltas=2, mm=0, servo=0, angulo=0):
+        Fast.M400(arduino)
+        Fast.sendGCODE(arduino, f'g91')
+        Fast.sendGCODE(arduino, f'g38.3 z-{pos} F{zMaxFed}')
+        Fast.sendGCODE(arduino, f'g0 z-{mm} {zMaxFed}')
+        Fast.sendGCODE(arduino, f'm280 p{servo} s{angulo}')
+        Fast.sendGCODE(arduino, f'm43 t s10 l10 w{voltas*50}')
+        Fast.sendGCODE(arduino, 'g90')
+        Fast.sendGCODE(arduino, f'g0 z{pos} F{2000}')
+        Fast.M400(arduino)
+
+def PegaObjeto():
+    print("Indo pegar...")
+    pegaPos = Config['configuration']['informations']['machine']['defaultPosition']['pegaTombador']
+    anlPos = Config['configuration']['informations']['machine']['defaultPosition']['analisaFoto']
+    # Fast.sendGCODE(arduino, "G90")
+    # Fast.sendGCODE(arduino, f"G0 X{pegaPos['X']} F{xMaxFed}")
+    # Fast.sendGCODE(arduino, f"G0 Y{pegaPos['Y']} F{yMaxFed}")
+    # Fast.M400(arduino)
+    # Fast.sendGCODE(arduino, "M42 P31 S255")
+    # Fast.sendGCODE(arduino, "G4 S0.3")
+    # Fast.sendGCODE(arduino, "G28 Y")
+    # Fast.sendGCODE(arduino, f"G0 X{anlPos['X']} F{xMaxFed}")
+    # Fast.sendGCODE(arduino, f"G0 Y{anlPos['Y']} F{yMaxFed}")
+    # Fast.M400(arduino)
+    # Fast.sendGCODE(arduino, "M42 P32 S255")
+    # Fast.sendGCODE(arduino, "G91")
+    print("Pegou")
+
+def Process_Imagew_Scew(frame, lower, upper, AreaMin, AreaMax ):
+    print("Validando encaixe....")
+    img_draw = frame.copy()
+    finds = 0
+    for Pontos in ScrewCuts:
+        pa, pb = tuple(Pontos["P0"]), (Pontos["P0"][0]+Pontos["P1"][0],
+                                       Pontos["P0"][1]+Pontos["P1"][1])
+
+        cv2.drawMarker(img_draw, pa, (255, 50, 0), thickness=10)
+        cv2.drawMarker(img_draw, pb, (50, 255, 0), thickness=10)
+        cv2.rectangle(img_draw, pa, pb, (255, 50, 255), 10)
+
+        show = frame[Pontos["P0"][1]:Pontos["P0"][1] + Pontos["P1"][1],
+                   Pontos["P0"][0]:Pontos["P0"][0] + Pontos["P1"][0]]
+
+        mask = Op.refineMask(Op.HSVMask(show, lower, upper), kerenelA=(10,10))
+        Cnt_A, _ = Op.findContoursPlus(mask, AreaMin_A=AreaMin, AreaMax_A=AreaMax)
+
+        show = cv2.bitwise_or(show, show, None, mask)
+        if Cnt_A:
+            finds += 1
+            for info in Cnt_A:
+                cv2.drawContours(show, [info['contour']], -1, (0, 255, 0), thickness=10,
+                                 lineType=cv2.LINE_AA)
+
+                for pp in range(len(info['contour'])):
+                    info['contour'][pp][0] += pa[0]
+                    info['contour'][pp][1] += pa[1]
+
+                cv2.drawContours(img_draw, [info['contour']], -1, (0, 255, 0), thickness=10,
+                                 lineType=cv2.LINE_AA)
+
+        # cv2.imshow(f"Img_{Pontos}", show)
+        img_draw[Pontos["P0"][1]:Pontos["P0"][1] + show.shape[0],
+                Pontos["P0"][0]:Pontos["P0"][0] + show.shape[1]] = show
+    cv2.putText(img_draw, str(finds), (200, 100), cv2.FONT_HERSHEY_DUPLEX, 5, (0, 0, 0), 10)
+    # cv2.imshow(f"Draw_Copy", cv2.resize(img_draw, None, fx=0.25, fy=0.25))
+    print("Feito")
+    return img_draw, finds
+
+
+
+def Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues):
+    img_draw = frame.copy()
+    print(areaMin, areaMax)
+    for Pontos in HoleCuts:
+        # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+        #            Corta a imagem e faz as marcações               #
+
+        show = frame[Pontos["P0"][1]:Pontos["P0"][1] + Pontos["P1"][1],
+                Pontos["P0"][0]:Pontos["P0"][0] + Pontos["P1"][0]]
+        pa, pb = tuple(Pontos["P0"]),(Pontos["P0"][0]+Pontos["P1"][0],
+                                    Pontos["P0"][1]+Pontos["P1"][1])
+
+        cv2.drawMarker(img_draw, pa, (255, 50, 0), thickness=10)
+        cv2.drawMarker(img_draw, pb, (50, 255, 0), thickness=10)
+        cv2.rectangle(img_draw, pa, pb, (255, 50, 255), 10)
+
+        # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+        #                      Procura os furos                      #
+
+        Resultados, R, per = findHole(show, areaMin, areaMax, perimeter, HSValues, (int((pb[0]-pa[0])/2),int((pb[1]-pa[1])/2)))
+
+        # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+        #                           X-ray                            #
+
+        img_draw[Pontos["P0"][1]:Pontos["P0"][1] + show.shape[0],
+                Pontos["P0"][0]:Pontos["P0"][0] + show.shape[1]] = R
+
+        cv2.drawMarker(img_draw, (int((pa[0]+pb[0])/2),
+                                int((pa[1]+pb[1])/2)),
+                                (255,0,0),
+                                thickness=5,
+                                markerSize=50)
+
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+    #                          Exibe                             #
+    #cv2.imshow("show", cv2.resize(show, None, fx=0.25, fy=0.25))
+    # cv2.imshow("draw", cv2.resize(img_draw, None, fx=0.25, fy=0.25))
+    # cv2.waitKey(1)
+    return Resultados, R, per, img_draw
+
+
+def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues):
+    print("Iniciando busca pelos furos...")
+    precicao = 0.4
+    dsts = 0
+    Pos = []
+
+    for lados in range(4):
+        tentavias = 0
+        while tentavias<=3:
+                
+            Resultados, R, per, img_draw = Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues)
+            # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+            #                     Verifica a distância                   #
+            if Resultados:
+                MY = Resultados[dsts][0]
+                MX = Resultados[dsts][1]
+#                   MX += (randint(-int(abs(MX)/4),abs(int(MX))))
+                if abs(MX) > precicao:
+                    #Fast.sendGCODE(arduino, f"G0 X{MX} Y0 F{xMaxFed}", echo=True)
+                    print(f"G0 X{MX} Y0 F{xMaxFed}")
+                    
+                elif abs(MY) > precicao:
+                    aMY = NLinearRegression(abs(MY))
+                    aMY *= -1 if MY < 0 else 1
+                    # Fast.sendGCODE(arduino, f"G0 X0 Y{aMY} F{yMaxFed}", echo=True)
+                    print(f"G0 X0 Y{aMY} F{yMaxFed}")
+
+                #Fast.M400(arduino)
+                tentavias+=1
+
+                print("Tentativa:", tentavias)
+                if abs(MY) <= precicao and abs(MX) <= precicao or tentavias >=3 :
+                    Pos.append(Fast.M114(arduino))
+                    if len(Resultados)>1:
+                        if dsts == 0:
+                            dsts += 1
+                        else:
+                            tentavias = 10
+                    else:
+                        tentavias = 10
+        print("Passando pro lado:", lados+1)
+    print("Busca finalizada")
+    return Pos
+
+
 def shutdown_server():
     shutdown_function = request.environ.get('werkzeug.server.shutdown')
     if shutdown_function is None:
@@ -333,12 +484,17 @@ def shutdown_server():
 async def updateSlider(processos):
     Config['configuration']['camera']['process'] = processos
     for x in Config['configuration']['camera']:
-        if x[0:1] != 'p':
+        if x[0:1] != 'p' and x[0:1] != "a":
             Config['configuration']['camera'][x] = [
                 fullJson['Filtros']['HSV'][processos]['Valores']['lower'][x[0:1]+'_min'],
                 fullJson['Filtros']['HSV'][processos]['Valores']['upper'][x[0:1]+'_max']
             ]
-
+        elif x[0:1] == "a":
+            Config['configuration']['camera'][x] = [
+                fullJson['Mask_Parameters'][processos]['areaMin'],
+                fullJson['Mask_Parameters'][processos]['areaMax']
+            ]
+        print(Config['configuration']['camera'][x])
     await sendWsMessage("update", Config)
 
 
@@ -347,11 +503,16 @@ async def funcs():
 
 
 async def startAutoCheck():
-    await updateSlider('Normal')
-    await sendWsMessage("startAutoCheck_success")
+    global primeiraConexao
+    AutoCheckStatus = True
+    if primeiraConexao:
+        primeiraConexao = False
+        await updateSlider('Normal')
 
-    global StartedStream
-    if not StartedStream:
+        status, code, arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
+        if not status:
+            await sendWsMessage('erro', {'codigo': code, 'menssagem':arduino })
+            AutoCheckStatus = False
         thread1.start()
         thread0.start()
         while True:
@@ -363,8 +524,62 @@ async def startAutoCheck():
 
         appTh.start()
         print("Transmissão de vídeo iniciada.")
-        StartedStream = True
+    await sendWsMessage("startAutoCheck_success")
+    return AutoCheckStatus
 
+async def startScan():
+
+    cameCent = Config['configuration']['informations']['machine']['defaultPosition']['camera0Centro']
+    parafCent = Config['configuration']['informations']['machine']['defaultPosition']['parafusadeiraCentro']
+
+    intervalo = {
+                'X':parafCent['X']-cameCent['X'],
+                'Y':parafCent['Y']-cameCent['Y']
+                }
+
+    #while verificaCLP():
+    for _ in range(6):
+        PegaObjeto()
+        parcialFuro = Processo_Hole(globals()['frame'+str(fullJson["Cameras"]["Hole"]["Settings"]["id"])],
+                      fullJson['Mask_Parameters']['Hole']['areaMin'],
+                      fullJson['Mask_Parameters']['Hole']['areaMax'],
+                      fullJson['Mask_Parameters']['Hole']['perimeter'],
+                      fullJson['Filtros']['HSV']['Hole']['Valores'])
+
+        if len(parcialFuro) == 4:
+            finalFuro = []
+            for posicao in parcialFuro:
+                print("Posicao: ", posicao)
+                print(-round(cameCent['X']-posicao['X'], 2), intervalo['X'])
+                finalFuro.append({
+                            'X':-round(cameCent['X']-posicao['X'], 2)+parafCent ['X'],
+                            'Y':-round(cameCent['Y']-posicao['Y'], 2)+parafCent['Y'],
+                            'E':posicao['E']} )
+
+            Fast.sendGCODE(arduino, 'g90')
+            for posicao in finalFuro:
+                Fast.sendGCODE(arduino, f"g0 X{posicao['X']} E{posicao['E']} F{xMaxFed}")
+                Fast.sendGCODE(arduino, f"g0 Y{posicao['Y']} F{yMaxFed}")
+                Parafusa(140, mm=0, voltas=20)
+                Fast.sendGCODE(arduino, f"g0 X{100} F{xMaxFed}")
+                Parafusa(140, mm=0, voltas=20)
+            
+            _, encontrados = Process_Imagew_Scew(
+                                globals()['frame'+str(fullJson["Cameras"]["Screw"]["Settings"]["id"])],
+                                Op.extractHSValue(fullJson['Filtros']['HSV']['Screw']["Valores"], 'lower' ),
+                                Op.extractHSValue(fullJson['Filtros']['HSV']['Screw']["Valores"], 'upper' ),
+                                fullJson['Mask_Parameters']['Screw']['areaMin'],
+                                fullJson['Mask_Parameters']['Screw']['areaMax']
+                                )
+            if encontrados == 6:
+                print('descarte("Certo")')
+            else:
+                print(f"Foram fixados apenas {encontrados} parafusos.")
+                print('descarte("Errado")')
+        else:
+            print(f"Foram econtrados apenas {len(parcialFuro)} furos.")
+            print('descarte("Errado")')
+    await sendWsMessage("startScan_success")
 
 async def updateFilter(zipped):
     for xx in fullJson["Filtros"]["HSV"]:
@@ -372,13 +587,18 @@ async def updateFilter(zipped):
             # fullJson["Filtros"]["HSV"][xx]["Valores"]["lower"][zipped[1].key()] = [zipped[1]]
             min = list(zipped.keys())[1]
             max = list(zipped.keys())[2]
-            print(fullJson["Filtros"]["HSV"][xx]["Valores"]
-                  ["lower"][min], '-> ', zipped[min])
-            print(fullJson["Filtros"]["HSV"][xx]["Valores"]
-                  ["upper"][max], '-> ', zipped[max])
-            fullJson["Filtros"]["HSV"][xx]["Valores"]["lower"][min] = zipped[min]
-            fullJson["Filtros"]["HSV"][xx]["Valores"]["upper"][max] = zipped[max]
-
+            if min == "areaMin" and max == "areaMax":
+                fullJson['Mask_Parameters'][xx][min] = zipped[min]
+                fullJson['Mask_Parameters'][xx][max] = zipped[max]
+                print("Update Filter:",xx,fullJson['Mask_Parameters'][xx])
+            else:
+                print(fullJson["Filtros"]["HSV"][xx]["Valores"]
+                    ["lower"][min], '-> ', zipped[min])
+                print(fullJson["Filtros"]["HSV"][xx]["Valores"]
+                    ["upper"][max], '-> ', zipped[max])
+                fullJson["Filtros"]["HSV"][xx]["Valores"]["lower"][min] = zipped[min]
+                fullJson["Filtros"]["HSV"][xx]["Valores"]["upper"][max] = zipped[max]
+        
 
 async def saveJson():
     Fast.writeJson('Json/Temp.json', fullJson)
@@ -405,8 +625,39 @@ if __name__ == "__main__":
     #                        Load-Json                           #
 
     fullJson = Fast.readJson('Json/config.json')
+    mainConfig = Fast.readJson('Json/config.json')
     Config = Fast.readJson('Json/machine.json')
+    machineConfig = Fast.readJson('Json/machine.json')
+    HoleCuts = Fast.readJson("../engine_H/Json/HolePoints.json")
+    ScrewCuts = Fast.readJson("../engine_H/Json/ScrewPoints.json")
 
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+    #                      Json-Variables                        #
+
+    primeiraConexao = True
+
+    arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
+    DebugTypes = mainConfig['Debugs']
+
+    if DebugTypes["all"]:
+        DebugPrint = DebugPictures = DebugRT = DebugMarkings = True
+        DebugControls = False
+    else:
+        DebugPrint = DebugTypes["print"]
+        DebugPictures = DebugTypes["pictures"]
+        DebugRT = DebugTypes["realTime"]
+        DebugMarkings = DebugTypes["markings"]
+        DebugControls = DebugTypes["testControls"]
+
+    xFRP = 50
+    yFRP = 70
+    zFRP = 100
+    eFRP = 50
+
+    xMaxFed = int(machineConfig["configuration"]["informations"]["machine"]["maxFeedrate"]["xMax"]*(xFRP/100))
+    yMaxFed = int(machineConfig["configuration"]["informations"]["machine"]["maxFeedrate"]["yMax"]*(yFRP/100))
+    zMaxFed = int(machineConfig["configuration"]["informations"]["machine"]["maxFeedrate"]["zMax"]*(zFRP/100))
+    eMaxFed = int(machineConfig["configuration"]["informations"]["machine"]["maxFeedrate"]["aMax"]*(eFRP/100))
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                        Variables                           #
 
@@ -560,8 +811,8 @@ if __name__ == "__main__":
         while True:
             _, img = findHole(Image, areaMin, areaMax, perimeter, HSVValues_Hole, fixPoint)
             _, img2 = findScrew(Image, HSVJson, mainConfig, Processos)
-            cv2.imshow('A', img)
-            cv2.imshow('B', img2)
+            # cv2.imshow('A', img)
+            # cv2.imshow('B', img2)
             key = cv2.waitKey(1)
             if key == 27:
                 break

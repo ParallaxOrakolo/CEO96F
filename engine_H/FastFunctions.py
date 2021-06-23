@@ -52,7 +52,7 @@ def writeJson(json_local_save, json_data):
 # Envia um ou uma lista de comandos na serial, se possível e se requisitado retorna a resposta.
 def sendGCODE(serial, command, **kargs):
     # Verifica se é possivel enviar dados através da conexão informada.
-    if serial:
+    if serial and type(serial) != tuple:
 
         # Limpa o buffer.
         serial.flush()
@@ -150,12 +150,13 @@ def SerialConnect(SerialPath='../Json/serial.json', name='arduino'):
     # Conexão falhou porque o arquivo de configuração não foi encontrado.
     except FileNotFoundError:
         print(f"{ColorPrint.ERROR}O argumento [SerialPath='{SerialPath}'] é inválido.")
+        return False, -1, "Caminho especificado para conexão não pode ser encontrado."
         sys.exit(-1)
 
     # Conexão falhou porque o nome da conexão ão existe no arquivo de configuração.
     except KeyError as Ker:
         print(f"{ColorPrint.ERROR}O argumento [name='{name}'] é inválido.")
-        sys.exit(-1)
+        return False, -2, "Identificador para conexão não existe."
 
     # Conexão foi estabelecida, mas caiu.
     except serial.serialutil.SerialException as Erro_Conexao:
@@ -164,13 +165,11 @@ def SerialConnect(SerialPath='../Json/serial.json', name='arduino'):
         # Conexão não se manteve, após a tentativa porque não há nada ao que se conectar.
         if "FileNotFoundError" in str(Erro_Conexao):
             print(f"{ColorPrint.WARNING}Verifique a porta [{serialData[name]['porta']}]"'\n')
-
+            return False, -3, "Não foi possivel estabelecer conexão com o controlador."
         # Conexão não se manteve, após a tentativa porque há porta já está possui uma conexão.
         elif 'Acesso negado.' in str(Erro_Conexao):
             print(f"{ColorPrint.WARNING}A porta [{serialData[name]['porta']}] está ocupada."'\n')
-
-        return False
-
+            return False, -4, "Porta do controlador já se encontra em uso, feche as demais conexões."
     # Conexão foi estabelecida com sucesso.
     else:
         print(
@@ -181,4 +180,4 @@ def SerialConnect(SerialPath='../Json/serial.json', name='arduino'):
         # Espera para que a conexão se estabiliza.
         sleep(1.2)
 
-        return communication
+        return True, 200, communication

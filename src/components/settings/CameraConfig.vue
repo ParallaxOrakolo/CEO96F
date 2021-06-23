@@ -250,6 +250,60 @@
                 </v-row>
               </v-card-text>
             </v-card>
+
+            <v-card flat color="transparent">
+              <v-subheader>Area</v-subheader>
+              <v-card-text>
+                <v-row>
+                  <v-col class="px-4">
+                    <v-range-slider
+                      v-model="configuration.camera.are"
+                      :max="are_slid_max"
+                      :min="are_slid_min"
+                      hide-details
+                      class="align-center"
+                      @change="
+                        () => {
+                          SEND_MESSAGE({
+                            command: actions.UPDATE_FILTER,
+                            parameter: {
+                              process: process,
+                              areaMin: configuration.camera.are[0],
+                              areaMax: configuration.camera.are[1],
+                            },
+                          });
+                        }
+                      "
+                    >
+                      <template v-slot:prepend>
+                        <v-text-field
+                          :value="configuration.camera.are[0]"
+                          class="mt-0 pt-0"
+                          hide-details
+                          single-line
+                          type="number"
+                          style="width: 60px"
+                          @change="$set(configuration.camera.are, 0, $event)"
+                        ></v-text-field>
+                      </template>
+                      <template v-slot:append>
+                        <v-text-field
+                          :value="configuration.camera.are[1]"
+                          class="mt-0 pt-0"
+                          hide-details
+                          single-line
+                          type="number"
+                          style="width: 60px"
+                          @change="$set(configuration.camera.are, 1, $event)"
+                        ></v-text-field>
+                      </template>
+                    </v-range-slider>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
+            <v-divider></v-divider>
+
           </template>
         </v-col>
       </v-row>
@@ -299,6 +353,9 @@ export default {
 
       slid_min: 0,
       slid_max: 255,
+
+      are_slid_min: 0,
+      are_slid_max: 100000,
       cam_width: 720,
 
       // loadingb1: false,

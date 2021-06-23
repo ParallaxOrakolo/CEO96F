@@ -11,7 +11,7 @@ export const actions = {
   STOP_REASON_RESPONSE: "stopReasonsResponse",
   START_CAMERA_STREAM: "startCameraStream",
   START_AUTOCHECK: "startAutoCheck",
-  SCAN_CONNECTORS: "scanConnectors",
+  START_SCAN: "startScan",
   RESTART_PROCESS: "restartProcess",
   SERIAL_MONITOR: "serialMonitor",
   UPDATE_FILTER: "updateFilter",
@@ -105,6 +105,56 @@ const store = new Vuex.Store({
             aMax: null,
             bMax: null,
           },
+          defaultPosition:{
+            pegaTombador:{
+                X:2,
+                Y:49,
+                Z:null,
+                E:0
+            },
+            
+            analisaFoto:{
+              X:80,
+              Y:9,
+              Z:null,
+              E:null
+            },
+
+            descarteErrado:{
+                X:230,
+                Y:0,
+                Z:null,
+                E:null
+            },
+
+            descarteCerto:{
+                X:0,
+                Y:0,
+                Z:null,
+                E:0
+            },
+
+            camera0Centro:{
+                X:74.5,
+                Y:7.5,
+                Z:null,
+                E:null
+            },
+
+            camera1Centro:{
+                X:230,
+                Y:0,
+                Z:null,
+                E:null
+            },
+            
+            parafusadeiraCentro:{
+                X:240,
+                Y:16,
+                Z:null,
+                E:null
+            },
+          },
         },
       },
       statistics: {
@@ -116,7 +166,8 @@ const store = new Vuex.Store({
 
         hue: [2, 50],
         sat: [0, 250],
-        val: [30, 50]
+        val: [30, 50],
+        are: [200, 50000]
 
       }
     },
@@ -216,6 +267,12 @@ const store = new Vuex.Store({
           console.log(state.configuration)
           // code block
           break;
+        
+        case "error":
+        console.log("Back-end constata falha: ")
+        console.log(message.parameter)
+        // code block
+        break;
 
         case actions.SERIAL_MONITOR + "_response":
           //confere se a ultimo intem da lista é uma msg recebida, se sim.. 

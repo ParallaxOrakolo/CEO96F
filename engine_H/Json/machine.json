@@ -29,6 +29,56 @@
                     "zMax": 11000,
                     "aMax": 50000,
                     "bMax": 50000
+                },
+                "defaultPosition":{
+                    "pegaTombador":{
+                        "X":5,
+                        "Y":49,
+                        "Z":null,
+                        "E":0
+                    },
+
+                    "analisaFoto":{
+                        "X":80,
+                        "Y":9,
+                        "Z":null,
+                        "E":null
+                    },
+
+                    "descarteErrado":{
+                        "X":230,
+                        "Y":0,
+                        "Z":null,
+                        "E":null
+                    },
+
+                    "descarteCerto":{
+                        "X":0,
+                        "Y":0,
+                        "Z":null,
+                        "E":0
+                    },
+
+                    "camera0Centro":{
+                        "X":74.5,
+                        "Y":7.5,
+                        "Z":null,
+                        "E":null
+                    },
+
+                    "camera1Centro":{
+                        "X":230,
+                        "Y":0,
+                        "Z":null,
+                        "E":null
+                    },
+                    
+                    "parafusadeiraCentro":{
+                        "X":240,
+                        "Y":16,
+                        "Z":null,
+                        "E":null
+                    }
                 }
             }
         },
@@ -38,10 +88,10 @@
         },
         "camera": {
             "process": "Hole",
-
             "hue": [26, 55],
             "sat": [70, 240],
-            "val": [80, 150]
+            "val": [80, 150],
+            "are": [200, 50000]
 
         }
     }

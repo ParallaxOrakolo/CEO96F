@@ -38,7 +38,7 @@ export default {
   },
 
   created (){
-    this.SEND_MESSAGE({command: actions.SCAN_CONNECTORS})
+    this.SEND_MESSAGE({command: actions.START_SCAN})
   },
 
   beforeDestroy() {

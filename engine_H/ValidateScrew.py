@@ -1,34 +1,35 @@
 import cv2
 import OpencvPlus as Op
 import FastFunctions as Fast
-id = 6
-Pos = 'A'
-Picture = 0
-path_to_file = f"Auto-Gen/{id}_Rand/"
-with open(path_to_file+f'{Pos}/{id}_Rand_{Pos}.txt') as f:
-    contents = f.readlines()
+# # id = 6
+# # Pos = 'A'
+# # Picture = 0
+# # path_to_file = f"Auto-Gen/{id}_Rand/"
+# # with open(path_to_file+f'{Pos}/{id}_Rand_{Pos}.txt') as f:
+# #     contents = f.readlines()
 
-Op.ControlWindow((37, 106), (183, 255), (20, 227), (6090, 65555))
+# Op.ControlWindow((37, 106), (183, 255), (20, 227), (6090, 65555))
 
-nome = contents[Picture].rstrip()
-p = f"Auto-Gen/{id}_Rand/{Pos}/{nome}.png"
-SSW = 700
-SSH = 700
+# # nome = contents[Picture].rstrip()
+# # p = f"Auto-Gen/{id}_Rand/{Pos}/{nome}.png"
+# # SSW = 700
+# # SSH = 700
 
-SOW = 0
-SOH = 200
+# # SOW = 0
+# # SOH = 200
 
-LimitW = 300
-LimitH = 300
-cap = cv2.VideoCapture(0)
-cap.set(3, 3264)
-cap.set(4, 2448)
+# # LimitW = 300
+# # LimitH = 300
+# cap = cv2.VideoCapture(0)
+# cap.set(3, 3264)
+# cap.set(4, 2448)
 
-Cortes = Fast.readJson("Cuts.json")
+ScrewCuts = Fast.readJson("../engine_H/Json/ScrewPoints.json")
 # imgs = Op.Rois(show, 4, 0.25)
 
+
 while cv2.waitKey(1) != 27:
-    _, img = cap.read()
+    img = cv2.imread("../engine_H/Images/1.jpg")
     img_draw = img.copy()
     imgs = []
     finds = 0
@@ -47,7 +48,7 @@ while cv2.waitKey(1) != 27:
         Values = Op.GetControlWindow()
         mask = Op.refineMask(Op.HSVMask(show, Values["lower"], Values["upper"]), kerenelA=(10,10))
         Cnt_A, _ = Op.findContoursPlus(mask, AreaMin_A=Values["a_min"], AreaMax_A=Values["a_max"])
-        #
+
         show = cv2.bitwise_or(show, show, None, mask)
         if Cnt_A:
             finds += 1
