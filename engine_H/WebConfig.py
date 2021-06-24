@@ -515,8 +515,11 @@ async def startAutoCheck():
     if primeiraConexao:
         primeiraConexao = False
         await updateSlider('Normal')
-
-        status, code, arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
+        try:
+            status, code, arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
+        except TypeError as err:
+            print("Erro de compatibilidade? - Acontece quando a placa não é encontrada?")
+            status, code, arduino = False, -200, "Backend ERROR: '\n'"+err
         if not status:
             await sendWsMessage('erro', {'codigo': code, 'menssagem':arduino })
             AutoCheckStatus = False
