@@ -9,8 +9,10 @@ import FastFunctions as Fast
 import OpencvPlus as Op
 import numpy as np
 import threading
+import platform
 import socket
 import cv2
+import os
 
 import websockets
 import asyncio
@@ -36,6 +38,7 @@ ws_message = {
             não: Avança pra tela de start?
 
         Botão de start precionado:
+            Avisa o front.
             "CLP OK?:
                 sim: roda "Processo de identificação (PI)", até o final.
                 PI ok? (6 furos identificados?):
@@ -48,6 +51,17 @@ ws_message = {
                     não: Avisa o front. Reseta a maquina.
                 não: Avisa o front. Reseta a maquina.
 
+        Botão de parada precionado:
+            Avisa o front.
+            Deseja parar?:
+                sim: Conclui o movimento
+                     Descarta como errado
+                     retrai eixo Z
+                     zera Y
+                     Zera X e Z
+            Avisa o front.
+
+            
 
 """
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
@@ -63,14 +77,7 @@ class CamThread(threading.Thread):
         self.Procs = {"Hole": False, "Edge": False,
                       "Screw": False, "Normal": False}
 
-        #self.mainConfig = fullJson
-        #self.HSVJson = self.mainConfig['Filtros']['HSV']
         self.Processos = ['Edge', 'Screw']
-        #self.HSVjsonIndex = 'Hole'
-
-        #self.HSVValues_Hole = self.HSVJson[str(self.HSVjsonIndex)]['Valores']
-        #self.Process_Values = self.mainConfig['Mask_Parameters']['Hole']
-
         self.pFA = (50, 50)
         self.pFB = (100, 60)
         self.fixPoint = (self.pFB[0], int(
@@ -119,7 +126,7 @@ class CamThread(threading.Thread):
         while not self.stopped():
             if self.Procs['Edge']:
                 _, frame = findScrew(globals()[
-                                     'frame'+self.previewName], fullJson['Filtros']['HSV'], fullJson, self.Processos, aba=0)
+                                     'frame'+self.previewName], mainParamters['Filtros']['HSV'], mainParamters, self.Processos, aba=0)
                 yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
                        + cv2.imencode('.JPEG', frame,
                                       [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
@@ -128,13 +135,13 @@ class CamThread(threading.Thread):
                 
                 frame, _ = Process_Imagew_Scew(
                                     globals()['frame'+self.previewName],
-                                    Op.extractHSValue(fullJson['Filtros']['HSV']['Screw']["Valores"], 'lower' ),
-                                    Op.extractHSValue(fullJson['Filtros']['HSV']['Screw']["Valores"], 'upper' ),
-                                    fullJson['Mask_Parameters']['Screw']['areaMin'],
-                                    fullJson['Mask_Parameters']['Screw']['areaMax']
+                                    Op.extractHSValue(mainParamters['Filtros']['HSV']['Screw']["Valores"], 'lower' ),
+                                    Op.extractHSValue(mainParamters['Filtros']['HSV']['Screw']["Valores"], 'upper' ),
+                                    mainParamters['Mask_Parameters']['Screw']['areaMin'],
+                                    mainParamters['Mask_Parameters']['Screw']['areaMax']
                                     )
                 # _, frame = findScrew(globals()[
-                #                      'frame'+self.previewName], fullJson['Filtros']['HSV'], fullJson, self.Processos)
+                #                      'frame'+self.previewName], mainParamters['Filtros']['HSV'], mainParamters, self.Processos)
                 yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
                        + cv2.imencode('.JPEG', frame,
                                       [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
@@ -142,10 +149,10 @@ class CamThread(threading.Thread):
             if self.Procs['Hole']:
                 _, _, _, frame = Process_Image_Hole(
                     globals()['frame' + self.previewName],
-                    fullJson['Mask_Parameters']['Hole']['areaMin'],
-                    fullJson['Mask_Parameters']['Hole']['areaMax'],
-                    fullJson['Mask_Parameters']['Hole']['perimeter'],
-                    fullJson['Filtros']['HSV']['Hole']['Valores']
+                    mainParamters['Mask_Parameters']['Hole']['areaMin'],
+                    mainParamters['Mask_Parameters']['Hole']['areaMax'],
+                    mainParamters['Mask_Parameters']['Hole']['perimeter'],
+                    mainParamters['Filtros']['HSV']['Hole']['Valores']
                     )
                 yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
                        + cv2.imencode('.JPEG', frame,
@@ -328,8 +335,8 @@ def Parafusa(pos, voltas=2, mm=0, servo=0, angulo=0):
 
 def PegaObjeto():
     print("Indo pegar...")
-    pegaPos = Config['configuration']['informations']['machine']['defaultPosition']['pegaTombador']
-    anlPos = Config['configuration']['informations']['machine']['defaultPosition']['analisaFoto']
+    pegaPos = machineParamters['configuration']['informations']['machine']['defaultPosition']['pegaTombador']
+    anlPos = machineParamters['configuration']['informations']['machine']['defaultPosition']['analisaFoto']
     # Fast.sendGCODE(arduino, "G90")
     # Fast.sendGCODE(arduino, f"G0 X{pegaPos['X']} F{xMaxFed}")
     # Fast.sendGCODE(arduino, f"G0 Y{pegaPos['Y']} F{yMaxFed}")
@@ -482,20 +489,20 @@ def shutdown_server():
 #                                                 Async-Functions                                                      #
 
 async def updateSlider(processos):
-    Config['configuration']['camera']['process'] = processos
-    for x in Config['configuration']['camera']:
+    machineParamters['configuration']['camera']['process'] = processos
+    for x in machineParamters['configuration']['camera']:
         if x[0:1] != 'p' and x[0:1] != "a":
-            Config['configuration']['camera'][x] = [
-                fullJson['Filtros']['HSV'][processos]['Valores']['lower'][x[0:1]+'_min'],
-                fullJson['Filtros']['HSV'][processos]['Valores']['upper'][x[0:1]+'_max']
+            machineParamters['configuration']['camera'][x] = [
+                mainParamters['Filtros']['HSV'][processos]['Valores']['lower'][x[0:1]+'_min'],
+                mainParamters['Filtros']['HSV'][processos]['Valores']['upper'][x[0:1]+'_max']
             ]
         elif x[0:1] == "a":
-            Config['configuration']['camera'][x] = [
-                fullJson['Mask_Parameters'][processos]['areaMin'],
-                fullJson['Mask_Parameters'][processos]['areaMax']
+            machineParamters['configuration']['camera'][x] = [
+                mainParamters['Mask_Parameters'][processos]['areaMin'],
+                mainParamters['Mask_Parameters'][processos]['areaMax']
             ]
-        print(Config['configuration']['camera'][x])
-    await sendWsMessage("update", Config)
+        print(machineParamters['configuration']['camera'][x])
+    await sendWsMessage("update", machineParamters)
 
 
 async def funcs():
@@ -529,8 +536,8 @@ async def startAutoCheck():
 
 async def startScan():
 
-    cameCent = Config['configuration']['informations']['machine']['defaultPosition']['camera0Centro']
-    parafCent = Config['configuration']['informations']['machine']['defaultPosition']['parafusadeiraCentro']
+    cameCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['camera0Centro']
+    parafCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusadeiraCentro']
 
     intervalo = {
                 'X':parafCent['X']-cameCent['X'],
@@ -540,11 +547,11 @@ async def startScan():
     #while verificaCLP():
     for _ in range(6):
         PegaObjeto()
-        parcialFuro = Processo_Hole(globals()['frame'+str(fullJson["Cameras"]["Hole"]["Settings"]["id"])],
-                      fullJson['Mask_Parameters']['Hole']['areaMin'],
-                      fullJson['Mask_Parameters']['Hole']['areaMax'],
-                      fullJson['Mask_Parameters']['Hole']['perimeter'],
-                      fullJson['Filtros']['HSV']['Hole']['Valores'])
+        parcialFuro = Processo_Hole(globals()['frame'+str(mainParamters["Cameras"]["Hole"]["Settings"]["id"])],
+                      mainParamters['Mask_Parameters']['Hole']['areaMin'],
+                      mainParamters['Mask_Parameters']['Hole']['areaMax'],
+                      mainParamters['Mask_Parameters']['Hole']['perimeter'],
+                      mainParamters['Filtros']['HSV']['Hole']['Valores'])
 
         if len(parcialFuro) == 4:
             finalFuro = []
@@ -565,11 +572,11 @@ async def startScan():
                 Parafusa(140, mm=0, voltas=20)
             
             _, encontrados = Process_Imagew_Scew(
-                                globals()['frame'+str(fullJson["Cameras"]["Screw"]["Settings"]["id"])],
-                                Op.extractHSValue(fullJson['Filtros']['HSV']['Screw']["Valores"], 'lower' ),
-                                Op.extractHSValue(fullJson['Filtros']['HSV']['Screw']["Valores"], 'upper' ),
-                                fullJson['Mask_Parameters']['Screw']['areaMin'],
-                                fullJson['Mask_Parameters']['Screw']['areaMax']
+                                globals()['frame'+str(mainParamters["Cameras"]["Screw"]["Settings"]["id"])],
+                                Op.extractHSValue(mainParamters['Filtros']['HSV']['Screw']["Valores"], 'lower' ),
+                                Op.extractHSValue(mainParamters['Filtros']['HSV']['Screw']["Valores"], 'upper' ),
+                                mainParamters['Mask_Parameters']['Screw']['areaMin'],
+                                mainParamters['Mask_Parameters']['Screw']['areaMax']
                                 )
             if encontrados == 6:
                 print('descarte("Certo")')
@@ -582,26 +589,26 @@ async def startScan():
     await sendWsMessage("startScan_success")
 
 async def updateFilter(zipped):
-    for xx in fullJson["Filtros"]["HSV"]:
-        if zipped['process'] in fullJson["Filtros"]["HSV"][xx]["Application"]:
-            # fullJson["Filtros"]["HSV"][xx]["Valores"]["lower"][zipped[1].key()] = [zipped[1]]
+    for xx in mainParamters["Filtros"]["HSV"]:
+        if zipped['process'] in mainParamters["Filtros"]["HSV"][xx]["Application"]:
+            # mainParamters["Filtros"]["HSV"][xx]["Valores"]["lower"][zipped[1].key()] = [zipped[1]]
             min = list(zipped.keys())[1]
             max = list(zipped.keys())[2]
             if min == "areaMin" and max == "areaMax":
-                fullJson['Mask_Parameters'][xx][min] = zipped[min]
-                fullJson['Mask_Parameters'][xx][max] = zipped[max]
-                print("Update Filter:",xx,fullJson['Mask_Parameters'][xx])
+                mainParamters['Mask_Parameters'][xx][min] = zipped[min]
+                mainParamters['Mask_Parameters'][xx][max] = zipped[max]
+                print("Update Filter:",xx,mainParamters['Mask_Parameters'][xx])
             else:
-                print(fullJson["Filtros"]["HSV"][xx]["Valores"]
+                print(mainParamters["Filtros"]["HSV"][xx]["Valores"]
                     ["lower"][min], '-> ', zipped[min])
-                print(fullJson["Filtros"]["HSV"][xx]["Valores"]
+                print(mainParamters["Filtros"]["HSV"][xx]["Valores"]
                     ["upper"][max], '-> ', zipped[max])
-                fullJson["Filtros"]["HSV"][xx]["Valores"]["lower"][min] = zipped[min]
-                fullJson["Filtros"]["HSV"][xx]["Valores"]["upper"][max] = zipped[max]
+                mainParamters["Filtros"]["HSV"][xx]["Valores"]["lower"][min] = zipped[min]
+                mainParamters["Filtros"]["HSV"][xx]["Valores"]["upper"][max] = zipped[max]
         
 
 async def saveJson():
-    Fast.writeJson('Json/Temp.json', fullJson)
+    Fast.writeJson('Json/Temp.json', mainParamters)
     print("salvei")
 
 
@@ -624,20 +631,24 @@ if __name__ == "__main__":
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                        Load-Json                           #
 
-    fullJson = Fast.readJson('Json/config.json')
-    mainConfig = Fast.readJson('Json/config.json')
-    Config = Fast.readJson('Json/machine.json')
-    machineConfig = Fast.readJson('Json/machine.json')
+    mainParamters = Fast.readJson('Json/config.json')
+    machineParamters = Fast.readJson('Json/machine.json')
     HoleCuts = Fast.readJson("../engine_H/Json/HolePoints.json")
     ScrewCuts = Fast.readJson("../engine_H/Json/ScrewPoints.json")
+    SOC = Fast.readJson("../engine_H/Json/SystemChanges.json")
+    SO = platform.system()
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Json-Variables                        #
 
+    
+    machineParamters["configuration"]["informations"]["ip"] = SOC["ip"][SO]
+    Fast.writeJson('Json/machine.json', machineParamters)
+    
     primeiraConexao = True
 
     arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
-    DebugTypes = mainConfig['Debugs']
+    DebugTypes = mainParamters['Debugs']
 
     if DebugTypes["all"]:
         DebugPrint = DebugPictures = DebugRT = DebugMarkings = True
@@ -654,10 +665,10 @@ if __name__ == "__main__":
     zFRP = 100
     eFRP = 50
 
-    xMaxFed = int(machineConfig["configuration"]["informations"]["machine"]["maxFeedrate"]["xMax"]*(xFRP/100))
-    yMaxFed = int(machineConfig["configuration"]["informations"]["machine"]["maxFeedrate"]["yMax"]*(yFRP/100))
-    zMaxFed = int(machineConfig["configuration"]["informations"]["machine"]["maxFeedrate"]["zMax"]*(zFRP/100))
-    eMaxFed = int(machineConfig["configuration"]["informations"]["machine"]["maxFeedrate"]["aMax"]*(eFRP/100))
+    xMaxFed = int(machineParamters["configuration"]["informations"]["machine"]["maxFeedrate"]["xMax"]*(xFRP/100))
+    yMaxFed = int(machineParamters["configuration"]["informations"]["machine"]["maxFeedrate"]["yMax"]*(yFRP/100))
+    zMaxFed = int(machineParamters["configuration"]["informations"]["machine"]["maxFeedrate"]["zMax"]*(zFRP/100))
+    eMaxFed = int(machineParamters["configuration"]["informations"]["machine"]["maxFeedrate"]["aMax"]*(eFRP/100))
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                        Variables                           #
 
@@ -669,16 +680,16 @@ if __name__ == "__main__":
     offSetIp = 0
 
     prefix = socket.gethostbyname(socket.gethostname()).split('.')
-    ip = '.'.join(['.'.join(prefix[:len(prefix) - 1]),
-                  str(int(prefix[len(prefix) - 1]) + offSetIp)])
-
+    # ip = '.'.join(['.'.join(prefix[:len(prefix) - 1]),
+    #               str(int(prefix[len(prefix) - 1]) + offSetIp)])
+    ip = machineParamters["configuration"]["informations"]["ip"]
 
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Start-Threads                         #
 
-    thread1 = CamThread("1", fullJson["Cameras"]["Screw"]["Settings"]["id"])
-    thread0 = CamThread("0", fullJson["Cameras"]["Hole"]["Settings"]["id"])
+    thread1 = CamThread("1", mainParamters["Cameras"]["Screw"]["Settings"]["id"])
+    thread0 = CamThread("0", mainParamters["Cameras"]["Hole"]["Settings"]["id"])
     appTh = AppThread(ip, portBack)
     
 
@@ -710,7 +721,7 @@ if __name__ == "__main__":
                 print(post_data)
             return jsonify({
                 'status': 'success',
-                'Config': fullJson
+                'machineParamters': mainParamters
             })
 
         @app.route('/<valor>/<id>') 
@@ -756,7 +767,6 @@ if __name__ == "__main__":
             websockets.serve(echo, ip, portFront))
 
         print(f"server iniciado em {ip}:{portFront}")
-
         try:
             asyncio.get_event_loop().run_forever()
         except KeyboardInterrupt:
@@ -790,13 +800,13 @@ if __name__ == "__main__":
         column = 1
         Image = Quadrants[line][column]
 
-        mainConfig = Fast.readJson('Json/config.json')
-        HSVJson = mainConfig['Filtros']['HSV']
+        mainParamters = Fast.readJson('Json/config.json')
+        HSVJson = mainParamters['Filtros']['HSV']
         Processos = ['Edge', 'Screw']
         HSVjsonIndex = 'Hole'
 
         HSVValues_Hole = HSVJson[str(HSVjsonIndex)]['Valores']
-        Process_Values = mainConfig['Mask_Parameters'][str(Process)]
+        Process_Values = mainParamters['Mask_Parameters'][str(Process)]
 
         for values in Process_Values:
             locals()[values] = Process_Values[values]
@@ -810,7 +820,7 @@ if __name__ == "__main__":
         # Exibe o conteúdo da variavel 'frame1'
         while True:
             _, img = findHole(Image, areaMin, areaMax, perimeter, HSVValues_Hole, fixPoint)
-            _, img2 = findScrew(Image, HSVJson, mainConfig, Processos)
+            _, img2 = findScrew(Image, HSVJson, mainParamters, Processos)
             # cv2.imshow('A', img)
             # cv2.imshow('B', img2)
             key = cv2.waitKey(1)
@@ -822,6 +832,6 @@ if __name__ == "__main__":
         # cv2.destroyWindow("B")
 
         # Resultados = [findHole(Image, areaMin, areaMax, perimeter, HSVValues_Hole, fixPoint),
-        #               findScrew(Image, HSVJson, mainConfig, Processos)]
+        #               findScrew(Image, HSVJson, mainParamters, Processos)]
         print("Tempo de Execução:", round(timeit.default_timer() - T0A, 3))
  

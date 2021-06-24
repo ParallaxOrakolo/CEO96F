@@ -1,0 +1,13 @@
+{
+    "ip":{
+        "Windows":"192.168.1.57",
+        "Darwin":"192.168.1.58",
+        "Linux":"192.168.1.59"
+    },
+
+    "runCommand":{
+        "Windows":"npm run serve",
+        "Darwin":"npm run serve",
+        "Linux":"npm run serve"
+    }
+}

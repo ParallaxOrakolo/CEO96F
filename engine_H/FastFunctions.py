@@ -181,3 +181,12 @@ def SerialConnect(SerialPath='../Json/serial.json', name='arduino'):
         sleep(1.2)
 
         return True, 200, communication
+
+def EditJson(org, org_path, chg, chg_path='["configuration"]["informations"]["ip"]'):
+
+    # lista ='["configuration"]["informations"]["ip"]'
+    a = eval(str(org)+org_path)
+    b = eval(str(chg)+chg_path+' = '+a)
+    print(a)
+    print(b)
+

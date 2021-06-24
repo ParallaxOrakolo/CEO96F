@@ -1,10 +1,12 @@
 {
-"configuration": {
+    "configuration": {
         "informations": {
             "ip": "192.168.1.57",
             "connectionId": 123456,
             "port": 5000,
-            "userList": [null],
+            "userList": [
+                null
+            ],
             "version": {
                 "backend": "0",
                 "frontend": "0",
@@ -30,69 +32,78 @@
                     "aMax": 50000,
                     "bMax": 50000
                 },
-                "defaultPosition":{
-                    "pegaTombador":{
-                        "X":5,
-                        "Y":49,
-                        "Z":null,
-                        "E":0
+                "defaultPosition": {
+                    "pegaTombador": {
+                        "X": 5,
+                        "Y": 49,
+                        "Z": null,
+                        "E": 0
                     },
-
-                    "analisaFoto":{
-                        "X":80,
-                        "Y":9,
-                        "Z":null,
-                        "E":null
+                    "analisaFoto": {
+                        "X": 80,
+                        "Y": 9,
+                        "Z": null,
+                        "E": null
                     },
-
-                    "descarteErrado":{
-                        "X":230,
-                        "Y":0,
-                        "Z":null,
-                        "E":null
+                    "descarteErrado": {
+                        "X": 230,
+                        "Y": 0,
+                        "Z": null,
+                        "E": null
                     },
-
-                    "descarteCerto":{
-                        "X":0,
-                        "Y":0,
-                        "Z":null,
-                        "E":0
+                    "descarteCerto": {
+                        "X": 0,
+                        "Y": 0,
+                        "Z": null,
+                        "E": 0
                     },
-
-                    "camera0Centro":{
-                        "X":74.5,
-                        "Y":7.5,
-                        "Z":null,
-                        "E":null
+                    "camera0Centro": {
+                        "X": 74.5,
+                        "Y": 7.5,
+                        "Z": null,
+                        "E": null
                     },
-
-                    "camera1Centro":{
-                        "X":230,
-                        "Y":0,
-                        "Z":null,
-                        "E":null
+                    "camera1Centro": {
+                        "X": 230,
+                        "Y": 0,
+                        "Z": null,
+                        "E": null
                     },
-                    
-                    "parafusadeiraCentro":{
-                        "X":240,
-                        "Y":16,
-                        "Z":null,
-                        "E":null
+                    "parafusadeiraCentro": {
+                        "X": 240,
+                        "Y": 16,
+                        "Z": null,
+                        "E": null
                     }
                 }
             }
         },
         "statistics": {
-            "stopReasons": [null],
-            "stopReasonsList": [null]
+            "stopReasons": [
+                null
+            ],
+            "stopReasonsList": [
+                null
+            ]
         },
         "camera": {
             "process": "Hole",
-            "hue": [26, 55],
-            "sat": [70, 240],
-            "val": [80, 150],
-            "are": [200, 50000]
-
+            "hue": [
+                26,
+                55
+            ],
+            "sat": [
+                70,
+                240
+            ],
+            "val": [
+                80,
+                150
+            ],
+            "are": [
+                200,
+                50000
+            ]
         }
     }
 }

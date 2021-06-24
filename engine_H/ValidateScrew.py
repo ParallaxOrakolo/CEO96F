@@ -1,6 +1,10 @@
 import cv2
 import OpencvPlus as Op
 import FastFunctions as Fast
+
+Fast.SystemChangeJson()
+exit()
+
 # # id = 6
 # # Pos = 'A'
 # # Picture = 0
