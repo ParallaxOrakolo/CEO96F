@@ -12,7 +12,7 @@ import threading
 import platform
 import socket
 import cv2
-import os
+import time
 
 import websockets
 import asyncio
@@ -95,14 +95,22 @@ class CamThread(threading.Thread):
         print("Starting " + self.previewName)
         return self.camPreview(self.previewName, self.camID)
         
-    def camPreview(self, previewName, camID):
+    def camPreview(self, previewName, cam_json):
         # Abre a camera com o id passado.
+        camID = cam_json["Settings"]["id"]
+        cw = cam_json["Settings"]["frame_width"]
+        ch = cam_json["Settings"]["frame_height"]
         cam = cv2.VideoCapture(camID)
-        cam.set(3, 1280)
-        cam.set(4, 720)
+        cam.set(cv2.CAP_PROP_FRAME_WIDTH, int(cw))
+        cam.set(cv2.CAP_PROP_FRAME_HEIGHT, int(ch))
+        
+        for k, v in cam_json["Properties"].items():
+            cam.set(getattr(cv2, 'CAP_PROP_' + k), v)
 
         if cam.isOpened():                            # Verifica se foi aberta
             rval, frame = cam.read()                  # Lê o Status e uma imagem
+            # if frame.shape[1] != cw or frame.shape[0] != ch:
+            #     sendWsMessage('erro', {'codigo': "Wronge image size", 'menssagem': f'A imagem deveria ter:{cw} x {ch}, mas tem {frame.shape[1]} x {frame.shape[0]}' })
         else:
             globals()[f'frame{previewName}'] = cv2.imread(f"../engine_H/Images/{camID}.jpg")
             rval = False
@@ -351,9 +359,10 @@ def PegaObjeto():
     # Fast.sendGCODE(arduino, "G91")
     print("Pegou")
 
-def Process_Imagew_Scew(frame, lower, upper, AreaMin, AreaMax ):
+def Process_Imagew_Scew(frames, lower, upper, AreaMin, AreaMax ):
     print("Validando encaixe....")
-    img_draw = frame.copy()
+    img_draw = frames.copy()
+    # cv2.imshow("img_draw_original", cv2.resize(img_draw, None, fx=0.35, fy=0.35))
     finds = 0
     for Pontos in ScrewCuts:
         pa, pb = tuple(Pontos["P0"]), (Pontos["P0"][0]+Pontos["P1"][0],
@@ -362,13 +371,12 @@ def Process_Imagew_Scew(frame, lower, upper, AreaMin, AreaMax ):
         cv2.drawMarker(img_draw, pa, (255, 50, 0), thickness=10)
         cv2.drawMarker(img_draw, pb, (50, 255, 0), thickness=10)
         cv2.rectangle(img_draw, pa, pb, (255, 50, 255), 10)
-
-        show = frame[Pontos["P0"][1]:Pontos["P0"][1] + Pontos["P1"][1],
+        show = frames[Pontos["P0"][1]:Pontos["P0"][1] + Pontos["P1"][1],
                    Pontos["P0"][0]:Pontos["P0"][0] + Pontos["P1"][0]]
-
+        
         mask = Op.refineMask(Op.HSVMask(show, lower, upper), kerenelA=(10,10))
         Cnt_A, _ = Op.findContoursPlus(mask, AreaMin_A=AreaMin, AreaMax_A=AreaMax)
-
+        
         show = cv2.bitwise_or(show, show, None, mask)
         if Cnt_A:
             finds += 1
@@ -388,6 +396,7 @@ def Process_Imagew_Scew(frame, lower, upper, AreaMin, AreaMax ):
                 Pontos["P0"][0]:Pontos["P0"][0] + show.shape[1]] = show
     cv2.putText(img_draw, str(finds), (200, 100), cv2.FONT_HERSHEY_DUPLEX, 5, (0, 0, 0), 10)
     # cv2.imshow(f"Draw_Copy", cv2.resize(img_draw, None, fx=0.25, fy=0.25))
+    # cv2.waitKey(1)
     print("Feito")
     return img_draw, finds
 
@@ -395,7 +404,6 @@ def Process_Imagew_Scew(frame, lower, upper, AreaMin, AreaMax ):
 
 def Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues):
     img_draw = frame.copy()
-    print(areaMin, areaMax)
     for Pontos in HoleCuts:
         # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
         #            Corta a imagem e faz as marcações               #
@@ -691,8 +699,8 @@ if __name__ == "__main__":
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Start-Threads                         #
 
-    thread1 = CamThread("1", mainParamters["Cameras"]["Screw"]["Settings"]["id"])
-    thread0 = CamThread("0", mainParamters["Cameras"]["Hole"]["Settings"]["id"])
+    thread1 = CamThread("1", mainParamters["Cameras"]["Screw"])
+    thread0 = CamThread("0", mainParamters["Cameras"]["Hole"])
     appTh = AppThread(ip, portBack)
     
 

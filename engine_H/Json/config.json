@@ -99,8 +99,8 @@
             "Settings": {
                 "id": 0,
                 "scale": 0.04276480601654536,
-                "frame_height": 1280,
-                "frame_width": 720
+                "frame_height": 1994,
+                "frame_width": 2592
             },
             "Properties": {
                 "BRIGHTNESS": 0,
@@ -108,8 +108,8 @@
                 "BACKLIGHT": 0,
                 "EXPOSURE": -4,
                 "CONTRAST": 32,
-                "GAMMA": 300,
-                "GAIN": 64,
+                "GAMMA": 100,
+                "GAIN": 0,
                 "HUE": 0
             }
         },
@@ -117,26 +117,8 @@
             "Settings": {
                 "id": 1,
                 "scale": 0.04276480601654536,
-                "frame_height": 1280,
-                "frame_width": 720
-            },
-            "Properties": {
-                "BRIGHTNESS": 10,
-                "SATURATION": 64,
-                "BACKLIGHT": 0,
-                "EXPOSURE": -4,
-                "CONTRAST": 32,
-                "GAMMA": 300,
-                "GAIN": 64,
-                "HUE": 0
-            }
-        },
-        "Screw": {
-            "Settings": {
-                "id": 1,
-                "scale": 0.04276480601654536,
-                "frame_height": 1280,
-                "frame_width": 720
+                "frame_height": 1994,
+                "frame_width": 2592
             },
             "Properties": {
                 "BRIGHTNESS": 0,
@@ -144,8 +126,26 @@
                 "BACKLIGHT": 0,
                 "EXPOSURE": -4,
                 "CONTRAST": 32,
-                "GAMMA": 300,
-                "GAIN": 64,
+                "GAMMA": 100,
+                "GAIN": 0,
+                "HUE": 0
+            }
+        },
+        "Screw": {
+            "Settings": {
+                "id": 1,
+                "scale": 0.04276480601654536,
+                "frame_height": 1994,
+                "frame_width": 2592
+            },
+            "Properties": {
+                "BRIGHTNESS": 0,
+                "SATURATION": 64,
+                "BACKLIGHT": 0,
+                "EXPOSURE": -4,
+                "CONTRAST": 32,
+                "GAMMA": 100,
+                "GAIN": 0,
                 "HUE": 0
             }
         }
