@@ -16,7 +16,7 @@
                     }
                 }
             },
-            "Edge":{
+            "Edge": {
                 "Application": "Edge",
                 "Valores": {
                     "lower": {
@@ -46,7 +46,7 @@
                     }
                 }
             },
-            "Normal":{
+            "Normal": {
                 "Application": "Normal",
                 "Valores": {
                     "lower": {
@@ -99,8 +99,8 @@
             "Settings": {
                 "id": 0,
                 "scale": 0.04276480601654536,
-                "frame_height": 1994,
-                "frame_width": 2592
+                "frame_height": 720,
+                "frame_width": 1280
             },
             "Properties": {
                 "BRIGHTNESS": 0,
@@ -148,6 +148,15 @@
                 "GAIN": 0,
                 "HUE": 0
             }
+        }
+    },
+    "Recover": {
+        "Status": false,
+        "Coords": {
+            "X": 230,
+            "Y": null,
+            "Z": 4,
+            "E": 10
         }
     }
 }

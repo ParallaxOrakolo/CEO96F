@@ -80,16 +80,31 @@ class CamThread(threading.Thread):
         self.Processos = ['Edge', 'Screw']
         self.pFA = (50, 50)
         self.pFB = (100, 60)
-        self.fixPoint = (self.pFB[0], int(
+        self.fixPoiint = (self.pFB[0], int(
             self.pFA[1] + ((self.pFB[1] - self.pFA[1]) / 2)))
 
         self._stop_event = threading.Event()
+        self.get_data = threading.Event()
 
     def stop(self):
         self._stop_event.set()
 
     def stopped(self):
         return self._stop_event.is_set()
+
+    def update_data(self):
+        global LastCamID
+        print(f"Liberado o frame da thread{self.previewName}")
+        self.get_data.set()
+        LastCamID = self.previewName
+        print(f"thread{self.previewName}.updated_data() = {self.updated_data()}")
+
+    def lock_data(self):
+        print(f"Travando o frame da thread{self.previewName}")
+        self.get_data.clear()
+
+    def updated_data(self):
+        return self.get_data.is_set()
 
     def run(self):
         print("Starting " + self.previewName)
@@ -116,6 +131,9 @@ class CamThread(threading.Thread):
             rval = False
 
         while rval and not self.stopped():                                   # Verifica e camera ta 'ok'
+            while not self.updated_data() and not self.stopped():
+                globals()[f'frame{previewName}'] = Fast.backGround(50, 100)
+
             rval, frame = cam.read()                  # Atualiza
             globals()[f'frame{previewName}'] = frame
             # cv2.imshow(f'frame{previewName}', frame)  # Exporta
@@ -198,6 +216,24 @@ class AppThread(threading.Thread):
     def stopped(self):
         return self._stop_event.is_set()
 
+class ViewAnother(threading.Thread):
+    def __init__(self, quem, intervalo):
+        threading.Thread.__init__(self)
+        self.look_at = quem
+        self.look_time = intervalo
+        self._stop_event = threading.Event()
+
+    def stop(self):
+        self._stop_event.set()
+
+    def stopped(self):
+        return self._stop_event.is_set()
+
+    def run(self):
+        while not self.stopped():
+            if self.look_at.stopped():
+                print("PUTZ")
+            time.sleep(self.look_time)
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Functions                                                         #
 
@@ -527,12 +563,15 @@ async def startAutoCheck():
             status, code, arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
         except TypeError as err:
             print("Erro de compatibilidade? - Acontece quando a placa não é encontrada?")
-            status, code, arduino = False, -200, "Backend ERROR: '\n'"+err
+            status, code, arduino = False, -200, "Backend ERROR: '\n'"+str(err)
         if not status:
             await sendWsMessage('erro', {'codigo': code, 'menssagem':arduino })
             AutoCheckStatus = False
         thread1.start()
+        # stalker1.start()
         thread0.start()
+        # stalker0.start()
+        
         while True:
             try:
                 if type(globals()['frame1']) == np.ndarray:
@@ -631,8 +670,8 @@ async def sendWsMessage(command, parameter=None):
     # ident deixa o objeto mostrando bonito
     cover_msg = json.dumps(ws_message, indent=2)
     await ws_connection.send(cover_msg)
-    print(25*"-")
-    print("Enviado: " + cover_msg)
+    # print(25*"-")
+    # print("Enviado: " + cover_msg)
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                       Exec                                                           #
@@ -652,7 +691,18 @@ if __name__ == "__main__":
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Json-Variables                        #
 
-    
+    if mainParamters["Recover"]["Status"]:
+        mainParamters["Recover"]["Status"] = False
+        Fast.writeJson('Json/config.json', mainParamters)
+        print(mainParamters["Recover"]["Coords"])
+    for K, V in mainParamters["Recover"]["Coords"].items():
+        if V == None:
+            print("Deu ruim na hora do save, vai ser nescessário reiniciar todo o processo")
+            break 
+    else:
+        for K, V in mainParamters["Recover"]["Coords"].items():
+            print(f"G0 {K}{V}")
+
     machineParamters["configuration"]["informations"]["ip"] = SOC["ip"][SO]
     Fast.writeJson('Json/machine.json', machineParamters)
     
@@ -689,7 +739,7 @@ if __name__ == "__main__":
     portFront = 5000
     portBack = 5050
     offSetIp = 0
-
+    LastCamID = 1
     prefix = socket.gethostbyname(socket.gethostname()).split('.')
     # ip = '.'.join(['.'.join(prefix[:len(prefix) - 1]),
     #               str(int(prefix[len(prefix) - 1]) + offSetIp)])
@@ -700,7 +750,9 @@ if __name__ == "__main__":
     #                      Start-Threads                         #
 
     thread1 = CamThread("1", mainParamters["Cameras"]["Screw"])
+    stalker1 = ViewAnother(thread1, 5)
     thread0 = CamThread("0", mainParamters["Cameras"]["Hole"])
+    stalker0 = ViewAnother(thread0, 5)
     appTh = AppThread(ip, portBack)
     
 
@@ -737,10 +789,17 @@ if __name__ == "__main__":
 
         @app.route('/<valor>/<id>') 
         def video_feed(valor, id):
+            global LastCamID
             Esse = getattr(globals()['thread'+str(id)], "Procs")
             for processo in Esse:
                 Esse[processo] = True if processo == valor else False
             print("Chamando...")
+            if str(LastCamID) != str(id):
+                print(LastCamID,"!=", str(id))
+                (globals()[f'thread{str(LastCamID)}']).lock_data()
+                (globals()[f'thread{str(id)}'].update_data())
+            else:
+                print(LastCamID,"==", str(id))
             return Response(getattr(globals()['thread'+str(id)], "ViewCam")(),
                             mimetype='multipart/x-mixed-replace; boundary=frame')
 
