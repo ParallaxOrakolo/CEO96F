@@ -11,8 +11,7 @@
             <div class="d-flex flex-column justify-space-between align-center">
               <v-img
                 :width="cam_width"
-                :src="`http://${configuration.informations.ip}:5050/${radios}?${randomNumber()}`"
-                :key="`${randomNumber()}`"
+                :src="`http://${configuration.informations.ip}:5050/${radios}`"
               ></v-img>
               <v-slider
                 v-model="cam_width"
@@ -448,11 +447,6 @@ export default {
     getFilter() {
       var camera = this.configuration.camera;
       console.log(camera);
-    },
-
-    randomNumber : function(){
-      // return Math.floor(Math.random() * -100) + 100;
-      return Math.floor(Math.random()*101)
     },
   },
 

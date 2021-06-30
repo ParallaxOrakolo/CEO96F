@@ -61,7 +61,7 @@ ws_message = {
                      Zera X e Z
             Avisa o front.
 
-            
+
 
 """
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
@@ -92,20 +92,6 @@ class CamThread(threading.Thread):
     def stopped(self):
         return self._stop_event.is_set()
 
-    def update_data(self):
-        global LastCamID
-        print(f"Liberado o frame da thread{self.previewName}")
-        self.get_data.set()
-        LastCamID = self.previewName
-        print(f"thread{self.previewName}.updated_data() = {self.updated_data()}")
-
-    def lock_data(self):
-        print(f"Travando o frame da thread{self.previewName}")
-        self.get_data.clear()
-
-    def updated_data(self):
-        return self.get_data.is_set()
-
     def run(self):
         print("Starting " + self.previewName)
         return self.camPreview(self.previewName, self.camID)
@@ -118,6 +104,7 @@ class CamThread(threading.Thread):
         cam = cv2.VideoCapture(camID)
         cam.set(cv2.CAP_PROP_FRAME_WIDTH, int(cw))
         cam.set(cv2.CAP_PROP_FRAME_HEIGHT, int(ch))
+        cam.set(cv2.CAP_PROP_FOURCC,cv2.VideoWriter_fourcc('M','J','P','G'))
         
         for k, v in cam_json["Properties"].items():
             cam.set(getattr(cv2, 'CAP_PROP_' + k), v)
@@ -131,12 +118,9 @@ class CamThread(threading.Thread):
             rval = False
 
         while rval and not self.stopped():                                   # Verifica e camera ta 'ok'
-            while not self.updated_data() and not self.stopped():
-                globals()[f'frame{previewName}'] = Fast.backGround(50, 100)
 
             rval, frame = cam.read()                  # Atualiza
             globals()[f'frame{previewName}'] = frame
-            # cv2.imshow(f'frame{previewName}', frame)  # Exporta
             if cv2.waitKey(1) == 27:
                 break
         try:    
@@ -739,7 +723,6 @@ if __name__ == "__main__":
     portFront = 5000
     portBack = 5050
     offSetIp = 0
-    LastCamID = 1
     prefix = socket.gethostbyname(socket.gethostname()).split('.')
     # ip = '.'.join(['.'.join(prefix[:len(prefix) - 1]),
     #               str(int(prefix[len(prefix) - 1]) + offSetIp)])
@@ -794,12 +777,6 @@ if __name__ == "__main__":
             for processo in Esse:
                 Esse[processo] = True if processo == valor else False
             print("Chamando...")
-            if str(LastCamID) != str(id):
-                print(LastCamID,"!=", str(id))
-                (globals()[f'thread{str(LastCamID)}']).lock_data()
-                (globals()[f'thread{str(id)}'].update_data())
-            else:
-                print(LastCamID,"==", str(id))
             return Response(getattr(globals()['thread'+str(id)], "ViewCam")(),
                             mimetype='multipart/x-mixed-replace; boundary=frame')
 
