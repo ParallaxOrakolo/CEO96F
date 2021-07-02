@@ -1,7 +1,7 @@
 import { constants } from "fs";
 import Vue from "vue";
 import Vuex from "vuex";
-
+import machineJson from "../../engine_H/Json/machine.json";
 Vue.use(Vuex);
 
 var wsConnection = constants;
@@ -11,7 +11,6 @@ export const actions = {
   STOP_REASON_RESPONSE: "stopReasonsResponse",
   START_CAMERA_STREAM: "startCameraStream",
   START_AUTOCHECK: "startAutoCheck",
-  START_SCAN: "startScan",
   RESTART_PROCESS: "restartProcess",
   SERIAL_MONITOR: "serialMonitor",
   UPDATE_FILTER: "updateFilter",
@@ -19,9 +18,12 @@ export const actions = {
   PAUSE_PROCESS: "pauseProcess",
   UPDATE_SLIDER:"updateSlider",
   STOP_PROCESS: "stopProcess",
-  LOG_REQUEST: "LogRequest",
+  LOG_REQUEST: "logRequest",
+  UPDATE_USER:"updateUser",
   SEND_GCODE: "sendGcode",
-  SAVE_JSON: "saveJson"
+  START_SCAN: "startScan",
+  SAVE_JSON: "saveJson",
+  SHOW_POPUP:"showPopup"
 };
 
 const store = new Vuex.Store({
@@ -73,12 +75,12 @@ const store = new Vuex.Store({
     serialMonitor: [
       // {hour: 1611539081 ,sent: true, message:["ok","eaee","M117"]},
     ],
-
+    
     configuration: {
       informations: {
-        ip: "192.168.1.57",
+        ip: machineJson.configuration.informations.ip,
         connectionId: 123456,
-        port: 5000,
+        port: machineJson.configuration.informations.port,
         userList: [null],
         version: {
           backend: "0",
@@ -159,7 +161,9 @@ const store = new Vuex.Store({
       },
       statistics: {
         stopReasons: [],
-        stopReasonsList: [],
+        stopReasonsList: {
+          "000":"Maquin ok",
+        },
       },
       camera: {
         process: null,
@@ -231,7 +235,7 @@ const store = new Vuex.Store({
           state.autoCheckComplete = true;
           break;
 
-        case actions.SCAN_CONNECTORS + "_success":
+        case actions.START_SCAN + "_success":
           state.scanConnectorsComplete = true;
           console.log("scan conector");
           // code block

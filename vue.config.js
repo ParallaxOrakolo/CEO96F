@@ -1,6 +1,4 @@
-module.exports = {
-  
-  
+module.exports = {  
   pwa: {
     name: 'Parallax',
     themeColor: "#0D1D2D",

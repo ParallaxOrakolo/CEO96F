@@ -39,20 +39,20 @@ def backGround(h=600, w=900, c=0):
 
 # Abre e lê um json no caminho solicitado.
 def readJson(json_to_read):
-    with open(json_to_read, 'r', encoding='utf-8') as json_file:
+    with open(json_to_read, 'r', encoding='utf8') as json_file:
         return json.load(json_file)
 
 
 # Abre e grava um json no caminho solicitado.
 def writeJson(json_local_save, json_data):
-    with open(json_local_save, "w", encoding='utf-8') as jsonFile:
-        json.dump(json_data, jsonFile, indent=4)
+    with open(json_local_save, "w", encoding='utf8') as jsonFile:
+        json.dump(json_data, jsonFile, indent=4, ensure_ascii=False)
 
 
 # Envia um ou uma lista de comandos na serial, se possível e se requisitado retorna a resposta.
 def sendGCODE(serial, command, **kargs):
     # Verifica se é possivel enviar dados através da conexão informada.
-    if serial and type(serial) != tuple:
+    if serial and type(serial) not in [tuple, str, int, bool]:
 
         # Limpa o buffer.
         serial.flush()

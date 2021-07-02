@@ -13,13 +13,14 @@ operation = {
     },
 }
 
+
+# info, success, warning, error
 stopReasons = {
-    "stopReasons": [
-        "Conector mal encaixado",
-        "Pinça soltou o conector",
-        "Peça com rebarba",
-        "Outros"
-    ]
+    "stopReasons": {
+        {'code': 1, 'description': 'Garra não pegou', 'listed': True, "type":"error"},
+        {'code': 2,'description': 'Alimentador sem peça', 'listed': False,"type":"warning"},
+        {'code': 99,'description': 'Troca de turno', 'listed': True, "type":"info"},
+    }
 }
 
 logList = {

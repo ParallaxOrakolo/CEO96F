@@ -5,7 +5,10 @@
             "connectionId": 123456,
             "port": 5000,
             "userList": [
-                null
+                {
+                    "name": "Henrycke",
+                    "id": "12462584986"
+                }
             ],
             "version": {
                 "backend": "0",
@@ -80,7 +83,29 @@
         },
         "statistics": {
             "stopReasons": [
-                null
+                {
+                    "code": 1,
+                    "description": "Garra não pegou",
+                    "listed": true,
+                    "type": "error"
+                },
+                {
+                    "code": 2,
+                    "description": "Alimentador sem peça",
+                    "listed": false,
+                    "type": "warning"
+                },
+                {
+                    "code": 99,
+                    "description": "Troca de turno",
+                    "listed": true,
+                    "type": "info"
+                }
+            ],
+            "nonStopCode": [
+                0,
+                "000",
+                "ok"
             ],
             "stopReasonsList": [
                 null

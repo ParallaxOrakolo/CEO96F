@@ -13,7 +13,7 @@ import platform
 import socket
 import cv2
 import time
-
+import random
 import websockets
 import asyncio
 import socket
@@ -342,16 +342,19 @@ def findScrew(imgAnalyse, FiltrosHSV, MainJson, processos, bh=0.3, **kwargs):
 def NLinearRegression(x):
     return round((0.0059*(x**2)) + (0.2741*x) + (0.6205), 2)
 
+
 def HomingAll():
     Fast.sendGCODE(arduino, "G28 Y")
     Fast.sendGCODE(arduino, "G28 X Z")
     Parafusa(140, mm=5, voltas=20)
 
+
 def verificaCLP():
-    return True
+    return random.choice(["ok","ok","ok","ok","ok","ok","ok","ok","ok","ok",1,"ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok",])
+
 
 def Parafusa(pos, voltas=2, mm=0, servo=0, angulo=0):
-        Fast.M400(arduino)
+        #Fast.M400(arduino)
         Fast.sendGCODE(arduino, f'g91')
         Fast.sendGCODE(arduino, f'g38.3 z-{pos} F{zMaxFed}')
         Fast.sendGCODE(arduino, f'g0 z-{mm} {zMaxFed}')
@@ -359,7 +362,8 @@ def Parafusa(pos, voltas=2, mm=0, servo=0, angulo=0):
         Fast.sendGCODE(arduino, f'm43 t s10 l10 w{voltas*50}')
         Fast.sendGCODE(arduino, 'g90')
         Fast.sendGCODE(arduino, f'g0 z{pos} F{2000}')
-        Fast.M400(arduino)
+        #Fast.M400(arduino)
+
 
 def PegaObjeto():
     print("Indo pegar...")
@@ -378,6 +382,7 @@ def PegaObjeto():
     # Fast.sendGCODE(arduino, "M42 P32 S255")
     # Fast.sendGCODE(arduino, "G91")
     print("Pegou")
+
 
 def Process_Imagew_Scew(frames, lower, upper, AreaMin, AreaMax ):
     print("Validando encaixe....")
@@ -419,7 +424,6 @@ def Process_Imagew_Scew(frames, lower, upper, AreaMin, AreaMax ):
     # cv2.waitKey(1)
     print("Feito")
     return img_draw, finds
-
 
 
 def Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues):
@@ -467,9 +471,10 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues):
     precicao = 0.4
     dsts = 0
     Pos = []
-
+    identificar = []
     for lados in range(4):
         tentavias = 0
+        tI0 = timeit.default_timer()
         while tentavias<=3:
                 
             Resultados, R, per, img_draw = Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues)
@@ -502,10 +507,11 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues):
                             tentavias = 10
                     else:
                         tentavias = 10
+        identificar.append(timeit.default_timer()-tI0)
         print("Passando pro lado:", lados+1)
+    identificar = sum(identificar)
     print("Busca finalizada")
     return Pos
-
 
 def shutdown_server():
     shutdown_function = request.environ.get('werkzeug.server.shutdown')
@@ -545,6 +551,7 @@ async def startAutoCheck():
         await updateSlider('Normal')
         try:
             status, code, arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
+            status_nano, code_nano, nano = Fast.SerialConnect(SerialPath='Json/serial.json', name='Nano')
         except TypeError as err:
             print("Erro de compatibilidade? - Acontece quando a placa não é encontrada?")
             status, code, arduino = False, -200, "Backend ERROR: '\n'"+str(err)
@@ -568,8 +575,11 @@ async def startAutoCheck():
     await sendWsMessage("startAutoCheck_success")
     return AutoCheckStatus
 
-async def startScan():
 
+async def startScan(qtd=9999):
+    erradas = 0
+    corretas = 0
+    descargaCompleta = timeit.default_timer()
     cameCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['camera0Centro']
     parafCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusadeiraCentro']
 
@@ -578,49 +588,93 @@ async def startScan():
                 'Y':parafCent['Y']-cameCent['Y']
                 }
 
-    #while verificaCLP():
-    for _ in range(6):
+    infoCode = "ok"
+    print(infoCode)
+    for mnt in range(qtd):
+        failIn = mnt
+        totalUnitario = timeit.default_timer()
         PegaObjeto()
-        parcialFuro = Processo_Hole(globals()['frame'+str(mainParamters["Cameras"]["Hole"]["Settings"]["id"])],
-                      mainParamters['Mask_Parameters']['Hole']['areaMin'],
-                      mainParamters['Mask_Parameters']['Hole']['areaMax'],
-                      mainParamters['Mask_Parameters']['Hole']['perimeter'],
-                      mainParamters['Filtros']['HSV']['Hole']['Valores'])
+        parcialFuro =['', '', '', '']
+        # parcialFuro = Processo_Hole(globals()['frame'+str(mainParamters["Cameras"]["Hole"]["Settings"]["id"])],
+        #               mainParamters['Mask_Parameters']['Hole']['areaMin'],
+        #               mainParamters['Mask_Parameters']['Hole']['areaMax'],
+        #               mainParamters['Mask_Parameters']['Hole']['perimeter'],
+        #               mainParamters['Filtros']['HSV']['Hole']['Valores'])
+        infoCode = verificaCLP()
+        print("~~"*10)
+        print("604: Info code:", infoCode)
+        print("~~"*10)
+        if infoCode in nonStopCode:
+            if len(parcialFuro) == 4:
+                print("Iniciando processo de montagem...")
+                montar = []
+                tM0 = timeit.default_timer()
+                finalFuro = []
+                for posicao in [{'X':0, 'Y':0, 'Z':0, 'E':0}, {'X':0, 'Y':0, 'Z':0, 'E':0}, {'X':0, 'Y':0, 'Z':0, 'E':0}]:
+                    print("Posicao: ", posicao)
+                    print(-round(cameCent['X']-posicao['X'], 2), intervalo['X'])
+                    finalFuro.append({
+                                'X':-round(cameCent['X']-posicao['X'], 2)+parafCent ['X'],
+                                'Y':-round(cameCent['Y']-posicao['Y'], 2)+parafCent['Y'],
+                                'E':posicao['E']} )
 
-        if len(parcialFuro) == 4:
-            finalFuro = []
-            for posicao in parcialFuro:
-                print("Posicao: ", posicao)
-                print(-round(cameCent['X']-posicao['X'], 2), intervalo['X'])
-                finalFuro.append({
-                            'X':-round(cameCent['X']-posicao['X'], 2)+parafCent ['X'],
-                            'Y':-round(cameCent['Y']-posicao['Y'], 2)+parafCent['Y'],
-                            'E':posicao['E']} )
+                Fast.sendGCODE(arduino, 'g90')
+                for posicao in finalFuro:
+                    infoCode = verificaCLP()
+                    print("~~"*10)
+                    print("625: Info code:", infoCode)
+                    print("~~"*10)
+                    if infoCode in nonStopCode:
+                        Fast.sendGCODE(arduino, f"g0 X{posicao['X']} E{posicao['E']} F{xMaxFed}")
+                        Fast.sendGCODE(arduino, f"g0 Y{posicao['Y']} F{yMaxFed}")
+                        Parafusa(140, mm=0, voltas=20)
+                        Fast.sendGCODE(arduino, f"g0 X{100} F{xMaxFed}")
+                        Parafusa(140, mm=0, voltas=20)
+                        montar.append(timeit.default_timer()-tM0)
+                    else:
+                        print("Prolema encontado no 625")
+                        break
 
-            Fast.sendGCODE(arduino, 'g90')
-            for posicao in finalFuro:
-                Fast.sendGCODE(arduino, f"g0 X{posicao['X']} E{posicao['E']} F{xMaxFed}")
-                Fast.sendGCODE(arduino, f"g0 Y{posicao['Y']} F{yMaxFed}")
-                Parafusa(140, mm=0, voltas=20)
-                Fast.sendGCODE(arduino, f"g0 X{100} F{xMaxFed}")
-                Parafusa(140, mm=0, voltas=20)
-            
-            _, encontrados = Process_Imagew_Scew(
-                                globals()['frame'+str(mainParamters["Cameras"]["Screw"]["Settings"]["id"])],
-                                Op.extractHSValue(mainParamters['Filtros']['HSV']['Screw']["Valores"], 'lower' ),
-                                Op.extractHSValue(mainParamters['Filtros']['HSV']['Screw']["Valores"], 'upper' ),
-                                mainParamters['Mask_Parameters']['Screw']['areaMin'],
-                                mainParamters['Mask_Parameters']['Screw']['areaMax']
-                                )
-            if encontrados == 6:
-                print('descarte("Certo")')
+                if infoCode in nonStopCode:
+                    montar=sum(montar)
+                    print("Montagem finalizada.")
+                    print("Iniciando processo de validação.")
+                    validar = timeit.default_timer()
+                    _, encontrados = Process_Imagew_Scew(
+                                        globals()['frame'+str(mainParamters["Cameras"]["Screw"]["Settings"]["id"])],
+                                        Op.extractHSValue(mainParamters['Filtros']['HSV']['Screw']["Valores"], 'lower' ),
+                                        Op.extractHSValue(mainParamters['Filtros']['HSV']['Screw']["Valores"], 'upper' ),
+                                        mainParamters['Mask_Parameters']['Screw']['areaMin'],
+                                        mainParamters['Mask_Parameters']['Screw']['areaMax']
+                                        )
+                    validar = timeit.default_timer()-validar
+                    if encontrados == 6:
+                        print('descarte("Certo")')
+                        corretas+=1
+                    else:
+                        print(f"Foram fixados apenas {encontrados} parafusos.")
+                        print('descarte("Errado")')
+                        erradas+=1
+                else:
+                    print("Prolema encontado após 625")
+                    break
             else:
-                print(f"Foram fixados apenas {encontrados} parafusos.")
+                print(f"Foram econtrados apenas {len(parcialFuro)} furos.")
                 print('descarte("Errado")')
+                erradas+=1
+            totalUnitario = timeit.default_timer()-totalUnitario
         else:
-            print(f"Foram econtrados apenas {len(parcialFuro)} furos.")
-            print('descarte("Errado")')
+            print("Prolema encontado no 607")
+            break
+    for item in stopReasons:
+        if infoCode == item['code']:
+            print(f"Erro ao tentar montar a {failIn} peça")
+            print(item)
+            await sendWsMessage("update", item)
+
+    descargaCompleta = timeit.default_timer()-descargaCompleta
     await sendWsMessage("startScan_success")
+
 
 async def updateFilter(zipped):
     for xx in mainParamters["Filtros"]["HSV"]:
@@ -652,10 +706,10 @@ async def sendWsMessage(command, parameter=None):
     ws_message["parameter"] = parameter
 
     # ident deixa o objeto mostrando bonito
-    cover_msg = json.dumps(ws_message, indent=2)
+    cover_msg = json.dumps(ws_message, indent=2, ensure_ascii=False)
     await ws_connection.send(cover_msg)
-    # print(25*"-")
-    # print("Enviado: " + cover_msg)
+    print(25*"-")
+    print("Enviado: " + cover_msg)
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                       Exec                                                           #
@@ -669,8 +723,6 @@ if __name__ == "__main__":
     machineParamters = Fast.readJson('Json/machine.json')
     HoleCuts = Fast.readJson("../engine_H/Json/HolePoints.json")
     ScrewCuts = Fast.readJson("../engine_H/Json/ScrewPoints.json")
-    SOC = Fast.readJson("../engine_H/Json/SystemChanges.json")
-    SO = platform.system()
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Json-Variables                        #
@@ -687,12 +739,11 @@ if __name__ == "__main__":
         for K, V in mainParamters["Recover"]["Coords"].items():
             print(f"G0 {K}{V}")
 
-    machineParamters["configuration"]["informations"]["ip"] = SOC["ip"][SO]
-    Fast.writeJson('Json/machine.json', machineParamters)
     
     primeiraConexao = True
 
-    arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
+    sattus, code, arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
+    sattus_nano, code_nano, nano = Fast.SerialConnect(SerialPath='Json/serial.json', name='Nano')
     DebugTypes = mainParamters['Debugs']
 
     if DebugTypes["all"]:
@@ -710,23 +761,29 @@ if __name__ == "__main__":
     zFRP = 100
     eFRP = 50
 
-    xMaxFed = int(machineParamters["configuration"]["informations"]["machine"]["maxFeedrate"]["xMax"]*(xFRP/100))
-    yMaxFed = int(machineParamters["configuration"]["informations"]["machine"]["maxFeedrate"]["yMax"]*(yFRP/100))
-    zMaxFed = int(machineParamters["configuration"]["informations"]["machine"]["maxFeedrate"]["zMax"]*(zFRP/100))
-    eMaxFed = int(machineParamters["configuration"]["informations"]["machine"]["maxFeedrate"]["aMax"]*(eFRP/100))
+    maxFeedrate = machineParamters["configuration"]["informations"]["machine"]["maxFeedrate"]
+    stopReasons = machineParamters["configuration"]["statistics"]["stopReasons"]
+    nonStopCode = machineParamters["configuration"]["statistics"]["nonStopCode"]
+
+    xMaxFed = int(maxFeedrate["xMax"]*(xFRP/100))
+    yMaxFed = int(maxFeedrate["yMax"]*(yFRP/100))
+    zMaxFed = int(maxFeedrate["zMax"]*(zFRP/100))
+    eMaxFed = int(maxFeedrate["aMax"]*(eFRP/100))
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                        Variables                           #
 
     StartedStream = False
     AP = True
 
-    portFront = 5000
-    portBack = 5050
+    portFront = machineParamters["configuration"]["informations"]["port"]
+    portBack = portFront+1
     offSetIp = 0
     prefix = socket.gethostbyname(socket.gethostname()).split('.')
-    # ip = '.'.join(['.'.join(prefix[:len(prefix) - 1]),
-    #               str(int(prefix[len(prefix) - 1]) + offSetIp)])
-    ip = machineParamters["configuration"]["informations"]["ip"]
+    ip = '.'.join(['.'.join(prefix[:len(prefix) - 1]),
+                  str(int(prefix[len(prefix) - 1]) + offSetIp)])
+
+    machineParamters["configuration"]["informations"]["ip"] = ip
+    Fast.writeJson('Json/machine.json', machineParamters)
 
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
@@ -738,40 +795,38 @@ if __name__ == "__main__":
     stalker0 = ViewAnother(thread0, 5)
     appTh = AppThread(ip, portBack)
     
-
-    if AP:
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                          Routes                            #
 
-        @app.route('/')
-        def homepage():
-            return 'App vem Aqui?.'
+    @app.route('/')
+    def homepage():
+        return 'App vem Aqui?.'
 
-        @app.route('/exit', methods=['GET'])
-        def shutdown():
-            print("Pediu pra parar.")
-            thread0.stop()
-            thread1.stop()
-            shutdown_server()
-            print("Esperando Threads Serem Finalizadas")
-            thread0.join()
-            thread1.join()
-            appTh.join()
-            print("Threads Finalizadas com sucesso.")
-            return "Server Fechado"
+    @app.route('/exit', methods=['GET'])
+    def shutdown():
+        print("Pediu pra parar.")
+        thread0.stop()
+        thread1.stop()
+        shutdown_server()
+        print("Esperando Threads Serem Finalizadas")
+        thread0.join()
+        thread1.join()
+        appTh.join()
+        print("Threads Finalizadas com sucesso.")
+        return "Server Fechado"
 
-        @app.route('/config', methods=['GET', 'POST'])
-        def all_data():
-            if request.method == 'POST':
-                post_data = request.get_json()
-                print(post_data)
-            return jsonify({
-                'status': 'success',
-                'machineParamters': mainParamters
-            })
+    @app.route('/config', methods=['GET', 'POST'])
+    def all_data():
+        if request.method == 'POST':
+            post_data = request.get_json()
+            print(post_data)
+        return jsonify({
+            'status': 'success',
+            'machineParamters': mainParamters
+        })
 
-        @app.route('/<valor>/<id>') 
-        def video_feed(valor, id):
+    @app.route('/<valor>/<id>') 
+    def video_feed(valor, id):
             global LastCamID
             Esse = getattr(globals()['thread'+str(id)], "Procs")
             for processo in Esse:
@@ -783,102 +838,43 @@ if __name__ == "__main__":
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                    Inside-Async-Def                        #
 
-        async def sendGcode(obj):
-            #Fast.sendGCODE(arduino, str(obj))
-            print("Gcode:" + obj)
-            return
+    async def sendGcode(obj):
+        #Fast.sendGCODE(arduino, str(obj))
+        print("Gcode:" + obj)
+        return
 
-        async def actions(message):
-            # Verifica se afunção requisita existe e executa.
-            command = message["command"]
+    async def actions(message):
+        # Verifica se afunção requisita existe e executa.
+        command = message["command"]
+        try:
+            funcs = eval(command)
             try:
-                funcs = eval(command)
-                try:
-                    await funcs(message["parameter"])
-                except KeyError:
-                    await funcs()
-            except NameError:
-                print(command+"() não é uma função válida.")
+                await funcs(message["parameter"])
+            except KeyError:
+                await funcs()
+        except NameError as nmr:
+            print(nmr)
+            print(command+"() não é uma função válida.")
 
-        async def echo(websocket, path):
-            global ws_connection
-            ws_connection = websocket
-            async for message in ws_connection:
-                print(json.loads(message))
-                await actions(json.loads(message))
+    async def echo(websocket, path):
+        global ws_connection
+        ws_connection = websocket
+        async for message in ws_connection:
+            print(json.loads(message))
+            await actions(json.loads(message))
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Server-Start                          #
 
-        asyncio.get_event_loop().run_until_complete(
-            websockets.serve(echo, ip, portFront))
-
-        print(f"server iniciado em {ip}:{portFront}")
+    asyncio.get_event_loop().run_until_complete(
+        websockets.serve(echo, ip, portFront))
+    print(f"server iniciado em {ip}:{portFront}")
+    try:
+        asyncio.get_event_loop().run_forever()
+    except KeyboardInterrupt:
+        print("Fechando conexão com webscokets na base da força")
         try:
-            asyncio.get_event_loop().run_forever()
-        except KeyboardInterrupt:
-            print("Fechando conexão com webscokets na base da força")
-            try:
-                cv2.destroyAllWindows()
-            except cv2.error:
-                pass
-            exit(200)
-    
-    else:
-        thread1 = CamThread("1", 1)
-        thread0 = CamThread("0", 0)
-        thread1.start()
-        thread0.start()
-        while True:
-            try:
-                if type(globals()['frame1']) == np.ndarray:
-                    break
-            except KeyError:
-                continue
-
-        Process = 'Hole'
-        pathImages = '.\Images'
-        Read = '\A3.jpg' if Process == 'Hole' else '\P_ (3).jpg'
-        Process = 'Hole'
-        Image = cv2.imread(pathImages + Read)
-        Quadrants = Op.meshImg(Image)
-
-        line = 1
-        column = 1
-        Image = Quadrants[line][column]
-
-        mainParamters = Fast.readJson('Json/config.json')
-        HSVJson = mainParamters['Filtros']['HSV']
-        Processos = ['Edge', 'Screw']
-        HSVjsonIndex = 'Hole'
-
-        HSVValues_Hole = HSVJson[str(HSVjsonIndex)]['Valores']
-        Process_Values = mainParamters['Mask_Parameters'][str(Process)]
-
-        for values in Process_Values:
-            locals()[values] = Process_Values[values]
-
-        pFA = (50, 50)
-        pFB = (100, 60)
-        fixPoint = (pFB[0], int(pFA[1] + ((pFB[1] - pFA[1]) / 2)))
-
-        T0A = timeit.default_timer()
-
-        # Exibe o conteúdo da variavel 'frame1'
-        while True:
-            _, img = findHole(Image, areaMin, areaMax, perimeter, HSVValues_Hole, fixPoint)
-            _, img2 = findScrew(Image, HSVJson, mainParamters, Processos)
-            # cv2.imshow('A', img)
-            # cv2.imshow('B', img2)
-            key = cv2.waitKey(1)
-            if key == 27:
-                break
-
-        # Finaliza as threads.
-        # cv2.destroyWindow("A")
-        # cv2.destroyWindow("B")
-
-        # Resultados = [findHole(Image, areaMin, areaMax, perimeter, HSVValues_Hole, fixPoint),
-        #               findScrew(Image, HSVJson, mainParamters, Processos)]
-        print("Tempo de Execução:", round(timeit.default_timer() - T0A, 3))
- 
+            cv2.destroyAllWindows()
+        except cv2.error:
+            pass
+        exit(200)

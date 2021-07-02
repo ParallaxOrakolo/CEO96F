@@ -38,7 +38,7 @@ export default {
   },
 
   created (){
-    this.SEND_MESSAGE({command: actions.START_SCAN})
+    this.SEND_MESSAGE({command: actions.START_SCAN, paramter:2})
   },
 
   beforeDestroy() {

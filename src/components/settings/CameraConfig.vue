@@ -11,7 +11,7 @@
             <div class="d-flex flex-column justify-space-between align-center">
               <v-img
                 :width="cam_width"
-                :src="`http://${configuration.informations.ip}:5050/${radios}`"
+                :src="`http://${configuration.informations.ip}:${configuration.informations.port+1}/${radios}`"
               ></v-img>
               <v-slider
                 v-model="cam_width"
@@ -39,12 +39,6 @@
                   label="S-1"
                   value="Screw/1"
                   @click="process = 'Screw';
-                  SEND_MESSAGE({ command: actions.UPDATE_SLIDER, parameter:process});"
-                ></v-radio>
-                <v-radio
-                  label="Edge-1"
-                  value="Edge/1"
-                  @click="process = 'Edge';
                   SEND_MESSAGE({ command: actions.UPDATE_SLIDER, parameter:process});"
                 ></v-radio>
                 <v-divider class="mx-4" vertical></v-divider>
