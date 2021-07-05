@@ -22,6 +22,7 @@ import json
 import cv2
 
 import timeit
+# Adionando outro comentario para teste.
 subprocess.run("git checkout Auto_Pull")
 subprocess.run("git fetch")
 if "Your branch is behind" not in subprocess.check_output("git status", shell=True, text=True):
