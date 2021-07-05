@@ -1,19 +1,23 @@
 {
     "configuration": {
         "informations": {
-            "ip": "192.168.1.57",
+            "ip": "192.168.18.8",
             "connectionId": 123456,
             "port": 5000,
             "userList": [
                 {
                     "name": "Henrycke",
                     "id": "12462584986"
+                },
+                {
+                    "name": "Rodrigo Gomes",
+                    "id": "123"
                 }
             ],
             "version": {
-                "backend": "0",
-                "frontend": "0",
-                "marlin": "0"
+                "backend": "0.1.0",
+                "frontend": "0.1.1",
+                "marlin": "2.0.0"
             },
             "machine": {
                 "limits": {

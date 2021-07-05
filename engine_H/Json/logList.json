@@ -189,6 +189,56 @@
             "code": 118,
             "description": "Processo de Scan terminou",
             "date": 1625493511
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625496570
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625496573
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625496573
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625496573
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625496614
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625496614
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625497227
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625497230
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625497230
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625497230
         }
     ]
 }
