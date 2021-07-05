@@ -22,14 +22,6 @@ import json
 import cv2
 
 import timeit
-# Comentario para teste.
-subprocess.run(["git", "checkout", "Auto_Pull"])
-subprocess.run(["git", "fetch"])
-if "Your branch is behind" in str(subprocess.check_output(["git", "status"])):
-    print("Algumas alterações foram detectadas, atualizando..")
-    subprocess.run(["git", "pull"])
-else:
-    print("Você já está rodando a ultima versão disponivel")
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                      JSON                                                            #
 
@@ -531,12 +523,20 @@ def shutdown_server():
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                 Async-Functions                                                      #
 
-async def checkUpdate():
-    if "Your branch is up to date" not in subprocess.check_output("git checkout", shell=True, text=True):
+async def checkUpdate(branch="Auto_Pull"):
+    subprocess.run(["git", "checkout", branch])
+    subprocess.run(["git", "fetch"])
+    if "Your branch is behind" in str(subprocess.check_output(["git", "status"])):
         print("Algumas alterações foram detectadas, atualizando..")
-        subprocess.run("git pull")
+        subprocess.run(["git", "pull"])
+        resp = str(subprocess.check_output(["git", "log", "-1", "--oneline"]))
+        logRequest({
+            "code":resp[2:9],
+            "description":f"[Auto_Update]: {resp[9:len(resp)-3]}",
+            "date":int(round(datetime.now().timestamp()))})
     else:
         print("Você já está rodando a ultima versão disponivel")
+
 
 async def updateSlider(processos):
     machineParamters['configuration']['camera']['process'] = processos
