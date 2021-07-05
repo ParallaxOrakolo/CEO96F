@@ -1,0 +1,12 @@
+{
+  "Ramps 1.4": {
+    "porta": "COM12",
+    "velocidade": 250000
+  },
+
+  "Nano":{
+    "porta":"/dev/ttyS0",
+    "velocidade":9600
+  }
+  
+}

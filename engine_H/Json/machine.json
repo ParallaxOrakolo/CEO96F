@@ -1,0 +1,193 @@
+{
+    "configuration": {
+        "informations": {
+            "ip": "192.168.1.57",
+            "connectionId": 123456,
+            "port": 5000,
+            "userList": [
+                {
+                    "name": "Henrycke",
+                    "id": "12462584986"
+                }
+            ],
+            "version": {
+                "backend": "0",
+                "frontend": "0",
+                "marlin": "0"
+            },
+            "machine": {
+                "limits": {
+                    "xMin": 0,
+                    "yMin": 0,
+                    "zMin": 0,
+                    "aMin": 0,
+                    "bMin": 0,
+                    "xMax": 250,
+                    "yMax": 45,
+                    "zMax": 150,
+                    "aMax": 360,
+                    "bMax": 360
+                },
+                "maxFeedrate": {
+                    "xMax": 11000,
+                    "yMax": 3000,
+                    "zMax": 11000,
+                    "aMax": 50000,
+                    "bMax": 50000
+                },
+                "defaultPosition": {
+                    "pegaTombador": {
+                        "X": 5,
+                        "Y": 49,
+                        "Z": null,
+                        "E": 0
+                    },
+                    "analisaFoto": {
+                        "X": 80,
+                        "Y": 9,
+                        "Z": null,
+                        "E": null
+                    },
+                    "descarteErrado": {
+                        "X": 230,
+                        "Y": 0,
+                        "Z": null,
+                        "E": null
+                    },
+                    "descarteCerto": {
+                        "X": 0,
+                        "Y": 0,
+                        "Z": null,
+                        "E": 0
+                    },
+                    "camera0Centro": {
+                        "X": 74.5,
+                        "Y": 7.5,
+                        "Z": null,
+                        "E": null
+                    },
+                    "camera1Centro": {
+                        "X": 230,
+                        "Y": 0,
+                        "Z": null,
+                        "E": null
+                    },
+                    "parafusadeiraCentro": {
+                        "X": 240,
+                        "Y": 16,
+                        "Z": null,
+                        "E": null
+                    }
+                }
+            }
+        },
+        "statistics": {
+            "stopReasons": [
+                {
+                    "code": 1,
+                    "description": "Garra não pegou",
+                    "listed": true,
+                    "type": "error"
+                },
+                {
+                    "code": 2,
+                    "description": "Alimentador sem peça",
+                    "listed": false,
+                    "type": "warning"
+                },
+                {
+                    "code": 99,
+                    "description": "Troca de turno",
+                    "listed": true,
+                    "type": "info"
+                }
+            ],
+            "nonStopCode": [
+                0,
+                "000",
+                "ok"
+            ],
+            "functionsCode": {
+                "PI": {
+                    "code": 111,
+                    "description": "Progama iniciou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "PT": {
+                    "code": 112,
+                    "description": "Programa terminou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "AVI": {
+                    "code": 113,
+                    "description": "Auto verificiação iniciou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "AVT": {
+                    "code": 114,
+                    "description": "Auto verificiação terminou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "IDI": {
+                    "code": 115,
+                    "description": "Identificação iniciou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "IDT": {
+                    "code": 116,
+                    "description": "Identificação terminou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "VMI": {
+                    "code": 115,
+                    "description": "Validação de montagem iniciou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "VMT": {
+                    "code": 116,
+                    "description": "Validação de montagem terminou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "PSI": {
+                    "code": 117,
+                    "description": "Processo de Scan Iniciou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "PST": {
+                    "code": 118,
+                    "description": "Processo de Scan terminou",
+                    "listed": false,
+                    "type": "info"
+                }
+            }
+        },
+        "camera": {
+            "process": "Hole",
+            "hue": [
+                26,
+                55
+            ],
+            "sat": [
+                70,
+                240
+            ],
+            "val": [
+                80,
+                150
+            ],
+            "are": [
+                200,
+                50000
+            ]
+        }
+    }
+}

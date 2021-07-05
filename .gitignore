@@ -1,10 +1,14 @@
 .gitignore
 .gitattributes
-Log/api.log
-.idea
-Images
-Ignore
+.idea/
+.vscode/
+
+engine_H/Camera Calib/RawData/
+engine_H/Camera Calib/ValidateData/
+engine_H/__pycache__/
+engine_H/Log/api.log
+engine_H/Images/
+engine_H/Ignore/
+
 __pycache__/
-/Camera Calib/RawData/
-/Camera Calib/ValidateData/
-/node_modules
+node_modules/

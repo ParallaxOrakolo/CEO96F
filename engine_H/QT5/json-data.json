@@ -1,0 +1,130 @@
+{
+    "Filtros": {
+        "HSV": {
+            "0": {
+                "Application": "Hole",
+                "Valores": {
+                    "lower": [
+                        78,
+                        59,
+                        6
+                    ],
+                    "upper": [
+                        84,
+                        255,
+                        124
+                    ]
+                }
+            },
+            "1": {
+                "Application": "Edge",
+                "Valores": {
+                    "lower": [
+                        13,
+                        3,
+                        119
+                    ],
+                    "upper": [
+                        128,
+                        40,
+                        241
+                    ]
+                }
+            },
+            "2": {
+                "Application": "Screw",
+                "Valores": {
+                    "lower": [
+                        0,
+                        4,
+                        38
+                    ],
+                    "upper": [
+                        42,
+                        93,
+                        246
+                    ]
+                }
+            }
+        }
+    },
+    "Debugs": {
+        "all": false,
+        "print": false,
+        "pictures": false,
+        "markings": false,
+        "realTime": false,
+        "testControls": false
+    },
+    "Mask_Parameters": {
+        "Hole": {
+            "perimeter": 5,
+            "areaMin": 3500,
+            "areaMax": 4500
+        },
+        "Edge": {
+            "areaMin": 15000,
+            "areaMax": 50000
+        },
+        "Screw": {
+            "areaMin": 10002,
+            "areaMax": 20169
+        }
+    },
+    "Cameras": {
+        "Hole": {
+            "Settings": {
+                "id": 0,
+                "scale": 0.04276480601654536,
+                "frame_height": 1280,
+                "frame_width": 720
+            },
+            "Properties": {
+                "BRIGHTNESS":0,
+                "SATURATION":64,
+                "BACKLIGHT":0,
+                "EXPOSURE":-4,
+                "CONTRAST":32,
+                "GAMMA":300,
+                "GAIN":64,
+                "HUE": 0
+            }
+        },
+        "Edge": {
+            "Settings": {
+                "id": 1,
+                "scale": 0.04276480601654536,
+                "frame_height": 1280,
+                "frame_width": 720
+            },
+            "Properties": {
+                "BRIGHTNESS":0,
+                "SATURATION":64,
+                "BACKLIGHT":0,
+                "EXPOSURE":-4,
+                "CONTRAST":32,
+                "GAMMA":300,
+                "GAIN":64,
+                "HUE": 0
+            }
+        },
+        "Screw": {
+            "Settings": {
+                "id": 2,
+                "scale": 0.04276480601654536,
+                "frame_height": 1280,
+                "frame_width": 720
+            },
+            "Properties": {
+                "BRIGHTNESS":0,
+                "SATURATION":64,
+                "BACKLIGHT":0,
+                "EXPOSURE":-4,
+                "CONTRAST":32,
+                "GAMMA":300,
+                "GAIN":64,
+                "HUE": 0
+            }
+        }
+    }
+}
