@@ -570,9 +570,35 @@ async def startAutoCheck():
         await updateSlider('Normal')
         try:
             status, code, arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
-            status_nano, code_nano, nano = Fast.SerialConnect(SerialPath='Json/serial.json', name='Nano')
-        except TypeError as err:
-            print("Erro de compatibilidade? - Acontece quando a placa não é encontrada?")
+            if status:
+                await logRequest({
+                        "code":code, 
+                        "description":"[INFO]: Conexão com a placa 'Ramps 1.4' estabelecida.",
+                        "date":int(round(datetime.now().timestamp()))})
+            else:
+                raise TypeError
+
+            try:
+                status_nano, code_nano, nano = Fast.SerialConnect(SerialPath='Json/serial.json', name='Nano')
+                if status_nano:
+                    await logRequest({
+                        "code":code_nano, 
+                        "description":"[INFO]: Conexão com a placa 'Nano' estabelecida.",
+                        "date":int(round(datetime.now().timestamp()))})
+                else:
+                    raise TypeError 
+
+            except TypeError:
+                await logRequest({"code":-200, 
+                    "description":"[ERRO]: Conexão com a placa 'Nano' não pode estabelecida.",
+                    "date":int(round(datetime.now().timestamp()))})
+
+        except TypeError:
+            await logRequest({"code":-200, 
+                              "description":"[ERRO]: Conexão com a placa 'Ramps 1.4' não pode estabelecida.",
+                              "date":int(round(datetime.now().timestamp()))})
+
+
         if not status:
             await sendWsMessage('erro', {'codigo': code, 'menssagem':arduino })
             AutoCheckStatus = False
@@ -789,8 +815,8 @@ if __name__ == "__main__":
     
     primeiraConexao = True
 
-    sattus, code, arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
-    sattus_nano, code_nano, nano = Fast.SerialConnect(SerialPath='Json/serial.json', name='Nano')
+    # sattus, code, arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
+    # sattus_nano, code_nano, nano = Fast.SerialConnect(SerialPath='Json/serial.json', name='Nano')
 
     DebugTypes = mainParamters['Debugs']
 
