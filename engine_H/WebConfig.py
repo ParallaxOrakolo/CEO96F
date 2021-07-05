@@ -352,6 +352,18 @@ def HomingAll():
 def verificaCLP():
     return random.choice(["ok","ok","ok","ok","ok","ok","ok","ok","ok","ok",1,"ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok",])
 
+async def manualStop():
+    global intencionalStop
+    intencionalStop = True
+    await asyncio.sleep(0.5)
+
+async def logRequest(new_log=False):
+    global logList
+    if new_log:
+        logList["log"].append(new_log)
+    Fast.writeJson('Json/logList.json', logList)
+    await sendWsMessage("update", logList)
+    return
 
 def Parafusa(pos, voltas=2, mm=0, servo=0, angulo=0):
         #Fast.M400(arduino)
@@ -543,25 +555,10 @@ async def funcs():
     pass
 
 
-async def manualStop():
-    global intencionalStop
-    intencionalStop = True
-    await asyncio.sleep(0.5)
-
-
-async def logRequest(new_log=False):
-    global logList
-    if new_log:
-        logList["log"].append(new_log)
-    Fast.writeJson('Json/logList.json', logList)
-    await sendWsMessage("update", logList)
-    return
-
-
 async def startAutoCheck():
-    # await logRequest({"code":functionLog["AVI"]["code"], 
-    #                   "description":functionLog["AVI"]["description"],
-    #                   "date":int(round(datetime.now().timestamp()))})
+    await logRequest({"code":functionLog["AVI"]["code"], 
+                      "description":functionLog["AVI"]["description"],
+                      "date":int(round(datetime.now().timestamp()))})
 
     global primeiraConexao
     AutoCheckStatus = True
@@ -570,35 +567,10 @@ async def startAutoCheck():
         await updateSlider('Normal')
         try:
             status, code, arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
-            if status:
-                await logRequest({
-                        "code":code, 
-                        "description":"[INFO]: Conexão com a placa 'Ramps 1.4' estabelecida.",
-                        "date":int(round(datetime.now().timestamp()))})
-            else:
-                raise TypeError
-
-            try:
-                status_nano, code_nano, nano = Fast.SerialConnect(SerialPath='Json/serial.json', name='Nano')
-                if status_nano:
-                    await logRequest({
-                        "code":code_nano, 
-                        "description":"[INFO]: Conexão com a placa 'Nano' estabelecida.",
-                        "date":int(round(datetime.now().timestamp()))})
-                else:
-                    raise TypeError 
-
-            except TypeError:
-                await logRequest({"code":-200, 
-                    "description":"[ERRO]: Conexão com a placa 'Nano' não pode estabelecida.",
-                    "date":int(round(datetime.now().timestamp()))})
-
-        except TypeError:
-            await logRequest({"code":-200, 
-                              "description":"[ERRO]: Conexão com a placa 'Ramps 1.4' não pode estabelecida.",
-                              "date":int(round(datetime.now().timestamp()))})
-
-
+            status_nano, code_nano, nano = Fast.SerialConnect(SerialPath='Json/serial.json', name='Nano')
+        except TypeError as err:
+            print("Erro de compatibilidade? - Acontece quando a placa não é encontrada?")
+            status, code, arduino = False, -200, "Backend ERROR: '\n'"+str(err)
         if not status:
             await sendWsMessage('erro', {'codigo': code, 'menssagem':arduino })
             AutoCheckStatus = False
@@ -618,9 +590,9 @@ async def startAutoCheck():
         print("Transmissão de vídeo iniciada.")
     await sendWsMessage("startAutoCheck_success")
 
-    # await logRequest({"code":functionLog["AVT"]["code"], 
-    #                   "description":functionLog["AVT"]["description"],
-    #                   "date":int(round(datetime.now().timestamp()))})
+    await logRequest({"code":functionLog["AVT"]["code"], 
+                      "description":functionLog["AVT"]["description"],
+                      "date":int(round(datetime.now().timestamp()))})
 
     return AutoCheckStatus
 
@@ -628,9 +600,9 @@ async def startAutoCheck():
 async def startScan(qtd=9999):
     global intencionalStop
 
-    # await logRequest({"code":functionLog["PSI"]["code"], 
-    #                   "description":functionLog["PSI"]["description"],
-    #                   "date":int(round(datetime.now().timestamp()))})
+    await logRequest({"code":functionLog["PSI"]["code"], 
+                      "description":functionLog["PSI"]["description"],
+                      "date":int(round(datetime.now().timestamp()))})
 
     print(f"Foi requisitado a montagem de {qtd} peças certas.")
     erradas = 0
@@ -653,9 +625,9 @@ async def startScan(qtd=9999):
         PegaObjeto()
         parcialFuro =['', '', '', '']
 
-        # await logRequest({"code":functionLog["IDI"]["code"], 
-        #               "description":functionLog["IDI"]["description"],
-        #               "date":int(round(datetime.now().timestamp()))})
+        await logRequest({"code":functionLog["IDI"]["code"], 
+                      "description":functionLog["IDI"]["description"],
+                      "date":int(round(datetime.now().timestamp()))})
 
         # parcialFuro = Processo_Hole(globals()['frame'+str(mainParamters["Cameras"]["Hole"]["Settings"]["id"])],
         #               mainParamters['Mask_Parameters']['Hole']['areaMin'],
@@ -663,9 +635,9 @@ async def startScan(qtd=9999):
         #               mainParamters['Mask_Parameters']['Hole']['perimeter'],
         #               mainParamters['Filtros']['HSV']['Hole']['Valores'])
 
-        # await logRequest({"code":functionLog["IDT"]["code"], 
-        #               "description":functionLog["IDT"]["description"],
-        #               "date":int(round(datetime.now().timestamp()))})
+        await logRequest({"code":functionLog["IDT"]["code"], 
+                      "description":functionLog["IDT"]["description"],
+                      "date":int(round(datetime.now().timestamp()))})
 
         infoCode = verificaCLP()
         print("~~"*10)
@@ -743,9 +715,9 @@ async def startScan(qtd=9999):
     intencionalStop = False
     await sendWsMessage("startScan_success")
 
-    # await logRequest({"code":functionLog["PST"]["code"], 
-    #                   "description":functionLog["PST"]["description"],
-    #                   "date":int(round(datetime.now().timestamp()))})
+    await logRequest({"code":functionLog["PST"]["code"], 
+                      "description":functionLog["PST"]["description"],
+                      "date":int(round(datetime.now().timestamp()))})
 
 
 async def updateFilter(zipped):
@@ -815,9 +787,8 @@ if __name__ == "__main__":
     
     primeiraConexao = True
 
-    # sattus, code, arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
-    # sattus_nano, code_nano, nano = Fast.SerialConnect(SerialPath='Json/serial.json', name='Nano')
-
+    sattus, code, arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
+    sattus_nano, code_nano, nano = Fast.SerialConnect(SerialPath='Json/serial.json', name='Nano')
     DebugTypes = mainParamters['Debugs']
 
     if DebugTypes["all"]:
