@@ -22,8 +22,9 @@ import json
 import cv2
 
 import timeit
-# Adicionando um comentário para testar a função autopull
-if "Your branch is up to date" not in subprocess.check_output("git checkout", shell=True, text=True):
+subprocess.run("git checkout Auto_Pull")
+subprocess.run("git fetch")
+if "Your branch is behind" not in subprocess.check_output("git status", shell=True, text=True):
     print("Algumas alterações foram detectadas, atualizando..")
     subprocess.run("git pull")
 else:
