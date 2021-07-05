@@ -205,7 +205,9 @@ async def stopReasonsResponse(obj):
     print(configuration["configuration"]["statistics"]["stopReasonsList"])
     return
 
-async def log():
+async def log(new_log=False):
+    if new_log:
+        logList["log"].append(new_log)
     await sendWsMessage("update", logList)
     return
 

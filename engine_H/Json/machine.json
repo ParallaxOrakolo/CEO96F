@@ -107,9 +107,68 @@
                 "000",
                 "ok"
             ],
-            "stopReasonsList": [
-                null
-            ]
+            "functionsCode": {
+                "PI": {
+                    "code": 111,
+                    "description": "Progama iniciou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "PT": {
+                    "code": 112,
+                    "description": "Programa terminou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "AVI": {
+                    "code": 113,
+                    "description": "Auto verificiação iniciou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "AVT": {
+                    "code": 114,
+                    "description": "Auto verificiação terminou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "IDI": {
+                    "code": 115,
+                    "description": "Identificação iniciou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "IDT": {
+                    "code": 116,
+                    "description": "Identificação terminou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "VMI": {
+                    "code": 115,
+                    "description": "Validação de montagem iniciou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "VMT": {
+                    "code": 116,
+                    "description": "Validação de montagem terminou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "PSI": {
+                    "code": 117,
+                    "description": "Processo de Scan Iniciou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "PST": {
+                    "code": 118,
+                    "description": "Processo de Scan terminou",
+                    "listed": false,
+                    "type": "info"
+                }
+            }
         },
         "camera": {
             "process": "Hole",

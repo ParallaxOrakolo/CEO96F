@@ -13,6 +13,7 @@ import platform
 import socket
 import cv2
 import time
+from datetime import datetime
 import random
 import websockets
 import asyncio
@@ -20,7 +21,6 @@ import socket
 import json
 
 import timeit
-
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                      JSON                                                            #
 
@@ -352,6 +352,18 @@ def HomingAll():
 def verificaCLP():
     return random.choice(["ok","ok","ok","ok","ok","ok","ok","ok","ok","ok",1,"ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok",])
 
+async def manualStop():
+    global intencionalStop
+    intencionalStop = True
+    await asyncio.sleep(0.5)
+
+async def logRequest(new_log=False):
+    global logList
+    if new_log:
+        logList["log"].append(new_log)
+    Fast.writeJson('Json/logList.json', logList)
+    await sendWsMessage("update", logList)
+    return
 
 def Parafusa(pos, voltas=2, mm=0, servo=0, angulo=0):
         #Fast.M400(arduino)
@@ -544,6 +556,10 @@ async def funcs():
 
 
 async def startAutoCheck():
+    await logRequest({"code":functionLog["AVI"]["code"], 
+                      "description":functionLog["AVI"]["description"],
+                      "date":int(round(datetime.now().timestamp()))})
+
     global primeiraConexao
     AutoCheckStatus = True
     if primeiraConexao:
@@ -573,12 +589,25 @@ async def startAutoCheck():
         appTh.start()
         print("Transmissão de vídeo iniciada.")
     await sendWsMessage("startAutoCheck_success")
+
+    await logRequest({"code":functionLog["AVT"]["code"], 
+                      "description":functionLog["AVT"]["description"],
+                      "date":int(round(datetime.now().timestamp()))})
+
     return AutoCheckStatus
 
 
 async def startScan(qtd=9999):
+    global intencionalStop
+
+    await logRequest({"code":functionLog["PSI"]["code"], 
+                      "description":functionLog["PSI"]["description"],
+                      "date":int(round(datetime.now().timestamp()))})
+
+    print(f"Foi requisitado a montagem de {qtd} peças certas.")
     erradas = 0
     corretas = 0
+    rodada = 0
     descargaCompleta = timeit.default_timer()
     cameCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['camera0Centro']
     parafCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusadeiraCentro']
@@ -590,16 +619,26 @@ async def startScan(qtd=9999):
 
     infoCode = "ok"
     print(infoCode)
-    for mnt in range(qtd):
-        failIn = mnt
+    while qtd != corretas and not intencionalStop:
+        rodada +=1
         totalUnitario = timeit.default_timer()
         PegaObjeto()
         parcialFuro =['', '', '', '']
+
+        await logRequest({"code":functionLog["IDI"]["code"], 
+                      "description":functionLog["IDI"]["description"],
+                      "date":int(round(datetime.now().timestamp()))})
+
         # parcialFuro = Processo_Hole(globals()['frame'+str(mainParamters["Cameras"]["Hole"]["Settings"]["id"])],
         #               mainParamters['Mask_Parameters']['Hole']['areaMin'],
         #               mainParamters['Mask_Parameters']['Hole']['areaMax'],
         #               mainParamters['Mask_Parameters']['Hole']['perimeter'],
         #               mainParamters['Filtros']['HSV']['Hole']['Valores'])
+
+        await logRequest({"code":functionLog["IDT"]["code"], 
+                      "description":functionLog["IDT"]["description"],
+                      "date":int(round(datetime.now().timestamp()))})
+
         infoCode = verificaCLP()
         print("~~"*10)
         print("604: Info code:", infoCode)
@@ -668,12 +707,17 @@ async def startScan(qtd=9999):
             break
     for item in stopReasons:
         if infoCode == item['code']:
-            print(f"Erro ao tentar montar a {failIn} peça")
+            print(f"Erro ao tentar montar a {rodada} peça")
             print(item)
             await sendWsMessage("update", item)
 
     descargaCompleta = timeit.default_timer()-descargaCompleta
+    intencionalStop = False
     await sendWsMessage("startScan_success")
+
+    await logRequest({"code":functionLog["PST"]["code"], 
+                      "description":functionLog["PST"]["description"],
+                      "date":int(round(datetime.now().timestamp()))})
 
 
 async def updateFilter(zipped):
@@ -721,6 +765,7 @@ if __name__ == "__main__":
 
     mainParamters = Fast.readJson('Json/config.json')
     machineParamters = Fast.readJson('Json/machine.json')
+    logList = Fast.readJson('Json/logList.json')
     HoleCuts = Fast.readJson("../engine_H/Json/HolePoints.json")
     ScrewCuts = Fast.readJson("../engine_H/Json/ScrewPoints.json")
 
@@ -773,6 +818,7 @@ if __name__ == "__main__":
     #                        Variables                           #
 
     StartedStream = False
+    intencionalStop = False
     AP = True
 
     portFront = machineParamters["configuration"]["informations"]["port"]
@@ -785,6 +831,7 @@ if __name__ == "__main__":
     machineParamters["configuration"]["informations"]["ip"] = ip
     Fast.writeJson('Json/machine.json', machineParamters)
 
+    functionLog = machineParamters['configuration']["statistics"]["functionsCode"]
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Start-Threads                         #
