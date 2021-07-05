@@ -1,9 +1,194 @@
 {
     "log": [
         {
-            "code": -200,
-            "description": "[ERRO]: Conexão com a placa 'Ramps 1.4' não pode estabelecida.",
-            "date": 1625501052
+            "code": 504,
+            "description": "Programa iniciado",
+            "date": 1625490628
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625493461
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625493461
+        },
+        {
+            "code": 117,
+            "description": "Processo de Scan Iniciou",
+            "date": 1625493475
+        },
+        {
+            "code": 115,
+            "description": "Identificação iniciou",
+            "date": 1625493475
+        },
+        {
+            "code": 116,
+            "description": "Identificação terminou",
+            "date": 1625493475
+        },
+        {
+            "code": 115,
+            "description": "Identificação iniciou",
+            "date": 1625493475
+        },
+        {
+            "code": 116,
+            "description": "Identificação terminou",
+            "date": 1625493475
+        },
+        {
+            "code": 115,
+            "description": "Identificação iniciou",
+            "date": 1625493475
+        },
+        {
+            "code": 116,
+            "description": "Identificação terminou",
+            "date": 1625493475
+        },
+        {
+            "code": 115,
+            "description": "Identificação iniciou",
+            "date": 1625493475
+        },
+        {
+            "code": 116,
+            "description": "Identificação terminou",
+            "date": 1625493475
+        },
+        {
+            "code": 115,
+            "description": "Identificação iniciou",
+            "date": 1625493475
+        },
+        {
+            "code": 116,
+            "description": "Identificação terminou",
+            "date": 1625493475
+        },
+        {
+            "code": 115,
+            "description": "Identificação iniciou",
+            "date": 1625493475
+        },
+        {
+            "code": 116,
+            "description": "Identificação terminou",
+            "date": 1625493475
+        },
+        {
+            "code": 115,
+            "description": "Identificação iniciou",
+            "date": 1625493475
+        },
+        {
+            "code": 116,
+            "description": "Identificação terminou",
+            "date": 1625493475
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625493507
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625493507
+        },
+        {
+            "code": 117,
+            "description": "Processo de Scan Iniciou",
+            "date": 1625493511
+        },
+        {
+            "code": 115,
+            "description": "Identificação iniciou",
+            "date": 1625493511
+        },
+        {
+            "code": 116,
+            "description": "Identificação terminou",
+            "date": 1625493511
+        },
+        {
+            "code": 115,
+            "description": "Identificação iniciou",
+            "date": 1625493511
+        },
+        {
+            "code": 116,
+            "description": "Identificação terminou",
+            "date": 1625493511
+        },
+        {
+            "code": 115,
+            "description": "Identificação iniciou",
+            "date": 1625493511
+        },
+        {
+            "code": 116,
+            "description": "Identificação terminou",
+            "date": 1625493511
+        },
+        {
+            "code": 115,
+            "description": "Identificação iniciou",
+            "date": 1625493511
+        },
+        {
+            "code": 116,
+            "description": "Identificação terminou",
+            "date": 1625493511
+        },
+        {
+            "code": 115,
+            "description": "Identificação iniciou",
+            "date": 1625493511
+        },
+        {
+            "code": 116,
+            "description": "Identificação terminou",
+            "date": 1625493511
+        },
+        {
+            "code": 115,
+            "description": "Identificação iniciou",
+            "date": 1625493511
+        },
+        {
+            "code": 116,
+            "description": "Identificação terminou",
+            "date": 1625493511
+        },
+        {
+            "code": 115,
+            "description": "Identificação iniciou",
+            "date": 1625493511
+        },
+        {
+            "code": 116,
+            "description": "Identificação terminou",
+            "date": 1625493511
+        },
+        {
+            "code": 115,
+            "description": "Identificação iniciou",
+            "date": 1625493511
+        },
+        {
+            "code": 116,
+            "description": "Identificação terminou",
+            "date": 1625493511
+        },
+        {
+            "code": 118,
+            "description": "Processo de Scan terminou",
+            "date": 1625493511
         }
     ]
 }
