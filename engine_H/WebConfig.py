@@ -22,12 +22,11 @@ import json
 import cv2
 
 import timeit
-# Adionando outro comentario para teste.
-subprocess.run("git checkout Auto_Pull")
-subprocess.run("git fetch")
-if "Your branch is behind" not in subprocess.check_output("git status", shell=True, text=True):
+subprocess.run(["git", "checkout", "Auto_Pull"])
+subprocess.run(["git", "fetch"])
+if "Your branch is behind" in str(subprocess.check_output(["git", "status"])):
     print("Algumas alterações foram detectadas, atualizando..")
-    subprocess.run("git pull")
+    subprocess.run(["git", "pull"])
 else:
     print("Você já está rodando a ultima versão disponivel")
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
