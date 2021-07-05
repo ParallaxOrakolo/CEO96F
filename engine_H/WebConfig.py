@@ -5,22 +5,29 @@
 #                                                    Imports                                                           #
 
 from flask import Flask, Response, request, jsonify
+from datetime import datetime
 import FastFunctions as Fast
 import OpencvPlus as Op
 import numpy as np
+import subprocess
+import websockets
 import threading
 import platform
-import socket
-import cv2
-import time
-from datetime import datetime
-import random
-import websockets
 import asyncio
 import socket
+import random
+import socket
+import time
 import json
+import cv2
 
 import timeit
+
+if "Your branch is up to date" not in subprocess.check_output("git checkout", shell=True, text=True):
+    print("Algumas alterações foram detectadas, atualizando..")
+    subprocess.run("git pull")
+else:
+    print("Você já está rodando a ultima versão disponivel")
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                      JSON                                                            #
 
@@ -521,6 +528,13 @@ def shutdown_server():
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                 Async-Functions                                                      #
+
+async def checkUpdate():
+    if "Your branch is up to date" not in subprocess.check_output("git checkout", shell=True, text=True):
+        print("Algumas alterações foram detectadas, atualizando..")
+        subprocess.run("git pull")
+    else:
+        print("Você já está rodando a ultima versão disponivel")
 
 async def updateSlider(processos):
     machineParamters['configuration']['camera']['process'] = processos
