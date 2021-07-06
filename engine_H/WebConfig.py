@@ -5,20 +5,21 @@
 #                                                    Imports                                                           #
 
 from flask import Flask, Response, request, jsonify
+from datetime import datetime
 import FastFunctions as Fast
 import OpencvPlus as Op
 import numpy as np
+import subprocess
+import websockets
 import threading
 import platform
-import socket
-import cv2
-import time
-from datetime import datetime
-import random
-import websockets
 import asyncio
 import socket
+import random
+import socket
+import time
 import json
+import cv2
 
 import timeit
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
@@ -521,6 +522,21 @@ def shutdown_server():
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                 Async-Functions                                                      #
+
+async def checkUpdate(branch="Auto_Pull"):
+    subprocess.run(["git", "checkout", branch])
+    subprocess.run(["git", "fetch"])
+    if "Your branch is behind" in str(subprocess.check_output(["git", "status"])):
+        print("Algumas alterações foram detectadas, atualizando..")
+        subprocess.run(["git", "pull"])
+        resp = str(subprocess.check_output(["git", "log", "-1", "--oneline"]))
+        logRequest({
+            "code":resp[2:9],
+            "description":f"[Auto_Update]: {resp[9:len(resp)-3]}",
+            "date":int(round(datetime.now().timestamp()))})
+    else:
+        print("Você já está rodando a ultima versão disponivel")
+
 
 async def updateSlider(processos):
     machineParamters['configuration']['camera']['process'] = processos
