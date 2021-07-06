@@ -239,6 +239,176 @@
             "code": 114,
             "description": "Auto verificiação terminou",
             "date": 1625497230
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625497834
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625497834
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625497835
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625497835
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625499804
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625499804
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625501136
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625501136
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625501137
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625501137
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625502295
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625502295
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625502299
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625502300
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625502318
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625502318
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625502325
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625502325
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625502331
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625502331
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625502928
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625502928
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625504451
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625504451
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625511192
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625511192
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625520593
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625520593
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625520683
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625520683
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625532838
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625532845
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625537026
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625537026
         }
     ]
 }
