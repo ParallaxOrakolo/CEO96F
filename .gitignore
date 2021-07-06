@@ -12,3 +12,4 @@ engine_H/Ignore/
 
 __pycache__/
 node_modules/
+engine_H/Json/logList.json
