@@ -559,9 +559,16 @@ async def funcs():
     pass
 
 
-async def manualStop():
+async def manualStop(code):
     global intencionalStop
     intencionalStop = True
+    for item in stopReasons:
+        if code == item['code']:
+            logRequest({
+            "code":code,
+            "description":item['description'],
+            "date":int(round(datetime.now().timestamp()))})
+    
     await asyncio.sleep(0.5)
 
 
