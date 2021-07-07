@@ -627,9 +627,9 @@ async def startAutoCheck():
                               "date":int(round(datetime.now().timestamp()))})
 
 
-        if not status:
-            await sendWsMessage('erro', {'codigo': code, 'menssagem':arduino })
-            AutoCheckStatus = False
+        # if not status:
+        #     await sendWsMessage('erro', {'codigo': code, 'menssagem':arduino })
+        #     AutoCheckStatus = False
         thread1.start()
         # stalker1.start()
         thread0.start()
@@ -653,7 +653,7 @@ async def startAutoCheck():
     return AutoCheckStatus
 
 
-async def startScan(qtd=9999):
+async def startProcess(qtd=9999):
     global intencionalStop, arduino, nano
 
     # await logRequest({"code":functionLog["PSI"]["code"], 
@@ -769,7 +769,7 @@ async def startScan(qtd=9999):
 
     descargaCompleta = timeit.default_timer()-descargaCompleta
     intencionalStop = False
-    await sendWsMessage("startScan_success")
+    await sendWsMessage("startProcess_success")
 
     # await logRequest({"code":functionLog["PST"]["code"], 
     #                   "description":functionLog["PST"]["description"],
@@ -877,6 +877,8 @@ if __name__ == "__main__":
     StartedStream = False
     intencionalStop = False
     AP = True
+    nano = "lixo"
+    arduino = "lixo"
 
     portFront = machineParamters["configuration"]["informations"]["port"]
     portBack = portFront+1
