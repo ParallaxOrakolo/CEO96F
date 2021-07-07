@@ -409,6 +409,96 @@
             "code": 114,
             "description": "Auto verificiação terminou",
             "date": 1625537026
+        },
+        {
+            "code": 113,
+            "description": "Auto verificiação iniciou",
+            "date": 1625663728
+        },
+        {
+            "code": 114,
+            "description": "Auto verificiação terminou",
+            "date": 1625663731
+        },
+        {
+            "code": 117,
+            "description": "Processo de Scan Iniciou",
+            "date": 1625663897
+        },
+        {
+            "code": 115,
+            "description": "Identificação iniciou",
+            "date": 1625663897
+        },
+        {
+            "code": 116,
+            "description": "Identificação terminou",
+            "date": 1625663897
+        },
+        {
+            "code": 115,
+            "description": "Identificação iniciou",
+            "date": 1625663897
+        },
+        {
+            "code": 116,
+            "description": "Identificação terminou",
+            "date": 1625663897
+        },
+        {
+            "code": 115,
+            "description": "Identificação iniciou",
+            "date": 1625663897
+        },
+        {
+            "code": 116,
+            "description": "Identificação terminou",
+            "date": 1625663897
+        },
+        {
+            "code": 115,
+            "description": "Identificação iniciou",
+            "date": 1625663897
+        },
+        {
+            "code": 116,
+            "description": "Identificação terminou",
+            "date": 1625663897
+        },
+        {
+            "code": 115,
+            "description": "Identificação iniciou",
+            "date": 1625663897
+        },
+        {
+            "code": 116,
+            "description": "Identificação terminou",
+            "date": 1625663897
+        },
+        {
+            "code": 115,
+            "description": "Identificação iniciou",
+            "date": 1625663897
+        },
+        {
+            "code": 116,
+            "description": "Identificação terminou",
+            "date": 1625663897
+        },
+        {
+            "code": 115,
+            "description": "Identificação iniciou",
+            "date": 1625663897
+        },
+        {
+            "code": 116,
+            "description": "Identificação terminou",
+            "date": 1625663897
+        },
+        {
+            "code": 118,
+            "description": "Processo de Scan terminou",
+            "date": 1625663897
         }
     ]
 }
