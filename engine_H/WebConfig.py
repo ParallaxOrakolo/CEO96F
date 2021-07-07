@@ -563,15 +563,37 @@ async def funcs():
     pass
 
 
-async def manualStop(code):
+async def stopProcess():
     global intencionalStop
     intencionalStop = True
+    await asyncio.sleep(0.5)
+
+
+async def genereteError():
+    item = {
+    "code": random.randint(1, 100),
+    "description": [
+                    "perspiciatis unde omnis iste natus error",
+                    "Ut enim ad minima veniam, quis nostrum",
+                    "Nor again is there anyone who loves or pursues or desires to obtain"
+                    ],
+    "listed": random.choice([True, False]),
+    "type": random.choice(["warning", "info", "error"])
+    }
+    await sendWsMessage("error", item)
+
+
+async def stopReasonsResponse(message):
+    code = message['code']
+    date = message['date']
+    print("Stop code:", code)
+    print("Stop date:", date)
     for item in stopReasons:
         if code == item['code']:
-            logRequest({
+           await logRequest({
             "code":code,
             "description":item['description'],
-            "date":int(round(datetime.now().timestamp()))})
+            "date":date})
     
     await asyncio.sleep(0.5)
 
@@ -591,11 +613,11 @@ async def startAutoCheck():
     #                   "description":functionLog["AVI"]["description"],
     #                   "date":int(round(datetime.now().timestamp()))})
 
+    await updateSlider('Normal')
     global primeiraConexao
     AutoCheckStatus = True
     if primeiraConexao:
         primeiraConexao = False
-        await updateSlider('Normal')
         try:
             status, code, arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
             if status:
@@ -765,7 +787,7 @@ async def startProcess(qtd=9999):
         if infoCode == item['code']:
             print(f"Erro ao tentar montar a {rodada} peça")
             print(item)
-            await sendWsMessage("update", item)
+            await sendWsMessage("error", item)
 
     descargaCompleta = timeit.default_timer()-descargaCompleta
     intencionalStop = False
