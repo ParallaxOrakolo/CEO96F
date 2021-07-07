@@ -119,7 +119,7 @@
 </template>
 
 <script>
-import ProgressStatus from "../components/ProgressStatus";
+//import ProgressStatus from "../components/ProgressStatus";
 import { mapGetters, mapMutations } from "vuex";
 import { actions } from "../store/index";
 
@@ -136,7 +136,7 @@ export default {
   }),
 
   components: {
-    ProgressStatus,
+    //ProgressStatus,
   },
 
   computed: {
