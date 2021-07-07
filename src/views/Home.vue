@@ -2,7 +2,7 @@
   <section class="content d-flex align-center flex-column">
     <div class="start">
       <h1 class>
-        Certifique-se que os conectores e os painéis estejam bem posicionados
+        Certifique-se que a maquina possui insumos para montagem.
       </h1>
       <router-link to="/scan">
         <v-btn
@@ -15,7 +15,7 @@
       </router-link>
     </div>
 
-    <img src="../assets/img/conectors-pattern.png" />
+    <img src="../assets/img/estribo-pattern.jpg" />
   </section>
 </template>
 

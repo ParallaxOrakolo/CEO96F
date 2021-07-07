@@ -1,9 +1,39 @@
 {
     "log": [
-      {
+        {
             "code": -200,
             "description": "[ERRO]: Conexão com a placa 'Ramps 1.4' não pode estabelecida.",
             "date": 1625501052
+        },
+        {
+            "code": -200,
+            "description": "[ERRO]: Conexão com a placa 'Ramps 1.4' não pode estabelecida.",
+            "date": 1625666907
+        },
+        {
+            "code": 200,
+            "description": "[INFO]: Conexão com a placa 'Ramps 1.4' estabelecida.",
+            "date": 1625680429
+        },
+        {
+            "code": -200,
+            "description": "[ERRO]: Conexão com a placa 'Nano' não pode estabelecida.",
+            "date": 1625680430
+        },
+        {
+            "code": -200,
+            "description": "[ERRO]: Conexão com a placa 'Ramps 1.4' não pode estabelecida.",
+            "date": 1625682485
+        },
+        {
+            "code": -200,
+            "description": "[ERRO]: Conexão com a placa 'Ramps 1.4' não pode estabelecida.",
+            "date": 1625682656
+        },
+        {
+            "code": -200,
+            "description": "[ERRO]: Conexão com a placa 'Ramps 1.4' não pode estabelecida.",
+            "date": 1625682823
         }
     ]
 }

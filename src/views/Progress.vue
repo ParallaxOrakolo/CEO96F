@@ -1,6 +1,11 @@
 <template>
   <section class="content d-flex align-center flex-column">
-    <ProgressStatus />
+    <!-- <ProgressStatus /> -->
+    <video width="600" autoplay loop class="mt-16">
+      <source src="../assets/img/estribo-animation.mp4" type="video/mp4" />
+    </video>
+
+    <!-- <img src="../assets/img/estribo-animation.gif" width="100%" /> -->
     <div class="buttons">
       <v-btn
         v-if="!state.paused && !state.finished"
@@ -52,7 +57,7 @@
       >
         <v-icon left>mdi-reload</v-icon>reiniciar</v-btn
       >
-
+     {{state.configuration.statistics.des}}
       <v-btn
         v-if="state.started && !state.finished"
         rounded
@@ -71,10 +76,13 @@
 
       <!-- reasons -->
       <v-overlay :z-index="zIndex" :value="overlay" :opacity="opacity">
-        <h1 color="white" class="mb-16">Por favor selecione o motivo da parada</h1>
+        <h1 color="white" class="mb-16">
+          Por favor selecione o motivo da parada
+        </h1>
         <v-btn
-          v-for="(reason, index) in state.stopReasons"
+          v-for="(reason, index) in state.configuration.statistics.stopReasons"
           :key="index"
+          :v-if="reason.listed"
           class="white--text buttons"
           color="warning"
           rounded
@@ -83,26 +91,28 @@
             () => {
               SEND_MESSAGE({
                 command: actions.STOP_REASON_RESPONSE,
-                parameter: stopReasonsMessage(reason)});
+                parameter: stopReasonsMessage(reason.code),
+              });
               overlay = false;
+              log()
             }
           "
         >
-          {{ reason }}
+          {{ reason.description }}
         </v-btn>
       </v-overlay>
 
       <!-- end reasons -->
       <!-- registrar valor no back -->
       <router-link to="/home">
-        <v-btn
+        <!-- <v-btn
           v-if="!state.started || state.finished"
           rounded
           outlined
           x-large
           color="warning"
           >trocar conector ou bandeja</v-btn
-        >
+        > -->
       </router-link>
     </div>
   </section>
@@ -136,20 +146,24 @@ export default {
   methods: {
     ...mapMutations(["SEND_MESSAGE"]),
 
-    stopReasonsMessage(reason) {
+    stopReasonsMessage(code) {
       var message = {
-        reason: reason,
+        code: code,
         date: Math.floor(Date.now() / 1000),
       };
       return message;
     },
-  }
+  },
 };
-
 </script>
 
-<style lang="scss">
+<style lang="scss" >
 section {
+  video::-internal-media-controls-overlay-cast-button {
+    display: none;
+  }
+
+
   .buttons {
     display: flex;
     flex-flow: column;
