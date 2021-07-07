@@ -350,8 +350,12 @@ def HomingAll():
     Parafusa(140, mm=5, voltas=20)
 
 
-def verificaCLP():
-    return random.choice(["ok","ok","ok","ok","ok","ok","ok","ok","ok","ok",1,"ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok",])
+def verificaCLP(serial):
+    echo = Fast.sendGCODE(serial, 'F', echo=True)
+    return str(echo[len(echo)-1])
+
+    # return strr
+    #return random.choice(["ok","ok","ok","ok","ok","ok","ok","ok","ok","ok",1,"ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok",])
 
 
 def Parafusa(pos, voltas=2, mm=0, servo=0, angulo=0):
@@ -582,6 +586,7 @@ async def logRequest(new_log=False):
 
 
 async def startAutoCheck():
+    global arduino, nano
     # await logRequest({"code":functionLog["AVI"]["code"], 
     #                   "description":functionLog["AVI"]["description"],
     #                   "date":int(round(datetime.now().timestamp()))})
@@ -649,7 +654,7 @@ async def startAutoCheck():
 
 
 async def startScan(qtd=9999):
-    global intencionalStop
+    global intencionalStop, arduino, nano
 
     # await logRequest({"code":functionLog["PSI"]["code"], 
     #                   "description":functionLog["PSI"]["description"],
@@ -690,7 +695,7 @@ async def startScan(qtd=9999):
         #               "description":functionLog["IDT"]["description"],
         #               "date":int(round(datetime.now().timestamp()))})
 
-        infoCode = verificaCLP()
+        infoCode = verificaCLP(nano)
         print("~~"*10)
         print("604: Info code:", infoCode)
         print("~~"*10)
@@ -710,7 +715,7 @@ async def startScan(qtd=9999):
 
                 Fast.sendGCODE(arduino, 'g90')
                 for posicao in finalFuro:
-                    infoCode = verificaCLP()
+                    infoCode = verificaCLP(nano)
                     print("~~"*10)
                     print("625: Info code:", infoCode)
                     print("~~"*10)
