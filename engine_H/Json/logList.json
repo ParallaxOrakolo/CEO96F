@@ -1,6 +1,6 @@
 {
     "log": [
-        {
+      {
             "code": -200,
             "description": "[ERRO]: Conexão com a placa 'Ramps 1.4' não pode estabelecida.",
             "date": 1625501052

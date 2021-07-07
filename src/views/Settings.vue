@@ -22,7 +22,7 @@
 import Infos from "../components/settings/Infos";
 import AdvancedSettings from "../components/settings/AdvancedSettings";
 import Statistics from "../components/settings/Statistics.vue";
-import Controls from "../components/settings/Controls.vue";
+import Controls from "../components/settings/controls/Controls.vue";
 import CameraConfig from "../components/settings/CameraConfig.vue"
 
 export default {

@@ -4,9 +4,11 @@
     <v-expansion-panel-content>
       <!-- <v-divider></v-divider>
 <SerialMonitor></SerialMonitor> -->
-      <v-divider></v-divider>
-      <v-row no-gutters >
+
+      
+      <v-row no-gutters>
         <!-- <v-col cols="1"> </v-col> -->
+        <Camera></Camera>
         <v-col class="pa-2" cols="7">
           <v-row no-gutters class="mb-6">
             <v-col class="pa-2 d-flex justify-end">
@@ -281,32 +283,46 @@
               () => {
                 SEND_MESSAGE({
                   command: actions.SEND_GCODE,
-                  parameter: this.led ? 'M150 R' + this.ledRGB.rgba.r + ' I' + this.ledRGB.rgba.g + ' B' + this.ledRGB.rgba.b: 'M150 R0 I0 B0' ,
+                  parameter: this.led
+                    ? 'M150 R' +
+                      this.ledRGB.rgba.r +
+                      ' I' +
+                      this.ledRGB.rgba.g +
+                      ' B' +
+                      this.ledRGB.rgba.b
+                    : 'M150 R0 I0 B0',
                 });
               }
             "
           ></v-switch>
           <v-color-picker
             v-model="ledRGB"
-            v-on:mouseup="() => {
+            v-on:mouseup="
+              () => {
                 SEND_MESSAGE({
                   command: actions.SEND_GCODE,
-                  parameter: this.led ? 'M150 R' + this.ledRGB.rgba.r + ' I' + this.ledRGB.rgba.g + ' B' + this.ledRGB.rgba.b: 'M150 R0 I0 B0' ,
+                  parameter: this.led
+                    ? 'M150 R' +
+                      this.ledRGB.rgba.r +
+                      ' I' +
+                      this.ledRGB.rgba.g +
+                      ' B' +
+                      this.ledRGB.rgba.b
+                    : 'M150 R0 I0 B0',
                 });
-              }"
-                hide-canvas
-
+              }
+            "
+            hide-canvas
             dot-size="32"
             hide-mode-switch
             hide-sliders
             mode="rgba"
             swatches-max-height="200"
-            
           ></v-color-picker>
         </v-col>
 
         <v-col class="pa-2 col-md-3 col">
-          <v-subheader > Passo(mm) </v-subheader>
+          <v-subheader> Passo(mm) </v-subheader>
           <v-slider
             v-model="distance"
             :tick-labels="distancesLabels"
@@ -332,11 +348,10 @@
                 dense
                 rounded
                 v-model="speed"
-                class="mt-0 pt-0"
+                class="mt-0 pt-0 numberInput"
                 hide-details
                 single-line
                 type="number"
-                style="width: 100px"
               ></v-text-field>
             </template>
           </v-slider>
@@ -358,11 +373,12 @@
 
 <script>
 import { mapState, mapMutations } from "vuex";
-import { actions } from "../../store/index";
-import SerialMonitor from '../SerialMonitor.vue';
+import { actions } from "../../../store/index";
+import SerialMonitor from "../../SerialMonitor.vue";
+import Camera from "../controls/Cameras.vue"
 
 export default {
-  components: { SerialMonitor },
+  components: { SerialMonitor, Camera },
   name: "Controls",
   data() {
     return {
@@ -455,9 +471,9 @@ export default {
       if (axis == "z") {
         msg = msg.concat("Z");
       }
-        if (negative) {
-          msg = msg.concat("-");
-        }
+      if (negative) {
+        msg = msg.concat("-");
+      }
       msg = msg.concat(this.distanceList[this.distance]);
       msg = msg.concat(" F" + this.speed);
 
@@ -478,4 +494,9 @@ div {
 .v-btn--round {
   border-radius: 26%;
 }
+
+.numberInput {
+  width: 80px;
+}
+
 </style>
