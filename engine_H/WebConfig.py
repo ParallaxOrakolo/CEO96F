@@ -20,7 +20,7 @@ import socket
 import time
 import json
 import cv2
-
+import os
 import timeit
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                      JSON                                                            #
@@ -905,9 +905,19 @@ if __name__ == "__main__":
     portFront = machineParamters["configuration"]["informations"]["port"]
     portBack = portFront+1
     offSetIp = 0
-    prefix = socket.gethostbyname(socket.gethostname()).split('.')
-    ip = '.'.join(['.'.join(prefix[:len(prefix) - 1]),
+
+    if platform.system()=="Windows":
+        prefix = socket.gethostbyname(socket.gethostname()).split('.')
+        ip = '.'.join(['.'.join(prefix[:len(prefix) - 1]),
                   str(int(prefix[len(prefix) - 1]) + offSetIp)])
+    else:
+        gw = os.popen("ip -4 route show default").read().split()
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        s.connect((gw[2], 0))
+        ip = s.getsockname()[0]
+        gateway = gw[2]
+        host = socket.gethostname()
+        print ("IP:", ip, " GW:", gateway, " Host:", host)
 
     machineParamters["configuration"]["informations"]["ip"] = ip
     Fast.writeJson('Json/machine.json', machineParamters)
