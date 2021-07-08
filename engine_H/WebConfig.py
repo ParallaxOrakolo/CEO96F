@@ -569,14 +569,14 @@ async def stopProcess():
     await asyncio.sleep(0.5)
 
 
-async def genereteError():
+async def generateError():
     item = {
     "code": random.randint(1, 100),
-    "description": [
-                    "perspiciatis unde omnis iste natus error",
-                    "Ut enim ad minima veniam, quis nostrum",
-                    "Nor again is there anyone who loves or pursues or desires to obtain"
-                    ],
+    "description": random.choice([
+                    "Houve um problema com a parte das panelas vibratórias! Por favor faça a checagem.",
+                    "Falta de insumo na maquina! Reponha para continuar a operação",
+                    "Mais de 5 peças na sequencia, foram montadas de forma errada, verifique se à algum problema."
+                    ]),
     "listed": random.choice([True, False]),
     "type": random.choice(["warning", "info", "error"])
     }

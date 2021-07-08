@@ -1,7 +1,7 @@
 <template>
   <section class="content d-flex align-center flex-column">
     <!-- <ProgressStatus /> -->
-    <video width="600" autoplay loop class="mt-16">
+    <video width="600" loop class="mt-16">
       <source src="../assets/img/estribo-animation.mp4" type="video/mp4" />
     </video>
 
@@ -46,7 +46,22 @@
         ></v-progress-circular> -->
         Iniciar
       </v-btn>
-
+      <!-- <v-btn
+        rounded
+        x-large
+        v-on:click="
+          () => {
+            SEND_MESSAGE({
+              command: actions.GENERATE_ERROR,
+            });
+            overlay = false;
+          }
+        "
+        color="warning"
+        dark
+      >
+        <v-icon>mdi-alert-box</v-icon></v-btn
+      > -->
       <v-btn
         v-if="state.finished"
         rounded
@@ -57,7 +72,7 @@
       >
         <v-icon left>mdi-reload</v-icon>reiniciar</v-btn
       >
-     {{state.configuration.statistics.des}}
+      {{ state.configuration.statistics.des }}
       <v-btn
         v-if="state.started && !state.finished"
         rounded
@@ -94,7 +109,6 @@
                 parameter: stopReasonsMessage(reason.code),
               });
               overlay = false;
-              log()
             }
           "
         >
@@ -162,7 +176,6 @@ section {
   video::-internal-media-controls-overlay-cast-button {
     display: none;
   }
-
 
   .buttons {
     display: flex;
