@@ -1,6 +1,7 @@
 <template>
   <v-app>
     <snack-bar v-if="!isConnected"></snack-bar>
+    <DialogAlert />
     <NavBar />
     <v-main>
       <router-view />
@@ -14,6 +15,7 @@
 import NavBar from "./components/NavBar";
 import { mapState } from "vuex";
 import SnackBar from "./components/SnackBar.vue";
+import DialogAlert from "./components/DialogAlert.vue";
 
 export default {
   name: "App",
@@ -21,6 +23,7 @@ export default {
   components: {
     //Home,
     NavBar,
+    DialogAlert,
     SnackBar,
   },
 

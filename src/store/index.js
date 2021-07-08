@@ -23,7 +23,8 @@ export const actions = {
   SEND_GCODE: "sendGcode",
   START_SCAN: "startScan",
   SAVE_JSON: "saveJson",
-  SHOW_POPUP:"showPopup"
+  SHOW_POPUP:"showPopup",
+  GENERATE_ERROR:"generateError"
 };
 
 const store = new Vuex.Store({
@@ -63,6 +64,13 @@ const store = new Vuex.Store({
     ws_message: {
       command: "",
       parameter: "",
+    },
+
+    dialogAlert: {
+      show:false,
+      code: 0,
+      description: "",
+      type: "error"
     },
 
     isConnecting: false,
@@ -260,14 +268,14 @@ const store = new Vuex.Store({
           break;
 
         case actions.STOP_PROCESS + "_success":
-          store.commit("STOP");
-          console.log("STOP Process");
+          store.commit("STOP")
+          console.log("STOP Process")
           // code block
           break;
 
         case "update":
           state = Object.assign(state, message.parameter);
-          console.log("update");
+          console.log("update")
           console.log(state.configuration)
           // code block
           break;
@@ -275,6 +283,11 @@ const store = new Vuex.Store({
         case "error":
         console.log("Back-end constata falha: ")
         console.log(message.parameter)
+        state.dialogAlert.show = true
+        state.dialogAlert.description = message.parameter.description
+        state.dialogAlert.type = message.parameter.type
+        state.dialogAlert.code = message.parameter.code
+        
         // code block
         break;
 

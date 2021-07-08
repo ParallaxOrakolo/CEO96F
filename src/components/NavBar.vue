@@ -24,8 +24,10 @@
         <!-- <h3 v-if="!online">Offline </h3> -->
       </v-spacer>
       <!-- <v-icon v-show="showUpdateUI" dark color="light-green lighten-1" @click="accept()">mdi-reload</v-icon >   -->
+       
       <v-spacer></v-spacer>
       <!-- <SnackBar /> -->
+     
       <v-icon dark color="light-green lighten-1" v-show="isConnected"
         >mdi-lan-check</v-icon
       >
@@ -56,7 +58,7 @@
 
 <script>
 // import SnackBar from "../components/SnackBar";
-
+import { mapMutations } from "vuex";
 import { mapState } from "vuex";
 
 export default {
