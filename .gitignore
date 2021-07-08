@@ -9,7 +9,7 @@ engine_H/__pycache__/
 engine_H/Log/api.log
 engine_H/Images/
 engine_H/Ignore/
+engine_H/Json/logList.json
 
 __pycache__/
 node_modules/
-engine_H/Json/logList.json
