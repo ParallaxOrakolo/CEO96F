@@ -111,7 +111,7 @@
 //import ProgressStatus from "../components/ProgressStatus";
 import { mapGetters, mapMutations } from "vuex";
 import { actions } from "../store/index";
-import VideoProgress from "../components/VideoProgress";
+// import VideoProgress from "../components/VideoProgress"; Remove VideoProgress
 
 export default {
   // mixins: [mixins],
@@ -125,7 +125,7 @@ export default {
 
   components: {
     //ProgressStatus,
-    VideoProgress,
+    //VideoProgress, // Remove VideoProgress -HB
   },
 
   computed: {

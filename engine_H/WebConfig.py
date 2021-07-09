@@ -352,7 +352,10 @@ def HomingAll():
 
 def verificaCLP(serial):
     echo = Fast.sendGCODE(serial, 'F', echo=True)
-    return str(echo[len(echo)-1])
+    echo = str(echo[len(echo)-1])
+    if echo == "Comando não enviado...":
+        return 4
+    return echo
 
     # return strr
     #return random.choice(["ok","ok","ok","ok","ok","ok","ok","ok","ok","ok",1,"ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok",])
@@ -687,6 +690,7 @@ async def startProcess(qtd=9999):
     erradas = 0
     corretas = 0
     rodada = 0
+    intencionalStop = False # Destrava a maquina quando um novo processo é iniciado.
     descargaCompleta = timeit.default_timer()
     cameCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['camera0Centro']
     parafCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusadeiraCentro']

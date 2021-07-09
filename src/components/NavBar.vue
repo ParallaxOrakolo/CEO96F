@@ -44,7 +44,7 @@
 
 <script>
 // import SnackBar from "../components/SnackBar";
-import { mapMutations } from "vuex";
+// import { mapMutations } from "vuex"; Remove mapMutations -HB
 import { mapState } from "vuex";
 
 export default {

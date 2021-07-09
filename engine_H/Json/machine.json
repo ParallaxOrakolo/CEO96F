@@ -1,7 +1,7 @@
 {
     "configuration": {
         "informations": {
-            "ip": "192.168.18.8",
+            "ip": "192.168.1.57",
             "connectionId": 123456,
             "port": 5000,
             "userList": [
@@ -100,10 +100,22 @@
                     "type": "warning"
                 },
                 {
-                    "code": 99,
+                    "code": 3,
                     "description": "Troca de turno",
                     "listed": true,
                     "type": "info"
+                },
+                {
+                    "code": 4,
+                    "description": "Sem comunicação com o CLP",
+                    "listed": false,
+                    "type": "error"
+                },
+                {
+                    "code": 5,
+                    "description": "Sem comunicação com a estação de montagem",
+                    "listed": false,
+                    "type": "error"
                 }
             ],
             "nonStopCode": [

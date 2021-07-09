@@ -28,7 +28,7 @@
 
 
 <script>
-import { mapGetters, mapMutations } from "vuex";
+import { mapGetters} from "vuex"; // Remove mapMutations -HB
 
 export default {
   name: "DialogAlert",
