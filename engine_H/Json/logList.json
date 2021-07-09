@@ -674,6 +674,16 @@
             "code": 2,
             "description": "Alimentador sem peça",
             "date": 1625804622
+        },
+        {
+            "code": 1,
+            "description": "Garra não pegou",
+            "date": 1625805042
+        },
+        {
+            "code": 1,
+            "description": "Garra não pegou",
+            "date": 1625805054
         }
     ]
 }
