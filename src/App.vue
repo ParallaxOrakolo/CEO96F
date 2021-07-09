@@ -3,7 +3,7 @@
     <snack-bar v-if="!isConnected"></snack-bar>
     <DialogAlert />
     <NavBar />
-    <v-main>
+    <v-main >
       <router-view />
       <!-- <Home/> -->
     </v-main>
@@ -55,4 +55,5 @@ body {
   margin: 0;
   padding: 0;
 }
+
 </style>

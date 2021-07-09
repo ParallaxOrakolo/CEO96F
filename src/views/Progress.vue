@@ -1,11 +1,8 @@
 <template>
   <section class="content d-flex align-center flex-column">
     <!-- <ProgressStatus /> -->
-    <video width="600" loop class="mt-16">
-      <source src="../assets/img/estribo-animation.mp4" type="video/mp4" />
-    </video>
-
-    <!-- <img src="../assets/img/estribo-animation.gif" width="100%" /> -->
+    <VideoProgress v-show="state.started"/>
+    <div v-show="state.started" v-text="numberParts" class="yellow--text text--darken-3 font-weight-light text-h2"></div>
     <div class="buttons">
       <v-btn
         v-if="!state.paused && !state.finished"
@@ -16,36 +13,7 @@
         dark
         ><v-icon left> mdi-pause </v-icon> pausar</v-btn
       >
-      <v-btn
-        v-if="state.paused && !state.finished"
-        rounded
-        x-large
-        v-on:click="
-          () => {
-            SEND_MESSAGE({ command: actions.START_PROCESS });
-            //startStatusChage
-            buttomClicked = true;
-          }
-        "
-        color="warning"
-        dark
-      >
-        <span
-          v-show="
-            () => {
-              return !buttomClicked;
-              buttomClicked = !buttomClicked;
-            }
-          "
-          ><v-icon left>mdi-play</v-icon></span
-        >
-        <!-- <v-progress-circular
-          v-show="buttomClicked"
-          indeterminate
-          color="white"
-        ></v-progress-circular> -->
-        Iniciar
-      </v-btn>
+      <StartButton v-if="!state.playing"/>
       <!-- <v-btn
         rounded
         x-large
@@ -74,7 +42,7 @@
       >
       {{ state.configuration.statistics.des }}
       <v-btn
-        v-if="state.started && !state.finished"
+        v-if="state.started && state.playing"
         rounded
         x-large
         v-on:click="
@@ -136,6 +104,8 @@
 //import ProgressStatus from "../components/ProgressStatus";
 import { mapGetters, mapMutations } from "vuex";
 import { actions } from "../store/index";
+import VideoProgress from "../components/VideoProgress"
+import StartButton from "../components/StartButton"
 
 export default {
   // mixins: [mixins],
@@ -147,14 +117,25 @@ export default {
     overlay: false,
     zIndex: 9,
     opacity: 1,
-  }),
+    }),
 
   components: {
     //ProgressStatus,
+    VideoProgress,
+    StartButton
   },
 
   computed: {
     ...mapGetters(["state"]),
+    numberParts(){
+      
+      if(this.state.operation.total){
+        return this.state.operation.placed + "/" + this.state.operation.total
+      }else{
+        return this.state.operation.placed + "/Ilimitado"
+      }
+      
+    }
   },
 
   methods: {
@@ -173,9 +154,6 @@ export default {
 
 <style lang="scss" >
 section {
-  video::-internal-media-controls-overlay-cast-button {
-    display: none;
-  }
 
   .buttons {
     display: flex;
@@ -187,6 +165,7 @@ section {
     button {
       margin-bottom: 2em;
     }
+
   }
 }
 </style>

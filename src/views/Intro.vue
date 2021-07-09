@@ -57,7 +57,7 @@ export default {
     ...mapActions(["startConnection", "sendMessage"]),
 
     nextPage() {
-      setTimeout(() => this.$router.push({ path: "/progress" }), 3000);
+      setTimeout(() => this.$router.push({ path: "/progress" }).catch(()=>{}), 3000);
     },
   },
 
