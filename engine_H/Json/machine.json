@@ -116,6 +116,12 @@
                     "description": "Sem comunicação com a estação de montagem",
                     "listed": false,
                     "type": "error"
+                },
+                {
+                    "code": 6,
+                    "description": "Camera _id_ não pode ser iniciada.",
+                    "listed": false,
+                    "type": "error"
                 }
             ],
             "nonStopCode": [

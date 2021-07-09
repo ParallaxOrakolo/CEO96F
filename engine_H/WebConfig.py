@@ -97,6 +97,10 @@ class CamThread(threading.Thread):
         print("Starting " + self.previewName)
         return self.camPreview(self.previewName, self.camID)
         
+    async def report(self, item):
+        item["description"] = item["description"].replace("_id_", str(self.camID['Settings']['id']))
+        await sendWsMessage("error", item)
+
     def camPreview(self, previewName, cam_json):
         # Abre a camera com o id passado.
         camID = cam_json["Settings"]["id"]
@@ -130,6 +134,10 @@ class CamThread(threading.Thread):
             pass
         cam.release()
         print("Saindo da thread", self.previewName)
+        infoCode = 6
+        for item in stopReasons:
+            if infoCode == item['code']:
+                asyncio.run(self.report(item))
         return False
 
 
