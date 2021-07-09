@@ -109,19 +109,22 @@
                     "code": 4,
                     "description": "Sem comunicação com o CLP",
                     "listed": false,
-                    "type": "error"
+                    "type": "error",
+                    "button_action":"Reboot"
                 },
                 {
                     "code": 5,
                     "description": "Sem comunicação com a estação de montagem",
                     "listed": false,
-                    "type": "error"
+                    "type": "error",
+                    "button_action":"Reboot"
                 },
                 {
                     "code": 6,
                     "description": "Camera _id_ não pode ser iniciada.",
                     "listed": false,
-                    "type": "error"
+                    "type": "error",
+                    "button_action":"Reboot"
                 }
             ],
             "nonStopCode": [
