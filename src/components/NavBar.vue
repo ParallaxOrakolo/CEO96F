@@ -1,59 +1,45 @@
 <template>
-  <section>
-    <v-app-bar style="-webkit-app-region: drag" app dense dark>
-      <router-link to="/">
-        <v-btn
-          icon
-          class="hidden-xs-only"
-          v-on:click="$router.go(-1)"
-          alt
-          v-if="$route.name == 'settings'"
-        >
-          <v-icon>mdi-arrow-left</v-icon>
-        </v-btn>
-        <img
-          class="logo"
-          src="../assets/img/parallax-logo-06.svg"
-          alt
-          v-if="$route.name != 'settings'"
-        />
-      </router-link>
-      <v-spacer>
-        <h3 v-if="$route.name == 'settings'">Configurações</h3>
-        <!-- <h3 v-if="online">Online </h3> -->
-        <!-- <h3 v-if="!online">Offline </h3> -->
-      </v-spacer>
-      <!-- <v-icon v-show="showUpdateUI" dark color="light-green lighten-1" @click="accept()">mdi-reload</v-icon >   -->
-       
-      <v-spacer></v-spacer>
-      <!-- <SnackBar /> -->
-     
-      <v-icon dark color="light-green lighten-1" v-show="isConnected"
-        >mdi-lan-check</v-icon
+  <v-app-bar style="-webkit-app-region: drag" app dense dark>
+    <router-link to="/">
+      <v-btn
+        icon
+        class="hidden-xs-only"
+        v-on:click="$router.go(-1)"
+        alt
+        v-if="$route.name == 'settings'"
       >
-      <v-icon dark color="red darken-1" v-show="!isConnected"
-        >mdi-lan-disconnect</v-icon
-      >
+        <v-icon>mdi-arrow-left</v-icon>
+      </v-btn>
+      <img
+        class="logo"
+        src="../assets/img/parallax-logo-06.svg"
+        alt
+        v-if="$route.name != 'settings'"
+      />
+    </router-link>
+    <v-spacer>
+      <h3 v-if="$route.name == 'settings'">Configurações</h3>
+      <!-- <h3 v-if="online">Online </h3> -->
+      <!-- <h3 v-if="!online">Offline </h3> -->
+    </v-spacer>
+    <!-- <v-icon v-show="showUpdateUI" dark color="light-green lighten-1" @click="accept()">mdi-reload</v-icon >   -->
 
-      <router-link to="/config">
-        <v-btn icon v-if="$route.name != 'settings'">
-          <v-icon dark id="tune">tune</v-icon>
-        </v-btn>
-      </router-link>
-    </v-app-bar>
-    <!-- <div class="pt-16 alert">
-      <v-alert
-        v-model="alert"
-        dismissible
-        border="left"
-        elevation="16"
-        colored-border
-        type="info"
-      >
-        You've got <strong>5</strong> new updates on your timeline!.
-      </v-alert>
-    </div> -->
-  </section>
+    <v-spacer></v-spacer>
+    <!-- <SnackBar /> -->
+
+    <v-icon dark color="light-green lighten-1" v-show="isConnected"
+      >mdi-lan-check</v-icon
+    >
+    <v-icon dark color="red darken-1" v-show="!isConnected"
+      >mdi-lan-disconnect</v-icon
+    >
+
+    <router-link to="/config">
+      <v-btn icon v-if="$route.name != 'settings'">
+        <v-icon dark id="tune">tune</v-icon>
+      </v-btn>
+    </router-link>
+  </v-app-bar>
 </template>
 
 <script>
@@ -107,6 +93,8 @@ export default {
   height: 1.4em;
   margin-top: 0.5em;
 }
+
+
 
 .alert {
   // position: absolute;

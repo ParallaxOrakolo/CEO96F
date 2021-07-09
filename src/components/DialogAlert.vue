@@ -1,8 +1,9 @@
 <template>
+<div>
   <v-row justify="center">
     <!-- <v-dialog v-model="state.dialogAlert.show" persistent max-width="300"> -->
 
-    <v-overlay :absolute="absolute" v-model="state.dialogAlert.show">
+    <v-overlay v-model="state.dialogAlert.show">
       <v-alert
       class="alert"
         border="right"
@@ -22,6 +23,7 @@
       </v-alert>
     </v-overlay>
   </v-row>
+  </div>
 </template>
 
 

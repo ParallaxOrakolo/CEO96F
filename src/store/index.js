@@ -36,8 +36,8 @@ const store = new Vuex.Store({
       type: "",
       panel: "",
       timeSeconds: 0,
-      total: 0,
-      placed: 0,
+      total: 10,
+      placed: 5,
     },
 
     localTimer: {
@@ -48,8 +48,10 @@ const store = new Vuex.Store({
 
     progress: 5.1,
     started: false,
+    playing: false,
     paused: true,
     finished: false,
+    stoped:true,
 
     idVar: null,
 
@@ -202,6 +204,7 @@ const store = new Vuex.Store({
       );
 
       wsConnection.onmessage = function (event) {
+        console.log("Recebido:");
         console.log(event.data);
         // state.message = JSON.parse(event.data);
         // state.message = JSON.parse(event.data);
@@ -250,13 +253,13 @@ const store = new Vuex.Store({
           break;
 
         case actions.START_PROCESS + "_success":
-          store.commit("START");
+          store.commit("START2");
           console.log("START process");
           // code block
           break;
 
         case actions.PAUSE_PROCESS + "_success":
-          store.commit("START");
+          store.commit("START2");
           console.log("PAUSE process");
           // code block
           break;
@@ -315,7 +318,6 @@ const store = new Vuex.Store({
     SCAN_COMPLETE_CHANGE: (state) => (state.scanConnectorsComplete = false),
 
     SEND_MESSAGE: (state, payload) => {
-      // console.log("Enviado: " + payload);
       state.ws_message.command = payload.command;
       state.ws_message.parameter = payload.parameter;
       wsConnection.send(JSON.stringify(state.ws_message));
@@ -323,7 +325,6 @@ const store = new Vuex.Store({
     },
 
     START: (state) => {
-      state.started = true;
       state.paused = !state.paused;
 
       if (state.localTimer.currentSeconds == null) {
@@ -366,6 +367,12 @@ const store = new Vuex.Store({
       }
     },
 
+    START2: (state) => {
+      state.playing = true
+      state.started = true
+      state.stoped = false
+    },
+
     RESTART(state) {
       state.localTimer.currentSeconds = null;
       state.progress = 5.1;
@@ -377,9 +384,11 @@ const store = new Vuex.Store({
     STOP(state) {
       state.localTimer.currentSeconds = 0;
       state.progress = 5.1;
+      state.playing = false
       state.paused = true;
       state.finished = false;
-      state.started = false;
+      // state.started = false;
+      state.stoped = true
     },
   },
 

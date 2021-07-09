@@ -566,6 +566,7 @@ async def funcs():
 async def stopProcess():
     global intencionalStop
     intencionalStop = True
+    await sendWsMessage("stopProcess_success")
     await asyncio.sleep(0.5)
 
 
