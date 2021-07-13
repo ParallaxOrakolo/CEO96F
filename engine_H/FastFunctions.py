@@ -1,4 +1,5 @@
 from time import sleep
+import timeit
 import numpy as np
 import serial
 import json
@@ -31,6 +32,8 @@ class ColorPrint:
     HEADER = '\033[95m'
     BOLD = '\033[1m'
 
+class MyException(Exception):
+    pass
 # Cria uma imagem de cor solida com qualquer tamanho,, padrão 600x900 azul
 def backGround(h=600, w=900, c=0):
     bgk = np.zeros([h, w, 3], np.uint8)
@@ -134,10 +137,15 @@ def G28(serial, axis='E', endStop='filament', status='open', steps=5, speed=5000
 
 def M400(arduino, pattern='', **kwargs):
     echoMessge, echoCaugth = " ", ['x', 'X']
+    timeout= kwargs.get('timeout') if kwargs.get('timeout') else 20
+    T0 = timeit.default_timer()
     while echoMessge not in echoCaugth:
-        echoMessge = pattern+'_'+randomString()
-        echoCaugth = sendGCODE(arduino, "M400",  echo=True)
-        echoCaugth += sendGCODE(arduino, f"M118 {echoMessge}", echo=True)
+        if timeit.default_timer() - T0 <= timeout:
+            echoMessge = pattern+'_'+randomString()
+            echoCaugth = sendGCODE(arduino, "M400",  echo=True)
+            echoCaugth += sendGCODE(arduino, f"M118 {echoMessge}", echo=True)
+        else:
+            raise MyException(f"Movimento não pode ser concluido dentro de {timeout} segundos.")
 
 # Estabelece uma conexão com base em um arquivo de configuração personalizado.
 def SerialConnect(SerialPath='../Json/serial.json', name='arduino'):

@@ -4,10 +4,12 @@
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Imports                                                           #
 
+from FastFunctions import MyException
 from flask import Flask, Response, request, jsonify
 from datetime import datetime
 import FastFunctions as Fast
 import OpencvPlus as Op
+from threading import Thread
 import numpy as np
 import subprocess
 import websockets
@@ -96,7 +98,7 @@ class CamThread(threading.Thread):
     def run(self):
         print("Starting " + self.previewName)
         return self.camPreview(self.previewName, self.camID)
-        
+
     async def report(self, item):
         item["description"] = item["description"].replace("_id_", str(self.camID['Settings']['id']))
         await sendWsMessage("error", item)
@@ -713,6 +715,7 @@ async def startAutoCheck():
 
 async def startProcess(qtd=9999):
     global intencionalStop, arduino, nano
+    await sendWsMessage("startProcess_success")
 
     # await logRequest({"code":functionLog["PSI"]["code"], 
     #                   "description":functionLog["PSI"]["description"],
@@ -739,7 +742,11 @@ async def startProcess(qtd=9999):
     while qtd != corretas and not intencionalStop:
         rodada +=1
         totalUnitario = timeit.default_timer()
-        PegaObjeto()
+        try:
+            PegaObjeto()
+        except MyException as Mye:
+            print(Mye)
+            break
         parcialFuro =['', '', '', '']
 
         # await logRequest({"code":functionLog["IDI"]["code"], 
@@ -833,7 +840,7 @@ async def startProcess(qtd=9999):
 
     descargaCompleta = timeit.default_timer()-descargaCompleta
     intencionalStop = False
-    await sendWsMessage("startProcess_success")
+    
 
     # await logRequest({"code":functionLog["PST"]["code"], 
     #                   "description":functionLog["PST"]["description"],
@@ -985,13 +992,22 @@ if __name__ == "__main__":
     @app.route('/exit', methods=['GET'])
     def shutdown():
         print("Pediu pra parar.")
-        thread0.stop()
-        thread1.stop()
+        for x in range(10):
+            try:
+                globals()["thread"+str(x)].stop()
+                print(f"Aguardando 'thread{str(x)}' parar..")
+                globals()["thread"+str(x)].join()
+                print(f"'thread{str(x)}' parou com sucesso.. \n")
+            except KeyError:
+                pass
+        # thread0.stop()
+        # thread1.stop()
         shutdown_server()
         print("Esperando Threads Serem Finalizadas")
-        thread0.join()
-        thread1.join()
-        appTh.join()
+        #appTh.join()
+        loop.call_soon_threadsafe(loop.stop)  # here
+        print("Aguardando 'mainThread' parar...")
+        mainThread.join()
         print("Threads Finalizadas com sucesso.")
         return "Server Fechado"
 
@@ -1018,9 +1034,12 @@ if __name__ == "__main__":
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                    Inside-Async-Def                        #
 
-    async def sendGcode(obj):
-        Fast.sendGCODE(arduino, str(obj))
-        print("Gcode:" + obj)
+    async def serialMonitor(obj):
+        if str(obj).upper() == "REBOOT":
+            print("sys.reboot")
+        else:
+            Fast.sendGCODE(arduino, str(obj))
+            print("Gcode:" + obj)
         return
 
     async def actions(message):
@@ -1057,9 +1076,15 @@ if __name__ == "__main__":
         websockets.serve(echo, ip, portFront))
     print(f"server iniciado em {ip}:{portFront}")
     try:
-        asyncio.get_event_loop().run_forever()
+        loop = asyncio.get_event_loop()
+        mainThread = Thread(target=loop.run_forever)
+        mainThread.start()
+        print('Started!')
+        #ever = asyncio.get_event_loop()
+        #ever.run_forever()
     except KeyboardInterrupt:
         print("Fechando conexão com webscokets na base da força")
+        #ever.join()
         try:
             cv2.destroyAllWindows()
         except cv2.error:

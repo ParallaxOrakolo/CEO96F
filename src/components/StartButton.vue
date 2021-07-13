@@ -79,7 +79,7 @@
                       () => {
                         SEND_MESSAGE({
                           command: actions.START_PROCESS,
-                          parameter: selection,
+                          parameter: state.operation.total,     // Change selection -> state.operation.total -HB
                         });
                         //startStatusChage
                         dialog = false;
