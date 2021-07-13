@@ -365,7 +365,7 @@ def HomingAll():
 def verificaCLP(serial):
     echo = Fast.sendGCODE(serial, 'F', echo=True)
     echo = str(echo[len(echo)-1])
-    if echo == "Comando não enviado...":
+    if echo == "Comando não enviado, falha na conexão com a serial.":
         #return 4
         return "ok"
     #return echo
@@ -387,6 +387,7 @@ def Parafusa(pos, voltas=2, mm=0, servo=0, angulo=0):
         Fast.sendGCODE(arduino, f'g0 z{pos} F{1200}')
         Fast.M400(arduino)
 
+
 def descarte(valor="Errado", Deposito={"Errado":{"X":230, "Y":0}}):
     pos = machineParamters["configuration"]["informations"]["machine"]["defaultPosition"]["descarte"+valor]
     Fast.sendGCODE(arduino, f"G90")
@@ -396,6 +397,7 @@ def descarte(valor="Errado", Deposito={"Errado":{"X":230, "Y":0}}):
     Fast.sendGCODE(arduino, "M42 P31 S0")
     Fast.sendGCODE(arduino, "M42 P33 S0")
     Fast.sendGCODE(arduino, f"G28 Y")
+
 
 def PegaObjeto():
     print("Indo pegar...")
@@ -644,24 +646,51 @@ async def logRequest(new_log=False):
     return
 
 
+async def logRefresh(timeout=1):
+    global logList
+    date = int(round(datetime.now().timestamp()))
+
+    M=int(datetime.fromtimestamp(date).strftime("%m"))
+    Y=int(datetime.fromtimestamp(date).strftime("%Y"))
+    D=int(datetime.fromtimestamp(date).strftime("%d"))
+
+    month = datetime.fromtimestamp(date).strftime("%m")
+    for log in logList['log']:
+        logDate = datetime.fromtimestamp(log['date']).strftime("%m")
+        if logDate != month:
+            lM=int(datetime.fromtimestamp(log['date']).strftime("%m"))
+            lY=int(datetime.fromtimestamp(log['date']).strftime("%Y"))
+            lD=int(datetime.fromtimestamp(log['date']).strftime("%d"))
+            if M-lM >=timeout and D-lD<=0:
+                logList['log'].remove(log)
+            Fast.writeJson('Json/logList.json', logList)
+
+
 async def startAutoCheck():
-    global arduino, nano
+    global arduino, nano, conexaoStatus, threadStatus, infoCode 
     # await logRequest({"code":functionLog["AVI"]["code"], 
     #                   "description":functionLog["AVI"]["description"],
     #                   "date":int(round(datetime.now().timestamp()))})
 
     await updateSlider('Normal')
-    global primeiraConexao
+    await logRefresh()
     AutoCheckStatus = True
-    if primeiraConexao:
-        primeiraConexao = False
+    connection = {
+        "connectionStatus": "Tentantiva de conexão identificada"
+    }
+
+    await asyncio.sleep(0.5)
+    await sendWsMessage("update", connection)
+
+    connection["connectionStatus"] = "Conectando sistemas internos..."
+    await asyncio.sleep(0.5)
+    await sendWsMessage("update", connection)
+
+    if not conexaoStatus:
         try:
             status, code, arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
             if status:
-                await logRequest({                    
-                        "code":code, 
-                        "description":"[INFO]: Conexão com a placa 'Ramps 1.4' estabelecida.",
-                        "date":int(round(datetime.now().timestamp()))})
+                conexaoStatus = True
                 HomingAll()
             else:
                 raise TypeError
@@ -669,41 +698,66 @@ async def startAutoCheck():
             try:
                 status_nano, code_nano, nano = Fast.SerialConnect(SerialPath='Json/serial.json', name='Nano')
                 if status_nano:
-                    await logRequest({
-                        "code":code_nano, 
-                        "description":"[INFO]: Conexão com a placa 'Nano' estabelecida.",
-                        "date":int(round(datetime.now().timestamp()))})
+                    conexaoStatus = True
                 else:
                     raise TypeError 
-
             except TypeError:
-                await logRequest({"code":-200, 
-                    "description":"[ERRO]: Conexão com a placa 'Nano' não pode estabelecida.",
-                    "date":int(round(datetime.now().timestamp()))})
+                conexaoStatus = False
+                infoCode = 4
+                # await logRequest({"code":-200, 
+                #     "description":"[ERRO]: Conexão com a placa 'Nano' não pode estabelecida.",
+                #     "date":int(round(datetime.now().timestamp()))})
+
 
         except TypeError:
-            await logRequest({"code":-200, 
-                              "description":"[ERRO]: Conexão com a placa 'Ramps 1.4' não pode estabelecida.",
-                              "date":int(round(datetime.now().timestamp()))})
+            conexaoStatus = False
+            infoCode=5
+            # await logRequest({"code":-200, 
+            #                   "description":"[ERRO]: Conexão com a placa 'Ramps 1.4' não pode estabelecida.",
+            #                   "date":int(round(datetime.now().timestamp()))})
 
-
-        # if not status:
-        #     await sendWsMessage('erro', {'codigo': code, 'menssagem':arduino })
-        #     AutoCheckStatus = False
-        thread1.start()
-        # stalker1.start()
-        thread0.start()
-        # stalker0.start()
+    # if not status:
+    #     await sendWsMessage('erro', {'codigo': code, 'menssagem':arduino })
+    #     AutoCheckStatus = False
+    connection["connectionStatus"] = "Inicializando cameras..."
+    await sendWsMessage("update", connection)
+    await asyncio.sleep(0.5)
+    if not threadStatus:
+        try:
+            thread1.start()
+            # stalker1.start()
+            thread0.start()
+            # stalker0.start()
         
-        while True:
-            try:
-                if type(globals()['frame1']) == np.ndarray:
-                    break
-            except KeyError:
-                continue
+            while True:
+                try:
+                    if type(globals()['frame1']) == np.ndarray:
+                        break
+                except KeyError:
+                    continue
 
-        appTh.start()
-        print("Transmissão de vídeo iniciada.")
+            appTh.start()
+            print("Transmissão de vídeo iniciada.")
+            threadStatus = True
+        except Exception as Exp:
+            threadStatus = False
+            print(Exp)
+    
+    if not conexaoStatus:
+        for item in stopReasons:
+            if infoCode == item['code']:
+                print(item)
+                await logRequest({
+                        "code":item['code'], 
+                        "description":item['description'],
+                        "date":int(round(datetime.now().timestamp()))})
+                await sendWsMessage("error", item)
+    if not conexaoStatus or not threadStatus:
+        connection["connectionStatus"] = "Problema encontrado durante a conexão..."
+        await sendWsMessage("update", connection)
+        await asyncio.sleep(1.5)
+    connection["connectionStatus"] = "Verificação concluida"
+    await sendWsMessage("update", connection)
     await sendWsMessage("startAutoCheck_success")
 
     # await logRequest({"code":functionLog["AVT"]["code"], 
@@ -895,7 +949,6 @@ if __name__ == "__main__":
     logList = Fast.readJson('Json/logList.json')
     HoleCuts = Fast.readJson("../engine_H/Json/HolePoints.json")
     ScrewCuts = Fast.readJson("../engine_H/Json/ScrewPoints.json")
-
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Json-Variables                        #
 
@@ -913,6 +966,7 @@ if __name__ == "__main__":
 
     
     primeiraConexao = True
+    conexaoStatus, threadStatus, infoCode = False, False, 0
 
     # sattus, code, arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
     # sattus_nano, code_nano, nano = Fast.SerialConnect(SerialPath='Json/serial.json', name='Nano')
@@ -1038,7 +1092,9 @@ if __name__ == "__main__":
         if str(obj).upper() == "REBOOT":
             print("sys.reboot")
         else:
-            Fast.sendGCODE(arduino, str(obj))
+            Resposta = Fast.sendGCODE(arduino, str(obj), echo=True)
+            for msg in Resposta:
+                await sendWsMessage("serialMonitor_response", msg)
             print("Gcode:" + obj)
         return
 

@@ -99,7 +99,7 @@ def sendGCODE(serial, command, **kargs):
 
     # Avisa que o comando não pode ser enviado, pois a conexão não existe.
     else:
-        return ["Comando não enviado..."]
+        return ["Comando não enviado, falha na conexão com a serial."]
 
 
 def M114(serial, where=[("X:", " Y:"), ("Y:", " Z:"), ("Z:", " E:"), ("E:", " Count")]):
