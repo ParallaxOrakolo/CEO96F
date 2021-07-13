@@ -2,8 +2,8 @@ import cv2
 import OpencvPlus as Op
 import FastFunctions as Fast
 
-Fast.SystemChangeJson()
-exit()
+# Fast.SystemChangeJson()
+# exit()
 
 # # id = 6
 # # Pos = 'A'
@@ -12,7 +12,7 @@ exit()
 # # with open(path_to_file+f'{Pos}/{id}_Rand_{Pos}.txt') as f:
 # #     contents = f.readlines()
 
-# Op.ControlWindow((37, 106), (183, 255), (20, 227), (6090, 65555))
+Op.ControlWindow((37, 106), (183, 255), (20, 227), (6090, 65555))
 
 # # nome = contents[Picture].rstrip()
 # # p = f"Auto-Gen/{id}_Rand/{Pos}/{nome}.png"
@@ -27,17 +27,21 @@ exit()
 # cap = cv2.VideoCapture(0)
 # cap.set(3, 3264)
 # cap.set(4, 2448)
-
+cap = cv2.VideoCapture(0)
+cap.set(3, 3264)
+cap.set(4, 2448)
+_, show = cap.read()
 ScrewCuts = Fast.readJson("../engine_H/Json/ScrewPoints.json")
-# imgs = Op.Rois(show, 4, 0.25)
+#imgs = Op.Rois(show, 6, 0.25)
 
 
 while cv2.waitKey(1) != 27:
-    img = cv2.imread("../engine_H/Images/1.jpg")
+    #img = cv2.imread("../engine_H/Images/1.jpg")
+    _, img = cap.read()
     img_draw = img.copy()
     imgs = []
     finds = 0
-    for Pontos in Cortes:
+    for Pontos in ScrewCuts:
 
         show = img[Pontos["P0"][1]:Pontos["P0"][1] + Pontos["P1"][1],
                    Pontos["P0"][0]:Pontos["P0"][0] + Pontos["P1"][0]]

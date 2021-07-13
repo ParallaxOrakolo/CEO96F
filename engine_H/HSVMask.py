@@ -5,6 +5,7 @@ import cv2
 import numpy as np
 
 
+
 def findCircle(circle_Mask, areaMinC, areaMaxC, perimeter_size, blur_Size=3):
     global raio
     circle_info = []
@@ -103,9 +104,9 @@ cap.set(3, 3264)
 cap.set(4, 2448)
 _, Image = cap.read()
 p1 = tuple(map(opr.add, map(opr.mul, (((Quadrants[line][column]).shape[:2])[
-           ::-1]), (column, line)), (340, -500)))
+           ::-1]), (column, line)), (200, -500)))
 p2 = tuple(map(opr.add, map(opr.mul, ((
-    (Quadrants[line-1][column-1]).shape[:2])[::-1]), (column+1, line+1)), (-340, 500)))
+    (Quadrants[line-1][column-1]).shape[:2])[::-1]), (column+1, line+1)), (-200, 500)))
 cv2.rectangle(Image, p1, p2, (0, 0, 255), 5)
 
 # cv2.imshow('Image_Original', cv2.resize(Image, None, fx=Escala*0.3, fy=Escala*0.3))
@@ -133,9 +134,9 @@ while cv2.waitKey(1) != 27:
     fixPoint = (int(Image.shape[1]/2), int(Image.shape[0]/2))
     Quadrants = Op.meshImg(Image)
     p1 = tuple(map(opr.add, map(opr.mul, (((Quadrants[line][column]).shape[:2])[
-                       ::-1]), (column, line)), (250, -500)))
+                       ::-1]), (column, line)), (200, -500)))
     p2 = tuple(map(opr.add, map(opr.mul, ((
-        (Quadrants[line-1][column-1]).shape[:2])[::-1]), (column+1, line+1)), (-250, 500)))
+        (Quadrants[line-1][column-1]).shape[:2])[::-1]), (column+1, line+1)), (-200, 500)))
     cv2.rectangle(Image, p1, p2, (0, 0, 255), 5)
     Image = Image[p1[1]:p2[1], p1[0]:p2[0]]
     # Image = Quadrants[1][1]
@@ -143,10 +144,10 @@ while cv2.waitKey(1) != 27:
 
     
     cv2.imshow('Image_Original', cv2.resize(
-                img, None, fx=0.45, fy=0.25))
+                img, None, fx=0.3, fy=0.3))
     
     cv2.imshow('Image_Original2', cv2.resize(
-                img2, None, fx=0.45, fy=0.25))
+                img2, None, fx=0.3, fy=0.3))
 
 print(f'"h_min":{h_min}, "s_min":{s_min}, "v_min":{v_min},')
 print(f'"h_max":{h_max}, "s_min":{s_max}, "v_max":{v_max},')

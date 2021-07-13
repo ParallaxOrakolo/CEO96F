@@ -106,13 +106,14 @@ class CamThread(threading.Thread):
         camID = cam_json["Settings"]["id"]
         cw = cam_json["Settings"]["frame_width"]
         ch = cam_json["Settings"]["frame_height"]
+        print(cw,'x', ch)
         cam = cv2.VideoCapture(camID)
         cam.set(cv2.CAP_PROP_FRAME_WIDTH, int(cw))
         cam.set(cv2.CAP_PROP_FRAME_HEIGHT, int(ch))
         cam.set(cv2.CAP_PROP_FOURCC,cv2.VideoWriter_fourcc('M','J','P','G'))
         
-        for k, v in cam_json["Properties"].items():
-            cam.set(getattr(cv2, 'CAP_PROP_' + k), v)
+        # for k, v in cam_json["Properties"].items():
+        #     cam.set(getattr(cv2, 'CAP_PROP_' + k), v)
 
         if cam.isOpened():                            # Verifica se foi aberta
             rval, frame = cam.read()                  # Lê o Status e uma imagem
@@ -243,6 +244,7 @@ def findHole(imgAnalyse, minArea, maxArea, c_perimeter, HSValues, fixed_Point, e
     chr_k = cv2.bitwise_and(imgAnalyse, imgAnalyse, mask=mask)
     distances = []
     edge = findCircle(mask, minArea, maxArea, c_perimeter)
+    #cv2.imshow("Mascara", cv2.resize(mask, None, fx=0.3, fy=0.3))
     for Circle in edge:
         cv2.circle(chr_k, (int(Circle['center'][0]), int(Circle['center'][1])), int(Circle['radius']),
                    (36, 255, 12), 2)
@@ -289,7 +291,7 @@ def findCircle(circle_Mask, areaMinC, areaMaxC, perimeter_size, blur_Size=3):
         area = cv2.contourArea(c)
         if len(approx) >= perimeter_size and areaMinC < area < areaMaxC:
             ((x, y), r) = cv2.minEnclosingCircle(c)
-            if r >= 50 and r<=80:
+            if r >= 40 and r<=100:
                 circle_info.append({"center": (x, y), "radius": r, "id": ids})
                 ids += 1
     return circle_info
@@ -362,41 +364,53 @@ def verificaCLP(serial):
     echo = Fast.sendGCODE(serial, 'F', echo=True)
     echo = str(echo[len(echo)-1])
     if echo == "Comando não enviado...":
-        return 4
-    return echo
+        #return 4
+        return "ok"
+    #return echo
+    return "ok"
 
     # return strr
     #return random.choice(["ok","ok","ok","ok","ok","ok","ok","ok","ok","ok",1,"ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok",])
 
 
 def Parafusa(pos, voltas=2, mm=0, servo=0, angulo=0):
-        #Fast.M400(arduino)
+        Fast.M400(arduino)
         Fast.sendGCODE(arduino, f'g91')
         Fast.sendGCODE(arduino, f'g38.3 z-{pos} F{zMaxFed}')
         Fast.sendGCODE(arduino, f'g0 z-{mm} {zMaxFed}')
         Fast.sendGCODE(arduino, f'm280 p{servo} s{angulo}')
-        Fast.sendGCODE(arduino, f'm43 t s10 l10 w{voltas*50}')
+        #Fast.sendGCODE(arduino, f'm43 t s10 l10 w{voltas*50}')
+        Fast.sendGCODE(arduino, f"M43 t s32 l32 w{voltas*50}")
         Fast.sendGCODE(arduino, 'g90')
-        Fast.sendGCODE(arduino, f'g0 z{pos} F{2000}')
-        #Fast.M400(arduino)
+        Fast.sendGCODE(arduino, f'g0 z{pos} F{1200}')
+        Fast.M400(arduino)
 
+def descarte(valor="Errado", Deposito={"Errado":{"X":230, "Y":0}}):
+    pos = machineParamters["configuration"]["informations"]["machine"]["defaultPosition"]["descarte"+valor]
+    Fast.sendGCODE(arduino, f"G90")
+    Fast.sendGCODE(arduino, f"G0 Y{pos['Y']} f{yMaxFed}")
+    Fast.sendGCODE(arduino, f"G0 X{pos['X']} f{xMaxFed}")
+    Fast.M400(arduino)
+    Fast.sendGCODE(arduino, "M42 P31 S0")
+    Fast.sendGCODE(arduino, "M42 P33 S0")
+    Fast.sendGCODE(arduino, f"G28 Y")
 
 def PegaObjeto():
     print("Indo pegar...")
     pegaPos = machineParamters['configuration']['informations']['machine']['defaultPosition']['pegaTombador']
     anlPos = machineParamters['configuration']['informations']['machine']['defaultPosition']['analisaFoto']
-    # Fast.sendGCODE(arduino, "G90")
-    # Fast.sendGCODE(arduino, f"G0 X{pegaPos['X']} F{xMaxFed}")
-    # Fast.sendGCODE(arduino, f"G0 Y{pegaPos['Y']} F{yMaxFed}")
-    # Fast.M400(arduino)
-    # Fast.sendGCODE(arduino, "M42 P31 S255")
-    # Fast.sendGCODE(arduino, "G4 S0.3")
-    # Fast.sendGCODE(arduino, "G28 Y")
-    # Fast.sendGCODE(arduino, f"G0 X{anlPos['X']} F{xMaxFed}")
-    # Fast.sendGCODE(arduino, f"G0 Y{anlPos['Y']} F{yMaxFed}")
-    # Fast.M400(arduino)
-    # Fast.sendGCODE(arduino, "M42 P32 S255")
-    # Fast.sendGCODE(arduino, "G91")
+    Fast.sendGCODE(arduino, "G90")
+    Fast.sendGCODE(arduino, f"G0 X{pegaPos['X']} E0 F{xMaxFed}")
+    Fast.sendGCODE(arduino, f"G0 Y{pegaPos['Y']} F{yMaxFed}")
+    Fast.M400(arduino)
+    Fast.sendGCODE(arduino, "M42 P31 S255")
+    Fast.sendGCODE(arduino, "G4 S0.3")
+    Fast.sendGCODE(arduino, "G28 Y")
+    Fast.sendGCODE(arduino, f"G0 X{anlPos['X']} F{xMaxFed}")
+    Fast.sendGCODE(arduino, f"G0 Y{anlPos['Y']} F{yMaxFed}")
+    Fast.M400(arduino)
+    Fast.sendGCODE(arduino, "M42 P34 S255")
+    Fast.sendGCODE(arduino, "G91")
     print("Pegou")
 
 
@@ -485,32 +499,38 @@ def Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues):
 def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues):
     print("Iniciando busca pelos furos...")
     precicao = 0.4
-    dsts = 0
     Pos = []
     identificar = []
     for lados in range(4):
         tentavias = 0
+        dsts = 0
         tI0 = timeit.default_timer()
-        while tentavias<=3:
-                
+        while tentavias<=5:
+            print("Extraindo resultados")
+            frame = globals()['frame'+str(mainParamters["Cameras"]["Hole"]["Settings"]["id"])]
             Resultados, R, per, img_draw = Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues)
+            cv2.imshow("Img_Process", cv2.resize(frame, None, fx=0.3, fy=0.3))
+            cv2.imshow("Fora_Hole", cv2.resize(img_draw, None, fx=0.3, fy=0.3))
+            cv2.waitKey(2)
+            print("Resultados:", Resultados)
             # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
             #                     Verifica a distância                   #
             if Resultados:
                 MY = Resultados[dsts][0]
                 MX = Resultados[dsts][1]
+                print("MX:", MX, '\n MY:', MY)
 #                   MX += (randint(-int(abs(MX)/4),abs(int(MX))))
                 if abs(MX) > precicao:
-                    #Fast.sendGCODE(arduino, f"G0 X{MX} Y0 F{xMaxFed}", echo=True)
+                    Fast.sendGCODE(arduino, f"G0 X{MX} Y0 F{xMaxFed}", echo=True)
                     print(f"G0 X{MX} Y0 F{xMaxFed}")
                     
                 elif abs(MY) > precicao:
                     aMY = NLinearRegression(abs(MY))
                     aMY *= -1 if MY < 0 else 1
-                    # Fast.sendGCODE(arduino, f"G0 X0 Y{aMY} F{yMaxFed}", echo=True)
+                    Fast.sendGCODE(arduino, f"G0 X0 Y{aMY} F{yMaxFed}", echo=True)
                     print(f"G0 X0 Y{aMY} F{yMaxFed}")
 
-                #Fast.M400(arduino)
+                Fast.M400(arduino)
                 tentavias+=1
 
                 print("Tentativa:", tentavias)
@@ -523,8 +543,11 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues):
                             tentavias = 10
                     else:
                         tentavias = 10
+            else:
+                tentavias+=1
         identificar.append(timeit.default_timer()-tI0)
         print("Passando pro lado:", lados+1)
+        Fast.sendGCODE(arduino, f"G0 E-90 F{eMaxFed}")
     identificar = sum(identificar)
     print("Busca finalizada")
     return Pos
@@ -633,10 +656,11 @@ async def startAutoCheck():
         try:
             status, code, arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
             if status:
-                await logRequest({
+                await logRequest({                    
                         "code":code, 
                         "description":"[INFO]: Conexão com a placa 'Ramps 1.4' estabelecida.",
                         "date":int(round(datetime.now().timestamp()))})
+                HomingAll()
             else:
                 raise TypeError
 
@@ -695,6 +719,7 @@ async def startProcess(qtd=9999):
     #                   "date":int(round(datetime.now().timestamp()))})
 
     print(f"Foi requisitado a montagem de {qtd} peças certas.")
+    time.sleep(3)
     erradas = 0
     corretas = 0
     rodada = 0
@@ -709,6 +734,7 @@ async def startProcess(qtd=9999):
                 }
 
     infoCode = "ok"
+    infoCode = verificaCLP(nano)
     print(infoCode)
     while qtd != corretas and not intencionalStop:
         rodada +=1
@@ -720,11 +746,11 @@ async def startProcess(qtd=9999):
         #               "description":functionLog["IDI"]["description"],
         #               "date":int(round(datetime.now().timestamp()))})
 
-        # parcialFuro = Processo_Hole(globals()['frame'+str(mainParamters["Cameras"]["Hole"]["Settings"]["id"])],
-        #               mainParamters['Mask_Parameters']['Hole']['areaMin'],
-        #               mainParamters['Mask_Parameters']['Hole']['areaMax'],
-        #               mainParamters['Mask_Parameters']['Hole']['perimeter'],
-        #               mainParamters['Filtros']['HSV']['Hole']['Valores'])
+        parcialFuro = Processo_Hole(None,
+                      mainParamters['Mask_Parameters']['Hole']['areaMin'],
+                      mainParamters['Mask_Parameters']['Hole']['areaMax'],
+                      mainParamters['Mask_Parameters']['Hole']['perimeter'],
+                      mainParamters['Filtros']['HSV']['Hole']['Valores'])
 
         # await logRequest({"code":functionLog["IDT"]["code"], 
         #               "description":functionLog["IDT"]["description"],
@@ -735,12 +761,12 @@ async def startProcess(qtd=9999):
         print("604: Info code:", infoCode)
         print("~~"*10)
         if infoCode in nonStopCode:
-            if len(parcialFuro) == 4:
+            if len(parcialFuro) >= 5:
                 print("Iniciando processo de montagem...")
                 montar = []
                 tM0 = timeit.default_timer()
                 finalFuro = []
-                for posicao in [{'X':0, 'Y':0, 'Z':0, 'E':0}, {'X':0, 'Y':0, 'Z':0, 'E':0}, {'X':0, 'Y':0, 'Z':0, 'E':0}]:
+                for posicao in parcialFuro:
                     print("Posicao: ", posicao)
                     print(-round(cameCent['X']-posicao['X'], 2), intervalo['X'])
                     finalFuro.append({
@@ -758,7 +784,7 @@ async def startProcess(qtd=9999):
                         Fast.sendGCODE(arduino, f"g0 X{posicao['X']} E{posicao['E']} F{xMaxFed}")
                         Fast.sendGCODE(arduino, f"g0 Y{posicao['Y']} F{yMaxFed}")
                         Parafusa(140, mm=0, voltas=20)
-                        Fast.sendGCODE(arduino, f"g0 X{100} F{xMaxFed}")
+                        Fast.sendGCODE(arduino, f"g0 X{122} F{xMaxFed}")
                         Parafusa(140, mm=0, voltas=20)
                         montar.append(timeit.default_timer()-tM0)
                     else:
@@ -769,6 +795,9 @@ async def startProcess(qtd=9999):
                     montar=sum(montar)
                     print("Montagem finalizada.")
                     print("Iniciando processo de validação.")
+                    Fast.sendGCODE(arduino, "G90")
+                    Fast.sendGCODE(arduino, "G28 Y")
+                    Fast.sendGCODE(arduino, "G0 X 230")
                     validar = timeit.default_timer()
                     _, encontrados = Process_Imagew_Scew(
                                         globals()['frame'+str(mainParamters["Cameras"]["Screw"]["Settings"]["id"])],
@@ -779,23 +808,23 @@ async def startProcess(qtd=9999):
                                         )
                     validar = timeit.default_timer()-validar
                     if encontrados == 6:
-                        print('descarte("Certo")')
+                        descarte("Certo")
                         corretas+=1
                     else:
                         print(f"Foram fixados apenas {encontrados} parafusos.")
-                        print('descarte("Errado")')
+                        descarte("Errado")
                         erradas+=1
                 else:
                     print("Prolema encontado após 625")
                     break
             else:
                 print(f"Foram econtrados apenas {len(parcialFuro)} furos.")
-                print('descarte("Errado")')
+                descarte("Errado")
                 erradas+=1
             totalUnitario = timeit.default_timer()-totalUnitario
         else:
             print("Prolema encontado no 607")
-            break
+            break 
     for item in stopReasons:
         if infoCode == item['code']:
             print(f"Erro ao tentar montar a {rodada} peça")
@@ -831,7 +860,7 @@ async def updateFilter(zipped):
         
 
 async def saveJson():
-    Fast.writeJson('Json/Temp.json', mainParamters)
+    Fast.writeJson('Json/config.json', mainParamters)
     print("salvei")
 
 
@@ -863,17 +892,17 @@ if __name__ == "__main__":
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Json-Variables                        #
 
-    if mainParamters["Recover"]["Status"]:
-        mainParamters["Recover"]["Status"] = False
-        Fast.writeJson('Json/config.json', mainParamters)
-        print(mainParamters["Recover"]["Coords"])
-    for K, V in mainParamters["Recover"]["Coords"].items():
-        if V == None:
-            print("Deu ruim na hora do save, vai ser nescessário reiniciar todo o processo")
-            break 
-    else:
-        for K, V in mainParamters["Recover"]["Coords"].items():
-            print(f"G0 {K}{V}")
+    # if mainParamters["Recover"]["Status"]:
+    #     mainParamters["Recover"]["Status"] = False
+    #     Fast.writeJson('Json/config.json', mainParamters)
+    #     print(mainParamters["Recover"]["Coords"])
+    # for K, V in mainParamters["Recover"]["Coords"].items():
+    #     if V == None:
+    #         print("Deu ruim na hora do save, vai ser nescessário reiniciar todo o processo")
+    #         break 
+    # else:
+    #     for K, V in mainParamters["Recover"]["Coords"].items():
+    #         print(f"G0 {K}{V}")
 
     
     primeiraConexao = True
@@ -940,10 +969,10 @@ if __name__ == "__main__":
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Start-Threads                         #
 
-    thread1 = CamThread("1", mainParamters["Cameras"]["Screw"])
-    stalker1 = ViewAnother(thread1, 5)
-    thread0 = CamThread("0", mainParamters["Cameras"]["Hole"])
-    stalker0 = ViewAnother(thread0, 5)
+    globals()["thread"+str(mainParamters["Cameras"]["Screw"]["Settings"]["id"])] = CamThread(str(mainParamters["Cameras"]["Screw"]["Settings"]["id"]), mainParamters["Cameras"]["Screw"])
+    #stalker1 = ViewAnother(thread1, 5)
+    globals()["thread"+str(mainParamters["Cameras"]["Hole"]["Settings"]["id"])] = CamThread(str(mainParamters["Cameras"]["Hole"]["Settings"]["id"]), mainParamters["Cameras"]["Hole"])
+    #stalker0 = ViewAnother(thread0, 5)
     appTh = AppThread(ip, portBack)
     
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
@@ -990,7 +1019,7 @@ if __name__ == "__main__":
     #                    Inside-Async-Def                        #
 
     async def sendGcode(obj):
-        #Fast.sendGCODE(arduino, str(obj))
+        Fast.sendGCODE(arduino, str(obj))
         print("Gcode:" + obj)
         return
 
@@ -1014,6 +1043,13 @@ if __name__ == "__main__":
             print(json.loads(message))
             await actions(json.loads(message))
 
+
+    # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
+    #                      PreLaunch                             #
+
+    # HomingAll()    
+
+    
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Server-Start                          #
 

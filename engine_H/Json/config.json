@@ -5,14 +5,14 @@
                 "Application": "Hole",
                 "Valores": {
                     "lower": {
-                        "h_min": 109,
-                        "s_min": 59,
-                        "v_min": 2
+                        "h_min": 0,
+                        "s_min": 0,
+                        "v_min": 0
                     },
                     "upper": {
-                        "h_max": 145,
+                        "h_max": 255,
                         "s_max": 255,
-                        "v_max": 36
+                        "v_max": 145
                     }
                 }
             },
@@ -74,9 +74,9 @@
     },
     "Mask_Parameters": {
         "Hole": {
-            "perimeter": 4,
-            "areaMin": 5000,
-            "areaMax": 15000
+            "perimeter": 2,
+            "areaMin": 4000,
+            "areaMax": 6500
         },
         "Edge": {
             "perimeter": 0,
@@ -99,8 +99,8 @@
             "Settings": {
                 "id": 0,
                 "scale": 0.04276480601654536,
-                "frame_height": 1994,
-                "frame_width": 2592
+                "frame_height": 2448,
+                "frame_width": 3264
             },
             "Properties": {
                 "BRIGHTNESS": 0,
@@ -117,8 +117,8 @@
             "Settings": {
                 "id": 1,
                 "scale": 0.04276480601654536,
-                "frame_height": 1994,
-                "frame_width": 2592
+                "frame_height": 2448,
+                "frame_width": 3264
             },
             "Properties": {
                 "BRIGHTNESS": 0,
@@ -135,8 +135,8 @@
             "Settings": {
                 "id": 1,
                 "scale": 0.04276480601654536,
-                "frame_height": 1994,
-                "frame_width": 2592
+                "frame_height": 2448,
+                "frame_width": 3264
             },
             "Properties": {
                 "BRIGHTNESS": 0,

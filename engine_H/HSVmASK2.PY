@@ -105,6 +105,11 @@ HSVJson = mainConfig['Filtros']['HSV']
 cap = cv2.VideoCapture(0)
 cap.set(3, 3264)
 cap.set(4, 2448)
+while True:
+    _, img = cap.read()
+    cv2.imshow("Img", cv2.resize(img, None, fx=0.3, fy=0.3))
+    cv2.waitKey(1)
+exit()
 _, Image = cap.read()
 Quadrants = Op.meshImg(Image)
 # Image = Quadrants[line][column]
@@ -114,6 +119,8 @@ p1 = tuple(map(opr.add, map(opr.mul, (((Quadrants[line][column]).shape[:2])[
 p2 = tuple(map(opr.add, map(opr.mul, ((
     (Quadrants[line-1][column-1]).shape[:2])[::-1]), (column+1, line+1)), (500, -400)))
 Image = Image[p1[1]:p2[1], p1[0]:p2[0]]
+cv2.imshow("Image", Image)
+cv2.waitKey(0)
 Processos = ['Edge', 'Screw']
 
 borda = findScrew(Image, HSVJson, mainConfig, ['Edge'], edge_only=True)
