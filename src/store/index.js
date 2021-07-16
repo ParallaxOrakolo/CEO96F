@@ -24,7 +24,8 @@ export const actions = {
   START_SCAN: "startScan",
   SAVE_JSON: "saveJson",
   SHOW_POPUP:"showPopup",
-  GENERATE_ERROR:"generateError"
+  GENERATE_ERROR:"generateError",
+  SHUTDOWN_RASPBERRY:"shutdown_raspberry"
 };
 
 const store = new Vuex.Store({

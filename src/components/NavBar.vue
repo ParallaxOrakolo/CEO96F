@@ -26,6 +26,19 @@
 
     <v-spacer></v-spacer>
     <!-- <SnackBar /> -->
+    <v-btn
+      icon
+      v-if="$route.name == 'settings'"
+      v-on:click="
+        () => {
+          SEND_MESSAGE({
+            command: actions.SHUTDOWN_RASPBERRY,
+          });
+        }
+      "
+    >
+      <v-icon dark>mdi-power-standby</v-icon>
+    </v-btn>
 
     <v-icon dark color="light-green lighten-1" v-show="isConnected"
       >mdi-lan-check</v-icon
@@ -45,17 +58,20 @@
 <script>
 // import SnackBar from "../components/SnackBar";
 // import { mapMutations } from "vuex"; Remove mapMutations -HB
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
+import { actions } from "../../src/store/index";
+
 
 export default {
   name: "NavBar",
   data: () => ({
+    actions,
     online: false,
     showOnlineMsg: false,
     alert: true,
   }),
 
-  //checa se exite conecção tem a ver com o pwa
+  //checa se existe conexão tem a ver com o pwa
   mounted() {
     this.online = navigator.onLine;
     window.addEventListener("online", () => (this.online = true));
@@ -69,6 +85,8 @@ export default {
     // SnackBar,
   },
   methods: {
+    ...mapMutations(["SEND_MESSAGE"]),
+
     close() {
       const remote = require("electron").remote;
       var window = remote.getCurrentWindow();
@@ -93,8 +111,6 @@ export default {
   height: 1.4em;
   margin-top: 0.5em;
 }
-
-
 
 .alert {
   // position: absolute;

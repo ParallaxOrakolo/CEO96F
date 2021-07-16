@@ -25,7 +25,7 @@
                     SEND_MESSAGE({ command: actions.START_PROCESS });
                     //startStatusChage
                     dialog = false;
-                    state.operation.total = 0
+                    state.operation.total = 0;
                   }
                 "
               >
@@ -43,12 +43,7 @@
             <v-row class="mt-6 d-flex justify-center mb-4" v-if="selection">
               <div>
                 <v-row class="d-flex align-baseline mb-6">
-                  <v-btn
-                    class="mx-2"
-                    fab
-                    small
-                    @click="state.operation.total--"
-                  >
+                  <v-btn class="mx-2" fab small @click="less()" :disabled="buttomDisable">
                     <v-icon dark> mdi-minus </v-icon>
                   </v-btn>
 
@@ -61,25 +56,26 @@
                     hide-details
                     single-line
                     type="number"
+                    min="1" 
                   ></v-text-field>
 
                   <v-btn
                     class="mx-2"
                     fab
                     small
-                    @click="state.operation.total++"
+                    @click="state.operation.total++, buttomDisable=false"
                   >
                     <v-icon dark> mdi-plus </v-icon>
                   </v-btn>
                   <v-btn
-                  class="ml-6"
+                    class="ml-6"
                     color="warning"
                     rounded
                     v-on:click="
                       () => {
                         SEND_MESSAGE({
                           command: actions.START_PROCESS,
-                          parameter: state.operation.total,     // Change selection -> state.operation.total -HB
+                          parameter: state.operation.total, // Change selection -> state.operation.total -HB
                         });
                         //startStatusChage
                         dialog = false;
@@ -121,6 +117,7 @@ export default {
     selection: "",
     actions,
     dialog: false,
+    buttomDisable:false
   }),
 
   components: {
@@ -134,6 +131,14 @@ export default {
 
   methods: {
     ...mapMutations(["SEND_MESSAGE"]),
+    less() {
+      if (this.state.operation.total >= 2) {
+        this.state.operation.total--;
+      }else{
+        this.buttomDisable = true
+      }
+
+    },
   },
 };
 </script>
