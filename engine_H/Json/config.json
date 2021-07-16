@@ -12,7 +12,7 @@
                     "upper": {
                         "h_max": 255,
                         "s_max": 255,
-                        "v_max": 145
+                        "v_max": 75
                     }
                 }
             },
@@ -57,7 +57,7 @@
                     "upper": {
                         "h_max": 255,
                         "s_max": 255,
-                        "v_max": 255
+                        "v_max": 0
                     }
                 }
             }
@@ -74,9 +74,9 @@
     },
     "Mask_Parameters": {
         "Hole": {
-            "perimeter": 2,
-            "areaMin": 4000,
-            "areaMax": 6500
+            "perimeter": 0,
+            "areaMin": 1253,
+            "areaMax": 8271
         },
         "Edge": {
             "perimeter": 0,
@@ -90,8 +90,8 @@
         },
         "Normal": {
             "perimeter": 0,
-            "areaMin": 0,
-            "areaMax": 1
+            "areaMin": 2068,
+            "areaMax": 8662
         }
     },
     "Cameras": {

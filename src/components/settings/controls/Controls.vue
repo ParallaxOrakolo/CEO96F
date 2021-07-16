@@ -21,7 +21,7 @@
                 @click="
                   () => {
                     SEND_MESSAGE({
-                      command: actions.SEND_GCODE,
+                      command: actions.SERIAL_MONITOR,
                       parameter: 'G28 X Y',
                     });
                   }
@@ -42,7 +42,7 @@
                 @click="
                   () => {
                     SEND_MESSAGE({
-                      command: actions.SEND_GCODE,
+                      command: actions.SERIAL_MONITOR,
                       parameter: moveAxis('x', false),
                     });
                   }
@@ -63,7 +63,7 @@
                 @click="
                   () => {
                     SEND_MESSAGE({
-                      command: actions.SEND_GCODE,
+                      command: actions.SERIAL_MONITOR,
                       parameter: moveAxis('z'),
                     });
                   }
@@ -86,7 +86,7 @@
                 @click="
                   () => {
                     SEND_MESSAGE({
-                      command: actions.SEND_GCODE,
+                      command: actions.SERIAL_MONITOR,
                       parameter: moveAxis('y', true),
                     });
                   }
@@ -109,7 +109,7 @@
                 @click="
                   () => {
                     SEND_MESSAGE({
-                      command: actions.SEND_GCODE,
+                      command: actions.SERIAL_MONITOR,
                       parameter: moveAxis('y'),
                     });
                   }
@@ -138,7 +138,7 @@
                 @click="
                   () => {
                     SEND_MESSAGE({
-                      command: actions.SEND_GCODE,
+                      command: actions.SERIAL_MONITOR,
                       parameter: moveAxis('x', true),
                     });
                   }
@@ -159,7 +159,7 @@
                 @click="
                   () => {
                     SEND_MESSAGE({
-                      command: actions.SEND_GCODE,
+                      command: actions.SERIAL_MONITOR,
                       parameter: moveAxis('z', true),
                     });
                   }
@@ -180,7 +180,7 @@
             @click="
               () => {
                 SEND_MESSAGE({
-                  command: actions.SEND_GCODE,
+                  command: actions.SERIAL_MONITOR,
                   parameter: this.vacuum ? 'M106 P0 S128 ' : 'M107 P0',
                 });
               }
@@ -191,7 +191,7 @@
             @click="
               () => {
                 SEND_MESSAGE({
-                  command: actions.SEND_GCODE,
+                  command: actions.SERIAL_MONITOR,
                   parameter:
                     'G90 E1 \n G0 E' +
                     getRealValueToMove(this.vacuumPosition, 'a') +
@@ -229,7 +229,7 @@
             @click="
               () => {
                 SEND_MESSAGE({
-                  command: actions.SEND_GCODE,
+                  command: actions.SERIAL_MONITOR,
                   parameter: this.claw ? 'M104 T1 S255' : 'M104 T1 S0',
                 });
               }
@@ -240,7 +240,7 @@
             @click="
               () => {
                 SEND_MESSAGE({
-                  command: actions.SEND_GCODE,
+                  command: actions.SERIAL_MONITOR,
                   parameter:
                     'T1 \n G90 E0 \n G0 E' +
                     getRealValueToMove(this.rotationZ, 'b') +
@@ -282,7 +282,7 @@
             @click="
               () => {
                 SEND_MESSAGE({
-                  command: actions.SEND_GCODE,
+                  command: actions.SERIAL_MONITOR,
                   parameter: this.led
                     ? 'M150 R' +
                       this.ledRGB.rgba.r +
@@ -300,7 +300,7 @@
             v-on:mouseup="
               () => {
                 SEND_MESSAGE({
-                  command: actions.SEND_GCODE,
+                  command: actions.SERIAL_MONITOR,
                   parameter: this.led
                     ? 'M150 R' +
                       this.ledRGB.rgba.r +
@@ -475,7 +475,7 @@ export default {
         msg = msg.concat("-");
       }
       msg = msg.concat(this.distanceList[this.distance]);
-      msg = msg.concat(" F" + this.speed);
+      msg = msg.concat(" F" + this.speed*10);
 
       return msg;
     },

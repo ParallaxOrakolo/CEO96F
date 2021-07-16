@@ -1,27 +1,33 @@
-class teste():
-    def __init__(self, nome):
-        self.nome = nome
+import asyncio
+from time import sleep
 
-    def echo(self):
-        print(self.nome)
-    
-    def stop(self):
-        print(f" {self.nome} parou")
+Sair = False
+async def A():
+    auto_exit = False
+    contador = 0
+    while not Sair and not auto_exit:
+        contador +=1
+        sleep(1)
+        print("A:", contador)
+        if contador >= 10:
+            print("Auto Exit")
+            auto_exit = True
 
-    def join(self):
-        print(f" {self.nome} join")
 
-    def start(self):
-        print(f" {self.nome} start")
+async def B():
+    for x in range(5,-1,-1):
+        sleep(1)
+        print(x)
+
+async def Start():
+     await A()
+
+async def SUB():
+    asyncio.run(Start())
+
+async def RUN():
+    await SUB()
+    print("~~"*20)
 
 
-for x in range(1,3):
-    globals()["t"+str(x)] = teste(str(x))
-
-print(globals())
-for x in range(3):
-    try:
-        globals()["t"+str(x)].join()
-    except KeyError as Ke:
-        print(Ke)
-        pass
+asyncio.run(RUN())

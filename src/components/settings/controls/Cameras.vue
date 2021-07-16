@@ -50,13 +50,13 @@ export default {
       cameraList: [
         {
           name: "Camera Furação",
-          cameraId: 1,
-          filter: "Screw",
+          cameraId: 0,
+          filter: "Hole",
         },
         {
           name: "Camera de Validação",
-          cameraId: 0,
-          filter: "Hole",
+          cameraId: 1,
+          filter: "Screw",
         },
       ],
     };

@@ -230,9 +230,204 @@ class ViewAnother(threading.Thread):
             if self.look_at.stopped():
                 print("PUTZ")
             time.sleep(self.look_time)
+
+class Process(threading.Thread):
+    def __init__(self, quantidad, id):
+        threading.Thread.__init__(self)
+        global intencionalStop, arduino, nano
+        self.qtd = quantidad
+        self.corretas = 0
+        self.erradas = 0
+        self.rodada = 0
+        self.infoCode = infoCode
+        intencionalStop = False # Destrava a maquina quando um novo processo é iniciado.
+        self.arduino = arduino
+        self.nano = nano
+
+        self.id = id
+        self.cor = getattr(Fast.ColorPrint, random.choice(["YELLOW", "GREEN", "BLUE", "RED"]))
+
+    def run(self):
+        self.preMount()
+        self.Mount()
+        self.posMount()
+
+    def preMount(self):
+
+        print(f"{self.cor} ID:{self.id}--> pre Mount Start{Fast.ColorPrint.ENDC}")
+
+        print(f"Foi requisitado a montagem de {self.qtd} peças certas.")
+
+        
+        self.cameCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['camera0Centro']
+        self.parafCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusadeiraCentro']
+
+        self.intervalo = {
+                    'X':self.parafCent['X']-self.cameCent['X'],
+                    'Y':self.parafCent['Y']-self.cameCent['Y']
+                    }
+
+        print(f"{self.cor} ID:{self.id}--> pre Mount Finish{Fast.ColorPrint.ENDC}")
+
+    def Mount(self):
+
+        self.infoCode = verificaCLP(nano)
+        while self.qtd != self.corretas and not intencionalStop:
+            self.rodada +=1
+
+            # ------------ Vai ate tombador e pega ------------ #
+            try:
+                PegaObjeto()
+            except MyException as Mye:
+                print(Mye)
+                break
+
+            # ------------ Acha as coordenadas parciais do furo ------------ #
+            parcialFuro = Processo_Hole(None,
+                        mainParamters['Mask_Parameters']['Hole']['areaMin'],
+                        mainParamters['Mask_Parameters']['Hole']['areaMax'],
+                        mainParamters['Mask_Parameters']['Hole']['perimeter'],
+                        mainParamters['Filtros']['HSV']['Hole']['Valores'])
+
+
+            # ------------ Vai ate tombador e pega ------------ #
+            self.infoCode = verificaCLP(nano)
+            if self.infoCode in nonStopCode and not intencionalStop:
+                if len(parcialFuro) >= 5: # Verificar qual o número certo .....
+                    montar = []
+                    tM0 = timeit.default_timer()
+                    finalFuro = []
+                    for posicao in parcialFuro:
+                        print("Posicao: ", posicao)
+                        print(-round(self.cameCent['X']-posicao['X'], 2), self.intervalo['X'])
+
+                        # ------------ Acha a posição final dos furos  ------------ #
+                        finalFuro.append({
+                                    'X':-round(self.cameCent['X']-posicao['X'], 2)+self.parafCent ['X'],
+                                    'Y':-round(self.cameCent['Y']-posicao['Y'], 2)+self.parafCent['Y'],
+                                    'E':posicao['E']} )
+
+                    # ------------ Roda a sequência de parafusar ------------ #
+                    Fast.sendGCODE(arduino, 'g90')
+                    for posicao in finalFuro:
+                        self.infoCode = verificaCLP(nano)
+                        if self.infoCode in nonStopCode and not intencionalStop:
+                            Fast.sendGCODE(arduino, f"g0 X{posicao['X']} E{posicao['E']} F{xMaxFed}")
+                            Fast.sendGCODE(arduino, f"g0 Y{posicao['Y']} F{yMaxFed}")
+                            Parafusa(160, mm=0, voltas=20)
+                            Fast.sendGCODE(arduino, f"g0 Y{1} F{yMaxFed}")
+                            Parafusa(160, mm=0, voltas=20)
+                            montar.append(timeit.default_timer()-tM0)
+                        else:
+                            print("Prolema encontado durante o processo de parafusar")
+                            break
+                    
+                    # ------------ Verifica se a montagme está ok ------------ #
+                    if self.infoCode in nonStopCode and not intencionalStop:
+                        montar=sum(montar)
+                        print("Montagem finalizada.")
+                        print("Iniciando processo de validação.")
+                        Fast.sendGCODE(arduino, "G90")
+                        Fast.sendGCODE(arduino, "G28 Y")
+                        Fast.sendGCODE(arduino, "G0 X 230")
+                        validar = timeit.default_timer()
+                        _, encontrados = Process_Imagew_Scew(
+                                            globals()['frame'+str(mainParamters["Cameras"]["Screw"]["Settings"]["id"])],
+                                            Op.extractHSValue(mainParamters['Filtros']['HSV']['Screw']["Valores"], 'lower' ),
+                                            Op.extractHSValue(mainParamters['Filtros']['HSV']['Screw']["Valores"], 'upper' ),
+                                            mainParamters['Mask_Parameters']['Screw']['areaMin'],
+                                            mainParamters['Mask_Parameters']['Screw']['areaMax']
+                                            )
+                        validar = timeit.default_timer()-validar
+                        if encontrados == 6:
+                            descarte("Certo")
+                            self.corretas+=1
+                        else:
+                            print(f"Foram fixados apenas {encontrados} parafusos.")
+                            #descarte("Errado")
+                            self.erradas+=1
+                    else:
+                        print("Problema encontrado antes de validar a montagem")
+                        break
+                else:
+                    print("Problema encontrado depois do processo de Scan ")
+                    print(f"Foram econtrados apenas {len(parcialFuro)} furos.")
+                    #descarte("Errado")
+                    self.erradas+=1
+            else:
+                print("Prolema encontado antes de iniciar o processo de Scan")
+                break 
+
+            print(f"{self.cor} ID:{self.id}--> {self.rodada}{Fast.ColorPrint.ENDC}")
+
+    def posMount(self):
+        print(f"{self.cor} ID:{self.id}--> POS Mount Start{Fast.ColorPrint.ENDC}")
+        if intencionalStop:
+            self.infoCode = 7
+        for item in stopReasons:
+            if self.infoCode == item['code']:
+                descarte("Errado")
+                print(f"Erro ao tentar montar a {self.rodada}ª peça")
+                print(item)
+                asyncio.run(sendWsMessage("error", item))
+        print(f"{self.cor} ID:{self.id}--> POS Mount Finish{Fast.ColorPrint.ENDC}")
+
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Functions                                                         #
 
+def findHole(imgAnalyse, minArea, maxArea, c_perimeter, HSValues, fixed_Point, escala_real=4.4):
+    if type(imgAnalyse) != np.ndarray:
+        print(type(imgAnalyse))
+        imgAnalyse = Op.takeSnapshot(imgAnalyse)
+
+    for filter_values in HSValues:
+        locals()[filter_values] = np.array(
+            Op.extractHSValue(HSValues, filter_values))
+    mask = Op.refineMask(Op.HSVMask(imgAnalyse, locals()
+                         ['lower'], locals()['upper']))
+    mask_inv = cv2.bitwise_not(mask)
+    chr_k = cv2.bitwise_and(imgAnalyse, imgAnalyse, mask=mask)
+    distances = []
+    #edge = findCircle(mask, minArea, maxArea, c_perimeter)
+    edge, null = Op.findContoursPlus(
+            mask_inv, AreaMin_A=minArea, AreaMax_A=maxArea)
+    #cv2.imshow("Mascara", cv2.resize(mask, None, fx=0.3, fy=0.3))
+    if edge:
+        for info_edge in edge:
+            try:
+                if 20 <= int(info_edge['dimension'][0]/2) <= 80:
+
+                    cv2.drawMarker(chr_k,(info_edge['centers'][0]), (0,255,0), thickness=3)
+                    cv2.circle(chr_k, (info_edge['centers'][0]), int(info_edge['dimension'][0]/2),
+                    (36, 255, 12), 2)
+                    
+                    cv2.line(chr_k, (info_edge['centers'][0]), fixed_Point, (255, 0, 255), thickness=3)
+
+                    cv2.line(chr_k, (info_edge['centers'][0]),
+                            (int(info_edge['centers'][0][0]), fixed_Point[1]), (255, 0, 0), thickness=3)
+
+                    cv2.line(chr_k, (int(info_edge['centers'][0][0]), fixed_Point[1]), fixed_Point, (0, 0, 255), thickness=2)
+                    distance_to_fix = (round(((info_edge['centers'][0][0] - fixed_Point[0])*(escala_real/(info_edge['dimension'][0]))), 2),
+                                    round(((info_edge['centers'][0][1] - fixed_Point[1])*(escala_real/(info_edge['dimension'][0]))), 2))
+
+                    # cv2.putText(chr_k, str(distance_to_fix[1]), (int(Circle['center'][0]), int(Circle['center'][1] / 2)),
+                    #             cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+                    # cv2.putText(chr_k, str(distance_to_fix[0]), (int(Circle['center'][0] / 2), int(fixed_Point[1])),
+                    #             cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+
+                    # cv2.putText(chr_k, str(Circle["id"]), (int(Circle["center"][0]), int(Circle["center"][1])),
+                    #             cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
+
+                    distances.append(distance_to_fix)
+                    distances = list(dict.fromkeys(distances))
+            except KeyError:
+                print("KeyError:", info_edge)
+    try:
+        return distances, chr_k, (info_edge['dimension'][0])
+    except UnboundLocalError:
+        return distances, chr_k, (0)
+
+"""
 def findHole(imgAnalyse, minArea, maxArea, c_perimeter, HSValues, fixed_Point, escala_real=5):
     if type(imgAnalyse) != np.ndarray:
         print(type(imgAnalyse))
@@ -274,6 +469,9 @@ def findHole(imgAnalyse, minArea, maxArea, c_perimeter, HSValues, fixed_Point, e
         return distances, chr_k, (Circle['radius']*2)
     except UnboundLocalError:
         return distances, chr_k, (0)
+
+"""
+
 
 
 def findCircle(circle_Mask, areaMinC, areaMaxC, perimeter_size, blur_Size=3):
@@ -358,8 +556,12 @@ def NLinearRegression(x):
 
 def HomingAll():
     Fast.sendGCODE(arduino, "G28 Y")
-    Fast.sendGCODE(arduino, "G28 X Z")
-    Parafusa(140, mm=5, voltas=20)
+    Fast.sendGCODE(arduino, "G28 X")
+    Fast.G28(arduino)
+    Fast.sendGCODE(arduino, "G28 Z")
+    Fast.sendGCODE(arduino, "G92 X0 Y0 Z0 E0")
+    Fast.sendGCODE(arduino, "G92.1")
+    Parafusa(160, mm=5, voltas=20)
 
 
 def verificaCLP(serial):
@@ -520,8 +722,12 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues):
             # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
             #                     Verifica a distância                   #
             if Resultados:
-                MY = Resultados[dsts][0]
-                MX = Resultados[dsts][1]
+                try:
+                    MY = Resultados[dsts][0]
+                    MX = Resultados[dsts][1]
+                except IndexError:
+                    print("Falha de identificação, corrija o filtro..")
+                    break
                 print("MX:", MX, '\n MY:', MY)
 #                   MX += (randint(-int(abs(MX)/4),abs(int(MX))))
                 if abs(MX) > precicao:
@@ -551,7 +757,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues):
                 tentavias+=1
         identificar.append(timeit.default_timer()-tI0)
         print("Passando pro lado:", lados+1)
-        Fast.sendGCODE(arduino, f"G0 E-90 F{eMaxFed}")
+        Fast.sendGCODE(arduino, f"G0 E90 F{eMaxFed}")
     identificar = sum(identificar)
     print("Busca finalizada")
     return Pos
@@ -605,7 +811,6 @@ async def stopProcess():
     global intencionalStop
     intencionalStop = True
     await sendWsMessage("stopProcess_success")
-    await asyncio.sleep(0.5)
 
 
 async def generateError():
@@ -667,7 +872,7 @@ async def logRefresh(timeout=1):
 
 
 async def startAutoCheck():
-    global arduino, nano, conexaoStatus, threadStatus, infoCode 
+    global arduino, nano, conexaoStatusArdu, conexaoStatusNano, threadStatus, infoCode 
     # await logRequest({"code":functionLog["AVI"]["code"], 
     #                   "description":functionLog["AVI"]["description"],
     #                   "date":int(round(datetime.now().timestamp()))})
@@ -686,35 +891,33 @@ async def startAutoCheck():
     await asyncio.sleep(0.5)
     await sendWsMessage("update", connection)
 
-    if not conexaoStatus:
+    if not conexaoStatusArdu:
         try:
             status, code, arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
             if status:
-                conexaoStatus = True
+                conexaoStatusArdu = True
                 HomingAll()
             else:
                 raise TypeError
-
-            try:
-                status_nano, code_nano, nano = Fast.SerialConnect(SerialPath='Json/serial.json', name='Nano')
-                if status_nano:
-                    conexaoStatus = True
-                else:
-                    raise TypeError 
-            except TypeError:
-                conexaoStatus = False
-                infoCode = 4
-                # await logRequest({"code":-200, 
-                #     "description":"[ERRO]: Conexão com a placa 'Nano' não pode estabelecida.",
-                #     "date":int(round(datetime.now().timestamp()))})
-
-
         except TypeError:
-            conexaoStatus = False
+            conexaoStatusArdu = False
             infoCode=5
             # await logRequest({"code":-200, 
             #                   "description":"[ERRO]: Conexão com a placa 'Ramps 1.4' não pode estabelecida.",
             #                   "date":int(round(datetime.now().timestamp()))})
+    if not conexaoStatusNano:
+        try:
+            status_nano, code_nano, nano = Fast.SerialConnect(SerialPath='Json/serial.json', name='Nano')
+            if status_nano:
+                conexaoStatusNano = True
+            else:
+                raise TypeError 
+        except TypeError:
+            conexaoStatusNano = False
+            infoCode = 4
+            # await logRequest({"code":-200, 
+            #     "description":"[ERRO]: Conexão com a placa 'Nano' não pode estabelecida.",
+            #     "date":int(round(datetime.now().timestamp()))})
 
     # if not status:
     #     await sendWsMessage('erro', {'codigo': code, 'menssagem':arduino })
@@ -743,7 +946,10 @@ async def startAutoCheck():
             threadStatus = False
             print(Exp)
     
-    if not conexaoStatus:
+    if not conexaoStatusArdu or conexaoStatusNano or threadStatus:
+        connection["connectionStatus"] = "Problema encontrado durante a conexão..."
+        await sendWsMessage("update", connection)
+        
         for item in stopReasons:
             if infoCode == item['code']:
                 print(item)
@@ -752,10 +958,9 @@ async def startAutoCheck():
                         "description":item['description'],
                         "date":int(round(datetime.now().timestamp()))})
                 await sendWsMessage("error", item)
-    if not conexaoStatus or not threadStatus:
-        connection["connectionStatus"] = "Problema encontrado durante a conexão..."
-        await sendWsMessage("update", connection)
         await asyncio.sleep(1.5)
+    #if not conexaoStatus or not threadStatus:
+        
     connection["connectionStatus"] = "Verificação concluida"
     await sendWsMessage("update", connection)
     await sendWsMessage("startAutoCheck_success")
@@ -766,8 +971,22 @@ async def startAutoCheck():
 
     return AutoCheckStatus
 
+# async def SubRun(fz=2):
+#     global intencionalStop
+#     print("Entrou ++")
+#     while True:
+#         time.sleep(1)
+#         print(intencionalStop)
+#     print("Saiu ++")
 
 async def startProcess(qtd=9999):
+    t0 = timeit.default_timer()
+    NewMont = Process(qtd, Fast.randomString(tamanho=5 ,pattern=">>>"))
+    NewMont.start()
+    await sendWsMessage("startProcess_success")
+    print(f"Pedido de montagem finalizado em {int(timeit.default_timer()-t0)}s")
+
+async def startProcessss(qtd=9999):
     global intencionalStop, arduino, nano
     await sendWsMessage("startProcess_success")
 
@@ -793,7 +1012,11 @@ async def startProcess(qtd=9999):
     infoCode = "ok"
     infoCode = verificaCLP(nano)
     print(infoCode)
-    while qtd != corretas and not intencionalStop:
+    #while qtd != corretas and not intencionalStop:
+    for rr in range(qtd):
+        if intencionalStop:
+            break
+        print("IntencionalStop:", intencionalStop)
         rodada +=1
         totalUnitario = timeit.default_timer()
         try:
@@ -844,9 +1067,10 @@ async def startProcess(qtd=9999):
                     if infoCode in nonStopCode:
                         Fast.sendGCODE(arduino, f"g0 X{posicao['X']} E{posicao['E']} F{xMaxFed}")
                         Fast.sendGCODE(arduino, f"g0 Y{posicao['Y']} F{yMaxFed}")
-                        Parafusa(140, mm=0, voltas=20)
-                        Fast.sendGCODE(arduino, f"g0 X{122} F{xMaxFed}")
-                        Parafusa(140, mm=0, voltas=20)
+                        Parafusa(160, mm=0, voltas=20)
+                        #Fast.sendGCODE(arduino, f"g0 X{122} F{xMaxFed}")
+                        Fast.sendGCODE(arduino, f"g0 Y{1} F{yMaxFed}")
+                        Parafusa(160, mm=0, voltas=20)
                         montar.append(timeit.default_timer()-tM0)
                     else:
                         print("Prolema encontado no 625")
@@ -893,7 +1117,7 @@ async def startProcess(qtd=9999):
             await sendWsMessage("error", item)
 
     descargaCompleta = timeit.default_timer()-descargaCompleta
-    intencionalStop = False
+    #intencionalStop = False
     
 
     # await logRequest({"code":functionLog["PST"]["code"], 
@@ -966,7 +1190,7 @@ if __name__ == "__main__":
 
     
     primeiraConexao = True
-    conexaoStatus, threadStatus, infoCode = False, False, 0
+    conexaoStatusArdu, conexaoStatusNano, threadStatus, infoCode = False, False, False, 0
 
     # sattus, code, arduino = Fast.SerialConnect(SerialPath='Json/serial.json', name='Ramps 1.4')
     # sattus_nano, code_nano, nano = Fast.SerialConnect(SerialPath='Json/serial.json', name='Nano')
@@ -1100,6 +1324,7 @@ if __name__ == "__main__":
 
     async def actions(message):
         # Verifica se afunção requisita existe e executa.
+        print("Recebeu cahmado:", message)
         command = message["command"]
         try:
             funcs = eval(command)
@@ -1115,15 +1340,16 @@ if __name__ == "__main__":
         global ws_connection
         ws_connection = websocket
         async for message in ws_connection:
+            loop = asyncio.get_event_loop()
             print(json.loads(message))
-            await actions(json.loads(message))
-
+            loop.create_task(actions(json.loads(message)))
+            #await actions(json.loads(message))
+            print("~~~~~~~~~~~~~~"*20)
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      PreLaunch                             #
 
-    # HomingAll()    
-
+    
     
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Server-Start                          #

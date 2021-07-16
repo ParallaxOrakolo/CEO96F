@@ -14,6 +14,7 @@ def findCircle(circle_Mask, areaMinC, areaMaxC, perimeter_size, blur_Size=3):
         blur, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)[1]
     kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
     opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel, iterations=3)
+    cv2.imshow("Open", cv2.resize(opening, None, fx=0.3, fy=0.3))
     edges = cv2.findContours(
         opening, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     edges = edges[0] if len(edges) == 2 else edges[1]
@@ -24,9 +25,9 @@ def findCircle(circle_Mask, areaMinC, areaMaxC, perimeter_size, blur_Size=3):
         area = cv2.contourArea(c)
         if len(approx) >= perimeter_size and areaMinC < area < areaMaxC:
             ((x, y), r) = cv2.minEnclosingCircle(c)
-            if r >= 40 and r<=100:
-                circle_info.append({"center": (x, y), "radius": r, "id": ids})
-                ids += 1
+            #if r >= 30 and r<=120:
+            circle_info.append({"center": (x, y), "radius": r, "id": ids})
+            ids += 1
     return circle_info
 
 def findHole(imgAnalyse, minArea, maxArea, c_perimeter, lower, upper):
@@ -45,27 +46,53 @@ def findHole(imgAnalyse, minArea, maxArea, c_perimeter, lower, upper):
     chr_l = cv2.bitwise_or(img_masked, back_masked)
     chr_k = chr_l.copy()
     distances = []
-    edge = findCircle(mask, minArea, maxArea, c_perimeter)
-    for Circle in edge:
-        cv2.circle(chr_k, (int(Circle['center'][0]), int(Circle['center'][1])), int(Circle['radius']),
-                   (36, 255, 12), 2)
+    #edge = findCircle(mask_inv, minArea, maxArea, c_perimeter)
+    edge, null = Op.findContoursPlus(
+            mask_inv, AreaMin_A=minArea, AreaMax_A=maxArea)
+    if edge:
+        for info_edge in edge:
+            if 20 <= int(info_edge['dimension'][0]/2) <= 80:
+                # cv2.drawContours(
+                #     chr_k, [info_edge['contour']], -1, (70, 255, 20), 3)
 
-        cv2.line(chr_k, (int(Circle['center'][0]), int(Circle['center'][1])), fixPoint, (168, 50, 131))
+                cv2.drawMarker(chr_k,(info_edge['centers'][0]), (0,255,0), thickness=3)
+                cv2.circle(chr_k, (info_edge['centers'][0]), int(info_edge['dimension'][0]/2),
+                (36, 255, 12), 2)
+                
+                cv2.line(chr_k, (info_edge['centers'][0]), fixPoint, (255, 0, 255), thickness=3)
 
-        cv2.line(chr_k, (int(Circle['center'][0]), int(Circle['center'][1])),
-                 (int(Circle['center'][0]), fixPoint[1]), (255, 0, 0))
+                cv2.line(chr_k, (info_edge['centers'][0]),
+                        (int(info_edge['centers'][0][0]), fixPoint[1]), (255, 0, 0), thickness=3)
 
-        cv2.line(chr_k, (int(Circle['center'][0]), fixPoint[1]), fixPoint, (0, 0, 255), thickness=2)
+                cv2.line(chr_k, (int(info_edge['centers'][0][0]), fixPoint[1]), fixPoint, (0, 0, 255), thickness=2)
+                distance_to_fix = (round((info_edge['centers'][0][0] - fixPoint[0]), 3), round((info_edge['centers'][0][1] - fixPoint[1]), 3))
+                
+                distances.append(distance_to_fix)        
+                
+                distances = list(dict.fromkeys(distances))
+            else:
+                print(int(info_edge['dimension'][0]/2))
+#edge = Op.findContoursPlus(mask)
+    # for Circle in edge:
+    #     cv2.circle(chr_k, (int(Circle['center'][0]), int(Circle['center'][1])), int(Circle['radius']),
+    #                (36, 255, 12), 2)
 
-        distance_to_fix = (round((Circle['center'][0] - fixPoint[0]), 3), round((Circle['center'][1] - fixPoint[1]), 3))
-        cv2.putText(chr_k, str(distance_to_fix[1]), (int(Circle['center'][0]), int(Circle['center'][1] / 2)),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
-        cv2.putText(chr_k, str(distance_to_fix[0]), (int(Circle['center'][0] / 2), int(fixPoint[1])),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
+    #     cv2.line(chr_k, (int(Circle['center'][0]), int(Circle['center'][1])), fixPoint, (168, 50, 131))
+
+    #     cv2.line(chr_k, (int(Circle['center'][0]), int(Circle['center'][1])),
+    #              (int(Circle['center'][0]), fixPoint[1]), (255, 0, 0))
+
+    #     cv2.line(chr_k, (int(Circle['center'][0]), fixPoint[1]), fixPoint, (0, 0, 255), thickness=2)
+
+    #     distance_to_fix = (round((Circle['center'][0] - fixPoint[0]), 3), round((Circle['center'][1] - fixPoint[1]), 3))
+    #     cv2.putText(chr_k, str(distance_to_fix[1]), (int(Circle['center'][0]), int(Circle['center'][1] / 2)),
+    #                 cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
+    #     cv2.putText(chr_k, str(distance_to_fix[0]), (int(Circle['center'][0] / 2), int(fixPoint[1])),
+    #                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 3)
         
-        cv2.putText(chr_k, str(int(Circle['radius'])), (int(Circle['center'][0]), int(Circle['center'][0])),
-                    cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
-        distances.append([distance_to_fix])
+    #     cv2.putText(chr_k, str(int(Circle['radius'])), (int(Circle['center'][0]), int(Circle['center'][0])),
+    #                 cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 255), 3)
+    #     distances.append([distance_to_fix])
 
     return distances, chr_k, chr_l
 
@@ -141,7 +168,7 @@ while cv2.waitKey(1) != 27:
     Image = Image[p1[1]:p2[1], p1[0]:p2[0]]
     # Image = Quadrants[1][1]
     _, img, img2  =   findHole(Image, Amin, Amax, p, np.array([h_min, s_min, v_min]), np.array([h_max, s_max, v_max]))
-
+    print(_)
     
     cv2.imshow('Image_Original', cv2.resize(
                 img, None, fx=0.3, fy=0.3))

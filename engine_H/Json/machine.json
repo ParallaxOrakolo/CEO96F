@@ -41,13 +41,13 @@
                 },
                 "defaultPosition": {
                     "pegaTombador": {
-                        "X": 22,
+                        "X": 25,
                         "Y": 31,
                         "Z": null,
                         "E": 0
                     },
                     "analisaFoto": {
-                        "X": 80,
+                        "X": 154,
                         "Y": 2,
                         "Z": null,
                         "E": null
@@ -65,8 +65,8 @@
                         "E": 0
                     },
                     "camera0Centro": {
-                        "X": 61,
-                        "Y": 2,
+                        "X": 154.15,
+                        "Y": 0,
                         "Z": null,
                         "E": null
                     },
@@ -77,8 +77,8 @@
                         "E": null
                     },
                     "parafusadeiraCentro": {
-                        "X": 254,
-                        "Y": 24,
+                        "X": 258,
+                        "Y": 24.5,
                         "Z": 130,
                         "E": null
                     }
@@ -125,6 +125,13 @@
                     "listed": false,
                     "type": "error",
                     "button_action": "Reboot"
+                },
+                {
+                    "code": 7,
+                    "description": "Parada manual pelo operador",
+                    "listed": false,
+                    "type": "warning",
+                    "button_action": "None"
                 }
             ],
             "nonStopCode": [

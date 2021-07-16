@@ -684,6 +684,11 @@
             "code": 1,
             "description": "Garra não pegou",
             "date": 1625805054
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "date": 1626441122
         }
     ]
 }
