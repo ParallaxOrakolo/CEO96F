@@ -971,13 +971,6 @@ async def startAutoCheck():
 
     return AutoCheckStatus
 
-# async def SubRun(fz=2):
-#     global intencionalStop
-#     print("Entrou ++")
-#     while True:
-#         time.sleep(1)
-#         print(intencionalStop)
-#     print("Saiu ++")
 
 async def startProcess(qtd=9999):
     t0 = timeit.default_timer()
@@ -985,6 +978,7 @@ async def startProcess(qtd=9999):
     NewMont.start()
     await sendWsMessage("startProcess_success")
     print(f"Pedido de montagem finalizado em {int(timeit.default_timer()-t0)}s")
+
 
 async def startProcessss(qtd=9999):
     global intencionalStop, arduino, nano
@@ -1340,10 +1334,8 @@ if __name__ == "__main__":
         global ws_connection
         ws_connection = websocket
         async for message in ws_connection:
-            loop = asyncio.get_event_loop()
             print(json.loads(message))
-            loop.create_task(actions(json.loads(message)))
-            #await actions(json.loads(message))
+            await actions(json.loads(message))
             print("~~~~~~~~~~~~~~"*20)
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
