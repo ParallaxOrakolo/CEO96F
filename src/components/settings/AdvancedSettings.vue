@@ -42,32 +42,13 @@
           Acessar
         </v-btn> -->
       </v-card-text>
-      <v-divider></v-divider>
 
       <v-card-text v-show="logged">
-        <v-list three-line subheader>
-          <v-subheader>User Controls</v-subheader>
-          <v-list-item>
-            <v-list-item-content>
-              <v-list-item-title>Content filtering</v-list-item-title>
-              <v-list-item-subtitle
-                >Set the content filtering level to restrict apps that can be
-                downloaded</v-list-item-subtitle
-              >
-            </v-list-item-content>
-          </v-list-item>
-          <v-list-item>
-            <v-list-item-content>
-              <v-list-item-title>Password</v-list-item-title>
-              <v-list-item-subtitle
-                >Require password for purchase or use password to restrict
-                purchase</v-list-item-subtitle
-              >
-            </v-list-item-content>
-          </v-list-item>
-        </v-list>
+        
       <User-table v-if="logged"/>
       </v-card-text>
+
+      <JsonEditor2 v-if="logged"/>
     </v-expansion-panel-content>
   </v-expansion-panel>
 </template>
@@ -75,9 +56,10 @@
 <script>
 import { mapState } from "vuex";
 import UserTable from './UserTable.vue';
+import JsonEditor2 from './JsonEditor2.vue'
 
 export default {
-  components: { UserTable },
+  components: { UserTable, JsonEditor2 },
   name: "AdvancedSettings",
   data: () => ({
     userLogged: null,
@@ -91,7 +73,6 @@ export default {
     },
     errorMessages: "",
     formHasErrors: false,
-
   }),
 
   computed: {
@@ -123,6 +104,10 @@ export default {
       this.idInput = "";
     },
   },
+
+  created: function () {
+    
+  }
 };
 </script>
 
