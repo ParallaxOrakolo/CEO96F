@@ -22,10 +22,13 @@ export const actions = {
   UPDATE_USER:"updateUser",
   SEND_GCODE: "sendGcode",
   START_SCAN: "startScan",
-  SAVE_JSON: "saveJson",
+  SAVE_HSV_FILTER: "saveHsvFilter",
   SHOW_POPUP:"showPopup",
   GENERATE_ERROR:"generateError",
-  SHUTDOWN_RASPBERRY:"shutdown_raspberry"
+  SHUTDOWN_RASPBERRY:"shutdown_raspberry",
+  REFRESH_JSON:"refreshJson",
+  MODIFY_JSON:"modifyJson",
+  REQUEST_JSON:"requestJson"
 };
 
 const store = new Vuex.Store({
@@ -86,8 +89,17 @@ const store = new Vuex.Store({
     serialMonitor: [
       // {hour: 1611539081 ,sent: true, message:["ok","eaee","M117"]},
     ],
+
+   
     
     configuration: {
+      allJsons:{
+        name: 'mike',
+        age: 23,
+        phone: '419988756100',
+        address: ['AAA C1', 'BBB C2']
+      },
+
       informations: {
         ip: machineJson.configuration.informations.ip,
         connectionId: 123456,
@@ -184,7 +196,7 @@ const store = new Vuex.Store({
         val: [30, 50],
         are: [200, 50000]
 
-      }
+      },
     },
   },
 

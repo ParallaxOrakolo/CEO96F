@@ -5,14 +5,15 @@
       <!-- <v-divider></v-divider>
 <SerialMonitor></SerialMonitor> -->
 
-      
       <v-row no-gutters>
         <!-- <v-col cols="1"> </v-col> -->
         <Camera></Camera>
+        <ColorPikerHSV/>
         <v-col class="pa-2" cols="7">
           <v-row no-gutters class="mb-6">
             <v-col class="pa-2 d-flex justify-end">
               <v-btn
+                v-haptic
                 elevation="2"
                 fab
                 dark
@@ -34,6 +35,7 @@
             <v-col class="pa-2 d-flex justify-center col-md-2">
               <!-- buttom X+ -->
               <v-btn
+                v-haptic
                 elevation="2"
                 fab
                 dark
@@ -55,6 +57,7 @@
             <v-col class="pa-2">
               <!-- Z buttom -->
               <v-btn
+                v-haptic
                 elevation="2"
                 fab
                 dark
@@ -78,6 +81,7 @@
             <v-col class="pa-2 d-flex justify-end">
               <!-- -Y buttom -->
               <v-btn
+                v-haptic
                 elevation="2"
                 fab
                 dark
@@ -101,6 +105,7 @@
             <v-col class="pa-2">
               <!-- +Y buttom -->
               <v-btn
+                v-haptic
                 elevation="2"
                 fab
                 dark
@@ -122,14 +127,15 @@
 
           <v-row no-gutters class="mb-6">
             <v-col class="pa-2 d-flex justify-end">
-              <!-- <v-btn elevation="2" fab dark x-large color="blue">
-                <v-icon dark> mdi-arrow-up-bold </v-icon>
-              </v-btn> -->
+              <v-btn v-haptic elevation="2" fab dark x-large color="blue">
+                <v-icon dark> mdi-screw-lag</v-icon>
+              </v-btn>
             </v-col>
 
             <v-col class="pa-2 d-flex justify-center col-md-2">
               <!-- -X Buttom -->
               <v-btn
+                v-haptic
                 elevation="2"
                 fab
                 dark
@@ -151,6 +157,7 @@
             <v-col class="pa-2">
               <!-- -Z Buttom -->
               <v-btn
+                v-haptic
                 elevation="2"
                 fab
                 dark
@@ -172,7 +179,9 @@
         </v-col>
 
         <v-col class="pa-2 col-md-3">
-          <v-switch
+          
+          <!-- <v-switch
+            v-haptic
             v-model="vacuum"
             inset
             color="success"
@@ -186,7 +195,19 @@
               }
             "
           ></v-switch>
-          <v-subheader class="pl-0"> Pinça a vácuo </v-subheader>
+          <v-subheader class="pl-0">
+            Pinça a vácuo
+            <v-text-field
+              filled
+              dense
+              rounded
+              v-model="vacuumPosition"
+              class="mt-0 ml-4 pt-0 numberInput"
+              hide-details
+              single-line
+              type="number"
+            ></v-text-field>
+          </v-subheader>
           <v-slider
             @click="
               () => {
@@ -205,23 +226,11 @@
             min="0"
             hide-details
           >
-            <template v-slot:append>
-              <v-text-field
-                filled
-                dense
-                rounded
-                v-model="vacuumPosition"
-                class="mt-0 pt-0"
-                hide-details
-                single-line
-                type="number"
-                style="width: 100px"
-              ></v-text-field>
-            </template>
           </v-slider>
-          <v-divider></v-divider>
+          <v-divider></v-divider> -->
 
           <v-switch
+            v-haptic
             v-model="claw"
             inset
             color="success"
@@ -235,7 +244,19 @@
               }
             "
           ></v-switch>
-          <v-subheader class="pl-0">Rotação do Z (Graus) </v-subheader>
+          <v-subheader class="pl-0"
+            >Rotação Garra (Graus)
+            <v-text-field
+              filled
+              dense
+              rounded
+              v-model="rotationZ"
+              class="mt-0 pt-0 numberInput"
+              hide-details
+              single-line
+              type="number"
+            ></v-text-field>
+          </v-subheader>
           <v-slider
             @click="
               () => {
@@ -250,31 +271,60 @@
             "
             v-model="rotationZ"
             class="align-center"
-            max="0"
-            min="-270"
+            max="360"
+            min="0"
             hide-details
           >
-            <template v-slot:append>
-              <v-text-field
-                filled
-                dense
-                rounded
-                v-model="rotationZ"
-                class="mt-0 pt-0"
-                hide-details
-                single-line
-                type="number"
-                style="width: 100px"
-              ></v-text-field>
-            </template>
           </v-slider>
+           <v-divider></v-divider>
+          <v-switch
+          v-haptic
+          v-model="light1"
+          inset
+          class="mr-4"
+          color="success"
+          label="Luz Camera de Validação"
+          @click="
+            () => {
+              SEND_MESSAGE({
+                command: actions.SERIAL_MONITOR,
+                parameter: 'M42 P33 S255',
+              });
+            }
+          "
+        ></v-switch>
+        <v-switch
+          v-haptic
+          v-model="light2"
+          inset
+          color="success"
+          label="Luz camera furação"
+          @click="
+            () => {
+              SEND_MESSAGE({
+                command: actions.SERIAL_MONITOR,
+                parameter: 'M42 P34 S255',
+              });
+            }
+          "
+        ></v-switch>
         </v-col>
       </v-row>
       <v-divider></v-divider>
       <!-- seção 2 -->
       <v-row no-gutters>
-        <v-col class="pa-2 col col-6 d-flex align-start flex-column">
-          <v-switch
+        <v-col class="pa-2 col-md-3 col">
+          <v-subheader> Passo(mm) </v-subheader>
+          <v-slider
+            v-model="distance"
+            :tick-labels="distancesLabels"
+            :max="3"
+            step="1"
+            ticks="always"
+            tick-size="4"
+          ></v-slider>
+
+          <!-- <v-switch
             v-model="led"
             inset
             color="success"
@@ -294,8 +344,8 @@
                 });
               }
             "
-          ></v-switch>
-          <v-color-picker
+          ></v-switch> -->
+          <!-- <v-color-picker
             v-model="ledRGB"
             v-on:mouseup="
               () => {
@@ -318,22 +368,23 @@
             hide-sliders
             mode="rgba"
             swatches-max-height="200"
-          ></v-color-picker>
+          ></v-color-picker> -->
         </v-col>
 
         <v-col class="pa-2 col-md-3 col">
-          <v-subheader> Passo(mm) </v-subheader>
-          <v-slider
-            v-model="distance"
-            :tick-labels="distancesLabels"
-            :max="3"
-            step="1"
-            ticks="always"
-            tick-size="4"
-          ></v-slider>
-          <v-divider></v-divider>
-
-          <v-subheader class="pl-0"> Velocidade </v-subheader>
+          <v-subheader class="pl-0">
+            Velocidade
+            <v-text-field
+              filled
+              dense
+              rounded
+              v-model="speed"
+              class="mt-0 pt-0 numberInput"
+              hide-details
+              single-line
+              type="number"
+            ></v-text-field
+          ></v-subheader>
 
           <v-slider
             v-model="speed"
@@ -342,29 +393,17 @@
             min="0"
             hide-details
           >
-            <template v-slot:append>
-              <v-text-field
-                filled
-                dense
-                rounded
-                v-model="speed"
-                class="mt-0 pt-0 numberInput"
-                hide-details
-                single-line
-                type="number"
-              ></v-text-field>
-            </template>
           </v-slider>
         </v-col>
       </v-row>
       <v-divider></v-divider>
       <SerialMonitor></SerialMonitor>
       <!-- 
-    <v-btn elevation="2" fab dark x-large color="blue">
+    <v-btn v-haptic elevation="2" fab dark x-large color="blue">
       <v-icon dark> mdi-arrow-up-bold </v-icon>
     </v-btn>
 
-    <v-btn elevation="2" fab dark x-large color="blue">
+    <v-btn v-haptic elevation="2" fab dark x-large color="blue">
       <v-icon dark> mdi-arrow-down-bold </v-icon>
     </v-btn> -->
     </v-expansion-panel-content>
@@ -375,15 +414,17 @@
 import { mapState, mapMutations } from "vuex";
 import { actions } from "../../../store/index";
 import SerialMonitor from "../../SerialMonitor.vue";
-import Camera from "../controls/Cameras.vue"
+import Camera from "../controls/Cameras.vue";
+import ColorPikerHSV from "../controls/ColorPikerHSV.vue"
 
 export default {
-  components: { SerialMonitor, Camera },
+  components: { SerialMonitor, Camera, ColorPikerHSV },
   name: "Controls",
   data() {
     return {
       actions,
-      led: false,
+      light1: false,
+      light2: false,
       ledRGB: null,
       speed: 100,
       vacuumPosition: 0,
@@ -475,7 +516,7 @@ export default {
         msg = msg.concat("-");
       }
       msg = msg.concat(this.distanceList[this.distance]);
-      msg = msg.concat(" F" + this.speed*10);
+      msg = msg.concat(" F" + this.speed * 10);
 
       return msg;
     },
@@ -488,15 +529,12 @@ export default {
 </script>
 
 <style scoped lang="scss">
-div {
-  // border: 1px solid;;
-}
 .v-btn--round {
   border-radius: 26%;
 }
 
 .numberInput {
-  width: 80px;
+  max-width: 80px;
+  margin-left: 15px;
 }
-
 </style>

@@ -111,6 +111,8 @@ export default {
     width: 100%;
     max-width: 720px;
     display: block;
+    border-radius: 0px 10px 10px 10px;
+
   }
 
   .v-input--selection-controls {
