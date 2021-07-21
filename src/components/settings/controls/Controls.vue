@@ -8,7 +8,7 @@
       <v-row no-gutters>
         <!-- <v-col cols="1"> </v-col> -->
         <Camera></Camera>
-        <ColorPikerHSV/>
+        <!-- <ColorPikerHSV/> -->
         <v-col class="pa-2" cols="7">
           <v-row no-gutters class="mb-6">
             <v-col class="pa-2 d-flex justify-end">
@@ -415,10 +415,10 @@ import { mapState, mapMutations } from "vuex";
 import { actions } from "../../../store/index";
 import SerialMonitor from "../../SerialMonitor.vue";
 import Camera from "../controls/Cameras.vue";
-import ColorPikerHSV from "../controls/ColorPikerHSV.vue"
+// import ColorPikerHSV from "../controls/ColorPikerHSV.vue"
 
 export default {
-  components: { SerialMonitor, Camera, ColorPikerHSV },
+  components: { SerialMonitor, Camera}, //, ColorPikerHSV },
   name: "Controls",
   data() {
     return {
