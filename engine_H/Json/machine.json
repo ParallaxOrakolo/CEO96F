@@ -1,7 +1,7 @@
 {
     "configuration": {
         "informations": {
-            "ip": "192.168.18.8",
+            "ip": "192.168.1.16",
             "connectionId": 123456,
             "port": 5000,
             "userList": [
@@ -33,30 +33,36 @@
                     "bMax": 360
                 },
                 "maxFeedrate": {
-                    "xMax": 11000,
-                    "yMax": 3000,
+                    "xMax": 20000,
+                    "yMax": 8000,
                     "zMax": 2000,
                     "aMax": 50000,
                     "bMax": 50000
                 },
                 "defaultPosition": {
                     "pegaTombador": {
-                        "X": 25,
-                        "Y": 31,
+                        "X": 26,
+                        "Y": 33,
                         "Z": null,
                         "E": 0
                     },
                     "analisaFoto": {
                         "X": 154,
-                        "Y": 2,
+                        "Y": 9,
                         "Z": null,
                         "E": null
+                    },
+                    "validaParafuso": {
+                        "X": 261,
+                        "Y": 0,
+                        "Z": null,
+                        "E": 0
                     },
                     "descarteErrado": {
                         "X": 230,
                         "Y": 0,
                         "Z": null,
-                        "E": null
+                        "E": 0
                     },
                     "descarteCerto": {
                         "X": 0,
@@ -77,8 +83,8 @@
                         "E": null
                     },
                     "parafusadeiraCentro": {
-                        "X": 258,
-                        "Y": 24.5,
+                        "X": 253.5,
+                        "Y": 12.83,
                         "Z": 130,
                         "E": null
                     }

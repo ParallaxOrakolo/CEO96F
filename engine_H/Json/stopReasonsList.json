@@ -1,0 +1,16 @@
+{
+    "stopReasonsList": [
+        {
+            "code": 1,
+            "description": "Garra não pegou",
+            "type": "error",
+            "date": 1626453572
+        },
+        {
+            "code": 1,
+            "description": "Garra não pegou",
+            "type": "error",
+            "date": 1626461673
+        }
+    ]
+}
