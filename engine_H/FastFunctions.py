@@ -131,29 +131,34 @@ def M119(serial, cut=": "):
     return dict(zip(key, pos))
 
 
-def G28(serial, axis='E', endStop='filament', status='open',offset=-33, steps=5, speed=50000):
+def G28(serial, axis='E', endStop='filament', status='open',offset=-23, steps=5, speed=50000):
     sendGCODE(serial, "G91")
-    try:
-        if M119(serial)[endStop] != status:
-            sendGCODE(serial, f"G0 E{offset * -1} F{speed}")
-    except KeyError:
-        pass
-    try:
-        while M119(serial)[endStop] == status:
-            sendGCODE(serial, f"G0 {axis}{steps} F{speed}")
+    while True:
+        try:
+            if M119(serial)[endStop] != status:
+                sendGCODE(serial, f"G0 E{offset * -1} F{speed}")
+            break
+        except KeyError:
+            pass
 
-        sendGCODE(serial, "G91")
-        sendGCODE(serial, f"G0 E-{10} F{speed}")
+    while True:
+        try:
+            while M119(serial)[endStop] == status:
+                sendGCODE(serial, f"G0 {axis}{steps} F{speed}")
 
-        while M119(serial)[endStop] == status:
-            sendGCODE(serial, f"G0 {axis}{1} F{speed}")
+            sendGCODE(serial, "G91")
+            sendGCODE(serial, f"G0 E-{10} F{speed}")
 
-        sendGCODE(serial, "G91")
-        sendGCODE(serial, f"G0 E{offset} F{speed}")
-        #sendGCODE(serial, f"G92 E0")
-        sendGCODE(serial, "G90")
-    except KeyError:
-        pass
+            while M119(serial)[endStop] == status:
+                sendGCODE(serial, f"G0 {axis}{1} F{speed}")
+
+            sendGCODE(serial, "G91")
+            sendGCODE(serial, f"G0 E{offset} F{speed}")
+            #sendGCODE(serial, f"G92 E0")
+            sendGCODE(serial, "G90")
+            break
+        except KeyError:
+            pass
     
 
 

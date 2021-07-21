@@ -102,14 +102,14 @@ cv2.createTrackbar("p", "Controle", 0, 10, empty)
 
 mainConfig = Fast.readJson('Json/config.json')
 HSVJson = mainConfig['Filtros']['HSV']
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 cap.set(3, 3264)
 cap.set(4, 2448)
-while True:
-    _, img = cap.read()
-    cv2.imshow("Img", cv2.resize(img, None, fx=0.3, fy=0.3))
-    cv2.waitKey(1)
-exit()
+# while True:
+#     _, img = cap.read()
+#     cv2.imshow("Img", cv2.resize(img, None, fx=0.3, fy=0.3))
+#     cv2.waitKey(1)
+# exit()
 _, Image = cap.read()
 Quadrants = Op.meshImg(Image)
 # Image = Quadrants[line][column]

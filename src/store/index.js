@@ -172,9 +172,9 @@ const store = new Vuex.Store({
       },
       statistics: {
         stopReasons: [],
-        stopReasonsList: {
-          "000":"Maquin ok",
-        },
+        stopReasonsList: [
+          {"000":"Maquin ok"},
+        ],
       },
       camera: {
         process: null,
