@@ -890,6 +890,7 @@ async def sendParafusa(parms):
     print(f"recebeu:, pos:{parms['pos']}, {parms['mm']}mm, voltas x {parms['voltas']}")
     Parafusa(parms['pos'], parms['voltas'], parms['mm'])
 
+
 async def refreshJson():
     # global mainParamters, machineParamters, HoleCuts, ScrewCuts
     # mainParamters = Fast.readJson('Json/mainParamters.json')
@@ -906,10 +907,14 @@ async def refreshJson():
     }
 
     await sendWsMessage("update", allJS)
+
+
 async def modifyJson(parms):
     for k, v in parms.items():
         globals()[k] = v
         Fast.writeJson(f'Json/{k}.json', v)
+
+
 async def updateSlider(processos):
     machineParamters['configuration']['camera']['process'] = processos
     for x in machineParamters['configuration']['camera']:
