@@ -1,0 +1,232 @@
+{
+    "configuration": {
+        "allJsons": {},
+        "informations": {
+            "ip": "192.168.1.16",
+            "connectionId": 123456,
+            "port": 5000,
+            "userList": [
+                {
+                    "name": "Henrycke",
+                    "id": "12462584986"
+                },
+                {
+                    "name": "Rodrigo Gomes",
+                    "id": "123"
+                }
+            ],
+            "version": {
+                "backend": "0.1.0",
+                "frontend": "0.1.1",
+                "marlin": "2.0.0"
+            },
+            "machine": {
+                "limits": {
+                    "xMin": 0,
+                    "yMin": 0,
+                    "zMin": 0,
+                    "aMin": 0,
+                    "bMin": 0,
+                    "xMax": 250,
+                    "yMax": 45,
+                    "zMax": 150,
+                    "aMax": 360,
+                    "bMax": 360
+                },
+                "maxFeedrate": {
+                    "xMax": 20000,
+                    "yMax": 8000,
+                    "zMax": 2000,
+                    "aMax": 50000,
+                    "bMax": 50000
+                },
+                "defaultPosition": {
+                    "pegaTombador": {
+                        "X": 26,
+                        "Y": 33,
+                        "Z": null,
+                        "E": 0
+                    },
+                    "analisaFoto": {
+                        "X": 228.5,
+                        "Y": 1.65,
+                        "Z": null,
+                        "E": null
+                    },
+                    "validaParafuso": {
+                        "X": 261,
+                        "Y": 0,
+                        "Z": null,
+                        "E": 0
+                    },
+                    "descarteErrado": {
+                        "X": 230,
+                        "Y": 0,
+                        "Z": null,
+                        "E": 0
+                    },
+                    "descarteCerto": {
+                        "X": 0,
+                        "Y": 0,
+                        "Z": null,
+                        "E": 0
+                    },
+                    "camera0Centro": {
+                        "X": 228.5,
+                        "Y": 1.65,
+                        "Z": null,
+                        "E": null
+                    },
+                    "camera1Centro": {
+                        "X": 61,
+                        "Y": 1,
+                        "Z": null,
+                        "E": null
+                    },
+                    "parafusadeiraCentro": {
+                        "X": 254.2,
+                        "Y": 24.65,
+                        "Z": 130,
+                        "E": null
+                    }
+                }
+            }
+        },
+        "statistics": {
+            "stopReasons": [
+                {
+                    "code": 1,
+                    "description": "Garra não pegou",
+                    "listed": true,
+                    "type": "error"
+                },
+                {
+                    "code": 2,
+                    "description": "Alimentador sem peça",
+                    "listed": false,
+                    "type": "warning"
+                },
+                {
+                    "code": 3,
+                    "description": "Troca de turno",
+                    "listed": true,
+                    "type": "info"
+                },
+                {
+                    "code": 4,
+                    "description": "Sem comunicação com o CLP",
+                    "listed": false,
+                    "type": "error",
+                    "button_action": "Reboot"
+                },
+                {
+                    "code": 5,
+                    "description": "Sem comunicação com a estação de montagem",
+                    "listed": false,
+                    "type": "error",
+                    "button_action": "Reboot"
+                },
+                {
+                    "code": 6,
+                    "description": "Camera _id_ não pode ser iniciada.",
+                    "listed": false,
+                    "type": "error",
+                    "button_action": "Reboot"
+                },
+                {
+                    "code": 7,
+                    "description": "Parada manual pelo operador",
+                    "listed": false,
+                    "type": "warning",
+                    "button_action": "None"
+                }
+            ],
+            "nonStopCode": [
+                0,
+                "000",
+                "ok"
+            ],
+            "functionsCode": {
+                "PI": {
+                    "code": 111,
+                    "description": "Progama iniciou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "PT": {
+                    "code": 112,
+                    "description": "Programa terminou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "AVI": {
+                    "code": 113,
+                    "description": "Auto verificiação iniciou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "AVT": {
+                    "code": 114,
+                    "description": "Auto verificiação terminou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "IDI": {
+                    "code": 115,
+                    "description": "Identificação iniciou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "IDT": {
+                    "code": 116,
+                    "description": "Identificação terminou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "VMI": {
+                    "code": 115,
+                    "description": "Validação de montagem iniciou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "VMT": {
+                    "code": 116,
+                    "description": "Validação de montagem terminou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "PSI": {
+                    "code": 117,
+                    "description": "Processo de Scan Iniciou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "PST": {
+                    "code": 118,
+                    "description": "Processo de Scan terminou",
+                    "listed": false,
+                    "type": "info"
+                }
+            }
+        },
+        "camera": {
+            "process": "Normal",
+            "hue": [
+                0,
+                255
+            ],
+            "sat": [
+                0,
+                255
+            ],
+            "val": [
+                0,
+                0
+            ],
+            "are": [
+                2068,
+                8662
+            ]
+        }
+    }
+}

@@ -891,26 +891,25 @@ async def sendParafusa(parms):
     Parafusa(parms['pos'], parms['voltas'], parms['mm'])
 
 async def refreshJson():
-    global mainParamters, machineParamters, logList, stopReasonsList, HoleCuts, ScrewCuts
-    mainParamters = Fast.readJson('Json/config.json')
-    machineParamters = Fast.readJson('Json/machine.json')
-    logList = Fast.readJson('Json/logList.json')
-    stopReasonsList = Fast.readJson('Json/stopReasonsList.json')
-    HoleCuts = Fast.readJson("../engine_H/Json/HolePoints.json")
-    ScrewCuts = Fast.readJson("../engine_H/Json/ScrewPoints.json")
-    allJS = machineParamters["configuration"]["allJsons"]
+    # global mainParamters, machineParamters, HoleCuts, ScrewCuts
+    # mainParamters = Fast.readJson('Json/mainParamters.json')
+    # machineParamters = Fast.readJson('Json/machineParamters.json')
+    # HoleCuts = Fast.readJson("../engine_H/Json/HoleCuts")
+    # ScrewCuts = Fast.readJson("../engine_H/Json/ScrewCuts.json")
     allJS={
         "allJsons":{
             "mainParamters":mainParamters,
-            "mainParamters":machineParamters,
-            "logList":logList,
-            "stopReasonsList":stopReasonsList,
+            "machineParamters":machineParamters,
             "HoleCuts":HoleCuts,
             "ScrewCuts":ScrewCuts
         }
     }
 
     await sendWsMessage("update", allJS)
+async def modifyJson(parms):
+    for k, v in parms.items():
+        globals()[k] = v
+        Fast.writeJson(f'Json/{k}.json', v)
 async def updateSlider(processos):
     machineParamters['configuration']['camera']['process'] = processos
     for x in machineParamters['configuration']['camera']:
@@ -1019,6 +1018,7 @@ async def startAutoCheck():
 
     await updateSlider('Normal')
     await logRefresh()
+    await refreshJson()
     AutoCheckStatus = True
     connection = {
         "connectionStatus": "Tentantiva de conexão identificada"
@@ -1252,7 +1252,7 @@ async def updateFilter(zipped):
         
 
 async def saveJson():
-    Fast.writeJson('Json/config.json', mainParamters)
+    Fast.writeJson('Json/mainParamters.json', mainParamters)
     print("salvei")
 
 
@@ -1276,18 +1276,18 @@ if __name__ == "__main__":
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                        Load-Json                           #
 
-    mainParamters = Fast.readJson('Json/config.json')
-    machineParamters = Fast.readJson('Json/machine.json')
+    mainParamters = Fast.readJson('Json/mainParamters.json')
+    machineParamters = Fast.readJson('Json/machineParamters.json')
     logList = Fast.readJson('Json/logList.json')
     stopReasonsList = Fast.readJson('Json/stopReasonsList.json')
-    HoleCuts = Fast.readJson("../engine_H/Json/HolePoints.json")
-    ScrewCuts = Fast.readJson("../engine_H/Json/ScrewPoints.json")
+    HoleCuts = Fast.readJson("../engine_H/Json/HoleCuts.json")
+    ScrewCuts = Fast.readJson("../engine_H/Json/ScrewCuts.json")
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Json-Variables                        #
 
     # if mainParamters["Recover"]["Status"]:
     #     mainParamters["Recover"]["Status"] = False
-    #     Fast.writeJson('Json/config.json', mainParamters)
+    #     Fast.writeJson('Json/mainParamters.json', mainParamters)
     #     print(mainParamters["Recover"]["Coords"])
     # for K, V in mainParamters["Recover"]["Coords"].items():
     #     if V == None:
@@ -1356,7 +1356,7 @@ if __name__ == "__main__":
         print ("IP:", ip, " GW:", gateway, " Host:", host)
 
     machineParamters["configuration"]["informations"]["ip"] = ip
-    Fast.writeJson('Json/machine.json', machineParamters)
+    Fast.writeJson('Json/machineParamters.json', machineParamters)
 
     functionLog = machineParamters['configuration']["statistics"]["functionsCode"]
 
