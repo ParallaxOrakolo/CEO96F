@@ -78,7 +78,7 @@
               @click="
                 () => {
                   SEND_MESSAGE({
-                    command: actions.REFRESH_JSON,
+                    command: actions.RESTORE_JSON,
                   });
                   dialog = false;
                 }

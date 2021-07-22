@@ -27,7 +27,7 @@ export const actions = {
   SHOW_POPUP:"showPopup",
   GENERATE_ERROR:"generateError",
   SHUTDOWN_RASPBERRY:"shutdown_raspberry",
-  REFRESH_JSON:"refreshJson",
+  RESTORE_JSON:"restoreJson",
   MODIFY_JSON:"modifyJson",
   REQUEST_JSON:"requestJson"
 };
