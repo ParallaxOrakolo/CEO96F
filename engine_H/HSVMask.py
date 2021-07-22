@@ -126,7 +126,7 @@ cv2.createTrackbar("p", "Controle", 0, 10, empty)
 
 column =1
 line =1
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 cap.set(3, 3264)
 cap.set(4, 2448)
 _, Image = cap.read()

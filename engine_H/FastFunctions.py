@@ -65,7 +65,7 @@ def sendGCODE(serial, command, **kargs):
         # Verifica se é um unico comando
         if isinstance(command, str):
             serial.write(str(command + '{0}'.format('\n')).encode('ascii'))
-
+            #print("GCODE >> ", command)
         # Verifica se é uma lista de comandos
         if isinstance(command, list):
             for linha in command:
