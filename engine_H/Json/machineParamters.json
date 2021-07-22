@@ -42,14 +42,14 @@
                 },
                 "defaultPosition": {
                     "pegaTombador": {
-                        "X": 26,
-                        "Y": 33,
+                        "X": 27,
+                        "Y": 30,
                         "Z": null,
                         "E": 0
                     },
                     "analisaFoto": {
-                        "X": 228.5,
-                        "Y": 1.65,
+                        "X": 224.5,
+                        "Y": 1.5,
                         "Z": null,
                         "E": null
                     },
@@ -72,8 +72,8 @@
                         "E": 0
                     },
                     "camera0Centro": {
-                        "X": 228.5,
-                        "Y": 1.65,
+                        "X": 204.5,
+                        "Y": 1.5,
                         "Z": null,
                         "E": null
                     },
@@ -84,8 +84,8 @@
                         "E": null
                     },
                     "parafusadeiraCentro": {
-                        "X": 254.2,
-                        "Y": 24.65,
+                        "X": 247.5,
+                        "Y": 25,
                         "Z": 130,
                         "E": null
                     }

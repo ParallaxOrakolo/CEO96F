@@ -107,6 +107,18 @@
             "description": "Garra não pegou",
             "type": "error",
             "date": 1626955810
+        },
+        {
+            "code": 1,
+            "description": "Garra não pegou",
+            "type": "error",
+            "date": 1626987264
+        },
+        {
+            "code": 1,
+            "description": "Garra não pegou",
+            "type": "error",
+            "date": 1626987531
         }
     ]
 }

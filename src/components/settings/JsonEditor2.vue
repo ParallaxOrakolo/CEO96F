@@ -19,7 +19,6 @@
       <v-dialog v-model="dialog" persistent max-width="400">
         <template v-slot:activator="{ on, attrs }">
           <v-spacer></v-spacer>
-          {{jsonData}}
           <v-btn
             dark
             v-bind="attrs"

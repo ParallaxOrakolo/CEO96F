@@ -913,7 +913,7 @@ async def modifyJson(parms):
     for k, v in parms.items():
         globals()[k] = v
         Fast.writeJson(f'Json/{k}.json', v)
-
+    await refreshJson()
 
 async def updateSlider(processos):
     machineParamters['configuration']['camera']['process'] = processos

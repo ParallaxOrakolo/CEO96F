@@ -320,7 +320,7 @@
 import { mapState, mapMutations } from "vuex";
 import { actions } from "../../store/index.js";
 import SerialMonitor from "../SerialMonitor.vue";
-import json from "../../../engine_H/Json/mainParamters";
+import json from "../../../engine_H/Json/mainParamters.json";
 export default {
   components: { SerialMonitor },
   name: "CameraConfig",

@@ -96,7 +96,7 @@ def findHole(imgAnalyse, minArea, maxArea, c_perimeter, lower, upper):
 
     return distances, chr_k, chr_l
 
-jsn = Fast.readJson('Json/config.json')
+jsn = Fast.readJson('Json/mainParamters.json')
 imgPath = 'c:/Users/55419/Trabalho/Parallax/GitRepos/CEO96F/engine_H/Images/Lateral A.jpg'
 
 
@@ -126,7 +126,7 @@ cv2.createTrackbar("p", "Controle", 0, 10, empty)
 
 column =1
 line =1
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 cap.set(3, 3264)
 cap.set(4, 2448)
 _, Image = cap.read()
