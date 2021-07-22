@@ -8,17 +8,18 @@
     <JsonEditor
       :options="{
         confirmText: 'salvar',
-        cancelText: 'cancelar',
+        cancelText: 'cancelarfgfd',
       }"
-      :objData="allJsons"
-      v-model="allJsons"
+      :objData="jsonData"
+      v-model="jsonData"
     >
-    </JsonEditor> 
+    </JsonEditor>
 
     <v-row justify="center">
       <v-dialog v-model="dialog" persistent max-width="400">
         <template v-slot:activator="{ on, attrs }">
           <v-spacer></v-spacer>
+          {{jsonData}}
           <v-btn
             dark
             v-bind="attrs"
@@ -31,7 +32,6 @@
             <v-icon right dark> mdi-content-save </v-icon></v-btn
           >
           <v-btn
-            
             dark
             v-bind="attrs"
             v-on="on"
@@ -63,7 +63,7 @@
                 () => {
                   SEND_MESSAGE({
                     command: actions.MODIFY_JSON,
-                    parameter: allJsons,
+                    parameter: jsonData,
                   });
                   dialog = false;
                 }
@@ -103,21 +103,30 @@ export default {
     actions,
     dialog: false,
     selected: "",
-    jsonData: {
-      name: "mike",
-      age: 23,
-      phone: "18552129932",
-      address: ["AAA C1", "BBB C2"],
-    },
+    jsonData: {},
   }),
 
   methods: {
     ...mapMutations(["SEND_MESSAGE"]),
   },
 
+  mounted() {
+  this.$nextTick(function () {
+    this.jsonData = this.allJsons
+  })
+},
+
+ watch: {
+    allJsons: function () {
+    this.jsonData = this.allJsons
+    console.log(this.allJsons);
+    },
+ },
+
   computed: {
-    ...mapState(["allJsons"]),
+     ...mapState(["allJsons"]),
   },
+
 
   //   mounted: function () {
   //       console.log(this.configuration.json);

@@ -890,7 +890,7 @@ async def sendParafusa(parms):
     print(f"recebeu:, pos:{parms['pos']}, {parms['mm']}mm, voltas x {parms['voltas']}")
     Parafusa(parms['pos'], parms['voltas'], parms['mm'])
 
-async def refreshJson():
+async def restoreJson():
     global mainParamters, machineParamters, logList, stopReasonsList, HoleCuts, ScrewCuts
     mainParamters = Fast.readJson('Json/config.json')
     machineParamters = Fast.readJson('Json/machine.json')
