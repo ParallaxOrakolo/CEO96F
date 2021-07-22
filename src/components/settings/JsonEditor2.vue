@@ -10,10 +10,10 @@
         confirmText: 'salvar',
         cancelText: 'cancelar',
       }"
-      :objData="configuration.allJsons"
-      v-model="configuration.allJsons"
+      :objData="allJsons"
+      v-model="allJsons"
     >
-    </JsonEditor>
+    </JsonEditor> 
 
     <v-row justify="center">
       <v-dialog v-model="dialog" persistent max-width="400">
@@ -31,6 +31,7 @@
             <v-icon right dark> mdi-content-save </v-icon></v-btn
           >
           <v-btn
+            
             dark
             v-bind="attrs"
             v-on="on"
@@ -62,7 +63,7 @@
                 () => {
                   SEND_MESSAGE({
                     command: actions.MODIFY_JSON,
-                    parameter: configuration.allJsons,
+                    parameter: allJsons,
                   });
                   dialog = false;
                 }
@@ -115,7 +116,7 @@ export default {
   },
 
   computed: {
-    ...mapState(["configuration"]),
+    ...mapState(["allJsons"]),
   },
 
   //   mounted: function () {

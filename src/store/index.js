@@ -51,6 +51,15 @@ const store = new Vuex.Store({
       seconds: null,
     },
 
+    allJsons:{
+      "AVI": {
+      "code": 113,
+      "description": "Auto verificiação iniciou",
+      "listed": false,
+      "type": "info"
+    },
+  },
+
     progress: 5.1,
     started: false,
     playing: false,
