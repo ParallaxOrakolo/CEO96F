@@ -16,6 +16,7 @@ export const actions = {
   UPDATE_FILTER: "updateFilter",
   START_PROCESS: "startProcess",
   PAUSE_PROCESS: "pauseProcess",
+  PARAFUSA:"sendParafusa",
   UPDATE_SLIDER:"updateSlider",
   STOP_PROCESS: "stopProcess",
   LOG_REQUEST: "logRequest",
@@ -94,10 +95,10 @@ const store = new Vuex.Store({
     
     configuration: {
       allJsons:{
-        name: 'mike',
-        age: 23,
-        phone: '419988756100',
-        address: ['AAA C1', 'BBB C2']
+        // name: 'mike',
+        // age: 23,
+        // phone: '419988756100',
+        // address: ['AAA C1', 'BBB C2']
       },
 
       informations: {

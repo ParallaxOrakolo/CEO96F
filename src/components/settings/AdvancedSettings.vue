@@ -48,7 +48,7 @@
       <User-table v-if="logged"/>
       </v-card-text>
 
-      <JsonEditor2 v-if="logged"/>
+      <JsonEditor2/>
     </v-expansion-panel-content>
   </v-expansion-panel>
 </template>

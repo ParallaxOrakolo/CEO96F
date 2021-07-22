@@ -127,7 +127,15 @@
 
           <v-row no-gutters class="mb-6">
             <v-col class="pa-2 d-flex justify-end">
-              <v-btn v-haptic elevation="2" fab dark x-large color="blue">
+              <v-btn v-haptic elevation="2" fab dark x-large color="blue"
+              @click="
+                  () => {
+                    SEND_MESSAGE({
+                      command: actions.PARAFUSA,
+                      parameter: {pos:160, mm:2, voltas:20}
+                    });
+                  }
+                ">
                 <v-icon dark> mdi-screw-lag</v-icon>
               </v-btn>
             </v-col>
@@ -239,7 +247,7 @@
               () => {
                 SEND_MESSAGE({
                   command: actions.SERIAL_MONITOR,
-                  parameter: this.claw ? 'M104 T1 S255' : 'M104 T1 S0',
+                  parameter: this.claw ? 'M42 P31 S255' : 'M42 P31 S0',
                 });
               }
             "
@@ -263,9 +271,9 @@
                 SEND_MESSAGE({
                   command: actions.SERIAL_MONITOR,
                   parameter:
-                    'T1 \n G90 E0 \n G0 E' +
-                    getRealValueToMove(this.rotationZ, 'b') +
-                    getMaxFeedrate('b'),
+                    'T1 \n G90 E0 \n G0 E' + this.rotationZ
+                    // getRealValueToMove(this.rotationZ, 'b') +
+                    // getMaxFeedrate('b'),
                 });
               }
             "
@@ -288,7 +296,7 @@
             () => {
               SEND_MESSAGE({
                 command: actions.SERIAL_MONITOR,
-                parameter: 'M42 P33 S255',
+                parameter: this.light1 ? 'M42 P33 S255' : 'M42 P33 S0',
               });
             }
           "
@@ -303,7 +311,7 @@
             () => {
               SEND_MESSAGE({
                 command: actions.SERIAL_MONITOR,
-                parameter: 'M42 P34 S255',
+                parameter: this.light2 ? 'M42 P34 S255' : 'M42 P34 S0',
               });
             }
           "

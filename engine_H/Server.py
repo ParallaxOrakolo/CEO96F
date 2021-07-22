@@ -20,7 +20,7 @@ def NLinearRegression(x, c=160, aMin=151.34, reverse=False):
 
 z = NLinearRegression(float(input()), reverse=True)
 print(z)
-print(NLinearRegression(z-2))
+print(NLinearRegression(z-4))
 exit()      
 import asyncio
 from time import sleep

@@ -1,5 +1,6 @@
 {
     "configuration": {
+        "allJsons": {},
         "informations": {
             "ip": "192.168.1.16",
             "connectionId": 123456,
@@ -47,8 +48,8 @@
                         "E": 0
                     },
                     "analisaFoto": {
-                        "X": 154,
-                        "Y": 9,
+                        "X": 228.5,
+                        "Y": 1.65,
                         "Z": null,
                         "E": null
                     },
@@ -71,8 +72,8 @@
                         "E": 0
                     },
                     "camera0Centro": {
-                        "X": 154.15,
-                        "Y": 0,
+                        "X": 228.5,
+                        "Y": 1.65,
                         "Z": null,
                         "E": null
                     },
@@ -83,8 +84,8 @@
                         "E": null
                     },
                     "parafusadeiraCentro": {
-                        "X": 253.5,
-                        "Y": 12.83,
+                        "X": 254.2,
+                        "Y": 24.65,
                         "Z": 130,
                         "E": null
                     }
