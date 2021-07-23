@@ -611,7 +611,7 @@ def Parafusa(pos, voltas=2, mm=0, servo=0, angulo=0):
         Fast.M400(arduino)
         Fast.sendGCODE(arduino, f'g91')
         Fast.sendGCODE(arduino, f'g38.3 z-{pos} F{zMaxFed}')
-        Fast.sendGCODE(arduino, f'g0 z-{mm} {zMaxFed}')
+        Fast.sendGCODE(arduino, f'g0 z{mm} {zMaxFed}')
         #Fast.sendGCODE(arduino, f'm280 p{servo} s{angulo}')
         #Fast.sendGCODE(arduino, f'm43 t s10 l10 w{voltas*50}')
         Fast.sendGCODE(arduino, f"M43 t s32 l32 w{voltas*50}")
@@ -739,13 +739,14 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues):
     anlPos = machineParamters['configuration']['informations']['machine']['defaultPosition']['analisaFoto']
     cameCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['camera0Centro']
     parafCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusadeiraCentro']
+    parafusaCommand = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusar']
     # Pega a coordenada de inicio e aplica na formula, pra saber a quantos "mm" do "0" a maquina está.
     
     
     for lados in range(4):
         if not intencionalStop:
             tentavias, dsts = 0, 0
-
+            Fast.sendGCODE(arduino, "G90")
             Fast.sendGCODE(arduino, f"G0 X{anlPos['X']} F{xMaxFed}")
             Fast.sendGCODE(arduino, f"G0 Y{anlPos['Y']} F{yMaxFed}")
             Fast.M400(arduino)
@@ -831,9 +832,10 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues):
                         Fast.sendGCODE(arduino, f"g0 Y{posicao['Y']} F{yMaxFed}")
 
                         # Parafusa
-                        Parafusa(160, mm=2, voltas=20)
+                        
+                        Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'],  parafusaCommand['mm'])
                         Fast.sendGCODE(arduino, f"g0 Y{1} F{yMaxFed}")
-                        Parafusa(160, mm=5, voltas=20)
+                        Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'],  parafusaCommand['mm'])
                         parafusadas +=1
                         """
                         Como tratamos só um furo por vez, ignoramos o index.

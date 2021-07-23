@@ -1,6 +1,5 @@
 {
     "configuration": {
-        "allJsons": {},
         "informations": {
             "ip": "192.168.1.16",
             "connectionId": 123456,
@@ -48,7 +47,7 @@
                         "E": 0
                     },
                     "analisaFoto": {
-                        "X": 224.5,
+                        "X": 204.5,
                         "Y": 1.5,
                         "Z": null,
                         "E": null
@@ -84,10 +83,18 @@
                         "E": null
                     },
                     "parafusadeiraCentro": {
-                        "X": 247.5,
-                        "Y": 25,
+                        "X": 249,
+                        "Y": 25.5,
                         "Z": 130,
                         "E": null
+                    },
+                    "parafusar": {
+                        "X": null,
+                        "Y": null,
+                        "Z": 160,
+                        "E": null,
+                        "mm": 4,
+                        "voltas": 40
                     }
                 }
             }
