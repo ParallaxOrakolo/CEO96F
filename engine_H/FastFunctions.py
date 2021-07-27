@@ -81,12 +81,15 @@ def sendGCODE(serial, command, **kargs):
         strr = []
 
         # Lê, decodifica e processa enquanto houver informação no buffer de entrada.
+        echo0 = timeit.default_timer()
         while True:
             b = serial.readline()
             string_n = b.decode()
             strr.append(string_n.rstrip())
             if serial.inWaiting() == 0:
                 break
+            # elif timeit.default_timer() - echo0 >= 5:
+            #     raise MyException(f"Comando enviado, mas nenhuma resposta foi obtida, desconecte e reconecte a porta serial")
 
         # Se requisitado, retorna aquilo que foi recebido após o envio dos comandos.
         if kargs.get('echo'):

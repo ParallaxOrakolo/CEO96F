@@ -27,7 +27,7 @@
         class="cameraImg"
         alt="camera"
         :src="`http://${configuration.informations.ip}:${
-          configuration.informations.port + 1
+          configuration.informations.portStream
         }/${stringUrl}?${Math.floor(Math.random() * (1000 - 1 + 1)) + 1}`"
       >
       </v-img>

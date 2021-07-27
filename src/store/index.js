@@ -114,6 +114,7 @@ const store = new Vuex.Store({
         ip: machineJson.configuration.informations.ip,
         connectionId: 123456,
         port: machineJson.configuration.informations.port,
+        portStream: machineJson.configuration.informations.portStream,
         userList: [null],
         version: {
           backend: "0",

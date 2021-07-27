@@ -75,8 +75,8 @@
     "Mask_Parameters": {
         "Hole": {
             "perimeter": 0,
-            "areaMin": 2800,
-            "areaMax": 8000
+            "areaMin": 3500,
+            "areaMax": 5500
         },
         "Edge": {
             "perimeter": 0,

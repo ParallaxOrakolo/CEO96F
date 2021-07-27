@@ -3,7 +3,8 @@
         "informations": {
             "ip": "192.168.1.16",
             "connectionId": 123456,
-            "port": 5000,
+            "port": 443,
+            "portStream": 8080,
             "userList": [
                 {
                     "name": "Henrycke",
@@ -35,13 +36,23 @@
                 "maxFeedrate": {
                     "xMax": 20000,
                     "yMax": 8000,
-                    "zMax": 2000,
+                    "zMaxD": 20000,
+                    "zMaxU": 6500,
                     "aMax": 50000,
                     "bMax": 50000
                 },
+                "maxFeedratePercent": {
+                    "X": 50,
+                    "Y": 50,
+                    "ZD": 70,
+                    "ZU": 80,
+                    "ZD2": 25,
+                    "ZU2": 100,
+                    "E": 100
+                },
                 "defaultPosition": {
                     "pegaTombador": {
-                        "X": 27,
+                        "X": 14,
                         "Y": 30,
                         "Z": null,
                         "E": 0
@@ -83,18 +94,18 @@
                         "E": null
                     },
                     "parafusadeiraCentro": {
-                        "X": 249,
-                        "Y": 25.5,
+                        "X": 253,
+                        "Y": 10.52,
                         "Z": 130,
                         "E": null
                     },
                     "parafusar": {
                         "X": null,
                         "Y": null,
-                        "Z": 160,
+                        "Z": 200,
                         "E": null,
-                        "mm": 4,
-                        "voltas": 40
+                        "mm": 3,
+                        "voltas": 25
                     }
                 }
             }
@@ -135,7 +146,7 @@
                 },
                 {
                     "code": 6,
-                    "description": "Camera _id_ não pode ser iniciada.",
+                    "description": "Camera 1 não pode ser iniciada.",
                     "listed": false,
                     "type": "error",
                     "button_action": "Reboot"
@@ -143,6 +154,20 @@
                 {
                     "code": 7,
                     "description": "Parada manual pelo operador",
+                    "listed": false,
+                    "type": "warning",
+                    "button_action": "None"
+                },
+                {
+                    "code": 8,
+                    "description": "Falta de Pressão",
+                    "listed": false,
+                    "type": "warning",
+                    "button_action": "None"
+                },
+                {
+                    "code": 9,
+                    "description": "Não sei",
                     "listed": false,
                     "type": "warning",
                     "button_action": "None"
