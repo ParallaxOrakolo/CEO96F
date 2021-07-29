@@ -4,6 +4,7 @@ import numpy as np
 import serial
 import json
 import sys
+import os
 
 import string
 from random import choice
@@ -42,13 +43,21 @@ def backGround(h=600, w=900, c=0):
 
 # Abre e lê um json no caminho solicitado.
 def readJson(json_to_read):
-    with open(json_to_read, 'r', encoding='utf8') as json_file:
+    if os.path.exists("engine_H/"):
+        prefix = "engine_H/"
+    else:
+        prefix=""
+    with open(f"{prefix}{json_to_read}", 'r', encoding='utf8') as json_file:
         return json.load(json_file)
 
 
 # Abre e grava um json no caminho solicitado.
 def writeJson(json_local_save, json_data):
-    with open(json_local_save, "w", encoding='utf8') as jsonFile:
+    if os.path.exists("engine_H/"):
+        prefix = "engine_H/"
+    else:
+        prefix=""
+    with open(f"{prefix}{json_local_save}", "w", encoding='utf8') as jsonFile:
         json.dump(json_data, jsonFile, indent=4, ensure_ascii=False)
 
 
@@ -65,7 +74,6 @@ def sendGCODE(serial, command, **kargs):
         # Verifica se é um unico comando
         if isinstance(command, str):
             serial.write(str(command + '{0}'.format('\n')).encode('ascii'))
-            #print("GCODE >> ", command)
         # Verifica se é uma lista de comandos
         if isinstance(command, list):
             for linha in command:
@@ -86,11 +94,17 @@ def sendGCODE(serial, command, **kargs):
             b = serial.readline()
             string_n = b.decode()
             strr.append(string_n.rstrip())
+            if b == b'':
+                print("b:", b, type(b))
+                print("string_n:", string_n, type(string_n))
+                print("string_n.rstrip():", string_n.rstrip(), type(string_n.rstrip()))
+                break
             if serial.inWaiting() == 0:
                 break
             # elif timeit.default_timer() - echo0 >= 5:
             #     raise MyException(f"Comando enviado, mas nenhuma resposta foi obtida, desconecte e reconecte a porta serial")
-
+        if b == b'' or b == None or b is None:
+            raise MyException("Conexão com placa foi encontrada, mas ela não responde...")
         # Se requisitado, retorna aquilo que foi recebido após o envio dos comandos.
         if kargs.get('echo'):
             return strr
@@ -166,6 +180,7 @@ def G28(serial, axis='E', endStop='filament', status='open',offset=-23, steps=5,
 
 
 def M400(arduino, pattern='', **kwargs):
+    print("Entrou m400")
     echoMessge, echoCaugth = " ", ['x', 'X']
     timeout= kwargs.get('timeout') if kwargs.get('timeout') else 20
     T0 = timeit.default_timer()
@@ -175,15 +190,19 @@ def M400(arduino, pattern='', **kwargs):
             echoCaugth = sendGCODE(arduino, "M400",  echo=True)
             echoCaugth += sendGCODE(arduino, f"M118 {echoMessge}", echo=True)
         else:
+            print("Saiu m400")
             raise MyException(f"Movimento não pode ser concluido dentro de {timeout} segundos.")
+    print("Saiu m400")
 
 # Estabelece uma conexão com base em um arquivo de configuração personalizado.
 def SerialConnect(SerialPath='../Json/serial.json', name='arduino'):
+    if os.path.exists("engine_H/"):
+        SerialPath='engine_H/Json/serial.json'
     # Tenta Estabelecer uma conexão.
     try:
         with open(SerialPath, 'r', encoding='utf-8') as serial_json_file:
             serialData = json.load(serial_json_file)
-        communication = serial.Serial(serialData[name]['porta'], serialData[name]['velocidade'])
+        communication = serial.Serial(serialData[name]['porta'], serialData[name]['velocidade'], timeout=3)
 
     # Conexão falhou porque o arquivo de configuração não foi encontrado.
     except FileNotFoundError:

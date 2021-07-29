@@ -8,11 +8,13 @@
 # RAIZ((S^2-L^2)/-4) = H
 
 
-def NLinearRegression(x, c=160, aMin=151.34, reverse=False):
+def NLinearRegression(x, c=160, aMin=152.61, reverse=False):
     if not reverse:
         return round(aMin-(c**2 - ((c**2-aMin**2)**0.5+x)**2)**0.5, 2)
     else:
-        return round(((c**2 - (aMin-x )**2)**0.5)-(c**2- aMin**2)**0.5,2)
+        return round(((c**2 - (aMin-x )**2)**0.5)-(c**2- aMin**2)**0.5, 2)
+
+    
     #return round((0.0051*(x**2)) + (0.302*x) + (0.5339), 2)        # 19/07 - 2/2 0->30
     #return round((-0.0231*(x**2))+(2.4001*x)+0.4472, 2)            # Reversa 19/07
     #return round(((x**2)*0.0035)+(0.3518*x)+0.1181,2)              # 20/07 - 0,2/0,2 0 -> 6,2
@@ -20,7 +22,7 @@ def NLinearRegression(x, c=160, aMin=151.34, reverse=False):
 
 z = NLinearRegression(float(input()), reverse=True)
 print(z)
-print(NLinearRegression(z-4))
+print(NLinearRegression(z))
 exit()      
 import asyncio
 from time import sleep

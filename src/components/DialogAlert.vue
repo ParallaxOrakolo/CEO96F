@@ -16,8 +16,11 @@
         
 
         <v-row justify="center">
-          <v-btn x-large class="mt-4 mb-3" color="darken-1"  @click="state.dialogAlert.show = false">
-            Entendi
+          <v-btn x-large class="mt-4 mb-3" color="darken-1"
+          @click="state.dialogAlert.show = false;
+          SEND_MESSAGE({ command: actions.POPUP_TRIGGER, parameter:state.dialogAlert.button_action});"
+          >
+            {{state.dialogAlert.button_text}}
           </v-btn>
         </v-row>
       </v-alert>
@@ -28,12 +31,13 @@
 
 
 <script>
-import { mapGetters} from "vuex"; // Remove mapMutations -HB
-
+import { mapGetters, mapMutations} from "vuex";
+import { actions } from "../store/index.js";
 export default {
   name: "DialogAlert",
   data() {
     return {
+      actions,
       typeDictionary: {
         error: "Algo deu Errado",
         info: "Informação",
@@ -46,7 +50,9 @@ export default {
       },
     };
   },
-  methods: {},
+  methods: {
+  ...mapMutations(["SEND_MESSAGE"]),
+  },
   computed: {
     ...mapGetters(["state"]),
   },

@@ -29,7 +29,8 @@ export const actions = {
   SHUTDOWN_RASPBERRY:"shutdown_raspberry",
   RESTORE_JSON:"restoreJson",
   MODIFY_JSON:"modifyJson",
-  REQUEST_JSON:"requestJson"
+  REQUEST_JSON:"requestJson",
+  POPUP_TRIGGER:"popupTigger"
 };
 
 const store = new Vuex.Store({
@@ -86,7 +87,9 @@ const store = new Vuex.Store({
       show:false,
       code: 0,
       description: "",
-      type: "error"
+      type: "error",
+      button_text:"None",
+      button_action:"None"
     },
 
     isConnecting: false,
@@ -314,6 +317,8 @@ const store = new Vuex.Store({
         state.dialogAlert.description = message.parameter.description
         state.dialogAlert.type = message.parameter.type
         state.dialogAlert.code = message.parameter.code
+        state.dialogAlert.button_action = message.parameter.button_action
+        state.dialogAlert.button_text = message.parameter.button_text
         
         // code block
         break;

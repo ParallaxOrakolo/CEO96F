@@ -1,7 +1,7 @@
 {
     "configuration": {
         "informations": {
-            "ip": "192.168.1.16",
+            "ip": "25.1.133.200",
             "connectionId": 123456,
             "port": 443,
             "portStream": 8080,
@@ -29,7 +29,7 @@
                     "bMin": 0,
                     "xMax": 250,
                     "yMax": 45,
-                    "zMax": 150,
+                    "zMax": 152,
                     "aMax": 360,
                     "bMax": 360
                 },
@@ -42,8 +42,8 @@
                     "bMax": 50000
                 },
                 "maxFeedratePercent": {
-                    "X": 50,
-                    "Y": 50,
+                    "X": 70,
+                    "Y": 70,
                     "ZD": 70,
                     "ZU": 80,
                     "ZD2": 25,
@@ -54,6 +54,12 @@
                     "pegaTombador": {
                         "X": 14,
                         "Y": 30,
+                        "Z": null,
+                        "E": 0
+                    },
+                    "alinhaPeca": {
+                        "X": 54,
+                        "Y": 20,
                         "Z": null,
                         "E": 0
                     },
@@ -94,7 +100,7 @@
                         "E": null
                     },
                     "parafusadeiraCentro": {
-                        "X": 253,
+                        "X": 251,
                         "Y": 10.52,
                         "Z": 130,
                         "E": null
@@ -102,9 +108,9 @@
                     "parafusar": {
                         "X": null,
                         "Y": null,
-                        "Z": 200,
+                        "Z": 152,
                         "E": null,
-                        "mm": 3,
+                        "mm": 1,
                         "voltas": 25
                     }
                 }
@@ -116,46 +122,56 @@
                     "code": 1,
                     "description": "Garra não pegou",
                     "listed": true,
-                    "type": "error"
+                    "type": "error",
+                    "button_text": "Entendi",
+                    "button_action": "None"
                 },
                 {
                     "code": 2,
                     "description": "Alimentador sem peça",
                     "listed": false,
-                    "type": "warning"
+                    "type": "warning",
+                    "button_text": "Entendi",
+                    "button_action": "None"
                 },
                 {
                     "code": 3,
                     "description": "Troca de turno",
                     "listed": true,
-                    "type": "info"
+                    "type": "info",
+                    "button_text": "Entendi",
+                    "button_action": "None"
                 },
                 {
                     "code": 4,
                     "description": "Sem comunicação com o CLP",
                     "listed": false,
                     "type": "error",
-                    "button_action": "Reboot"
+                    "button_text": "Entendi",
+                    "button_action": "None"
                 },
                 {
                     "code": 5,
                     "description": "Sem comunicação com a estação de montagem",
                     "listed": false,
                     "type": "error",
-                    "button_action": "Reboot"
+                    "button_text": "Entendi",
+                    "button_action": "None"
                 },
                 {
                     "code": 6,
                     "description": "Camera 1 não pode ser iniciada.",
                     "listed": false,
                     "type": "error",
-                    "button_action": "Reboot"
+                    "button_text": "Reiniciar",
+                    "button_action": "restart_raspberry"
                 },
                 {
                     "code": 7,
                     "description": "Parada manual pelo operador",
                     "listed": false,
                     "type": "warning",
+                    "button_text": "Entendi",
                     "button_action": "None"
                 },
                 {
@@ -163,14 +179,16 @@
                     "description": "Falta de Pressão",
                     "listed": false,
                     "type": "warning",
+                    "button_text": "Entendi",
                     "button_action": "None"
                 },
                 {
-                    "code": 9,
-                    "description": "Não sei",
+                    "code": 999,
+                    "description": "Conexão com placa foi encontrada, mas ela não responde...",
                     "listed": false,
-                    "type": "warning",
-                    "button_action": "None"
+                    "type": "error",
+                    "button_text": "Reiniciar",
+                    "button_action": "Reboot"
                 }
             ],
             "nonStopCode": [

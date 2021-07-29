@@ -4,26 +4,27 @@
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Imports                                                           #
 
-from FastFunctions import MyException
+
 from flask import Flask, Response, request, jsonify
+from FastFunctions import MyException
 from datetime import datetime
+from threading import Thread
+from math import floor
 import FastFunctions as Fast
 import OpencvPlus as Op
-from threading import Thread
 import numpy as np
-import subprocess
 import websockets
+import subprocess
 import threading
 import platform
 import asyncio
-import socket
 import random
 import socket
-import time
+import timeit
 import json
+import time
 import cv2
 import os
-import timeit
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                      JSON                                                            #
 
@@ -248,10 +249,13 @@ class Process(threading.Thread):
         self.cor = getattr(Fast.ColorPrint, random.choice(["YELLOW", "GREEN", "BLUE", "RED"]))
 
     def run(self):
-        self.preMount()
-        self.Mount()
-        self.posMount()
-
+        try:
+            self.preMount()
+            self.Mount()
+            self.posMount()
+        except Fast.MyException as my:
+            print("Erro meu:", my)
+            return my
     def preMount(self):
 
         print(f"{self.cor} ID:{self.id}--> pre Mount Start{Fast.ColorPrint.ENDC}")
@@ -342,15 +346,19 @@ class Process(threading.Thread):
                     
                     validar = timeit.default_timer()
                     for n in range(10):
-                        _, encontrados = Process_Imagew_Scew(
-                                            globals()['frame'+str(mainParamters["Cameras"]["Screw"]["Settings"]["id"])],
-                                            Op.extractHSValue(mainParamters['Filtros']['HSV']['Screw']["Valores"], 'lower' ),
-                                            Op.extractHSValue(mainParamters['Filtros']['HSV']['Screw']["Valores"], 'upper' ),
-                                            mainParamters['Mask_Parameters']['Screw']['areaMin'],
-                                            mainParamters['Mask_Parameters']['Screw']['areaMax']
-                                            )
+                        frame = globals()['frame'+str(mainParamters["Cameras"]["Screw"]["Settings"]["id"])]
+                        time.sleep(0.1)
+                    _, encontrados = Process_Imagew_Scew(frame,
+                                        Op.extractHSValue(mainParamters['Filtros']['HSV']['Screw']["Valores"], 'lower' ),
+                                        Op.extractHSValue(mainParamters['Filtros']['HSV']['Screw']["Valores"], 'upper' ),
+                                        mainParamters['Mask_Parameters']['Screw']['areaMin'],
+                                        mainParamters['Mask_Parameters']['Screw']['areaMax']
+                                        )
                     cv2.imshow("Validador", cv2.resize(_, None, fx=0.3, fy=0.3))
-                    cv2.imwrite(f"Images/Process/{self.id}/validar/{encontrados}.jpg", _)
+                    if not os.path.exists(f'Images/Process/{self.id}/validar'):
+                        os.mkdir(f"Images/Process/{self.id}/validar")
+                    cv2.imwrite(f"Images/Process/{self.id}/validar/{encontrados}_draw.jpg", _)
+                    cv2.imwrite(f"Images/Process/{self.id}/validar/{encontrados}_normal.jpg", frame)
                     cv2.waitKey(1)
                     validar = timeit.default_timer()-validar
                     if encontrados == 6:
@@ -441,6 +449,7 @@ def findHole(imgAnalyse, minArea, maxArea, c_perimeter, HSValues, fixed_Point, e
 
                     distances.append(distance_to_fix)
                     distances = list(dict.fromkeys(distances))
+                    distances.sort(key = sortSecond)
             except KeyError:
                 print("KeyError:", info_edge)
     try:
@@ -593,7 +602,7 @@ def HomingAll():
     Fast.sendGCODE(arduino, "G92 X0 Y0 Z0 E0")
     Fast.sendGCODE(arduino, "G92.1")
     Fast.sendGCODE(arduino, "M17 X Y Z E")
-    Parafusa(160, mm=5, voltas=20)
+    Parafusa(152, mm=5, voltas=20)
 
 
 def verificaCLP(serial):
@@ -611,7 +620,7 @@ def verificaCLP(serial):
 
 def Parafusa(pos, voltas=2, mm=0, ZFD=100, ZFU=100, dowLess=False):
         Fast.M400(arduino)
-        print(pos, mm, voltas)
+        #print(pos, mm, voltas)
         Fast.sendGCODE(arduino, f'g91')
         if dowLess:
             Fast.sendGCODE(arduino, f"g38.3 Z-105 F{int(zMaxFedDown*(ZFD/100))}")
@@ -619,7 +628,7 @@ def Parafusa(pos, voltas=2, mm=0, ZFD=100, ZFU=100, dowLess=False):
         Fast.M400(arduino)
         Fast.sendGCODE(arduino, f"M42 p32 s255")
         Fast.sendGCODE(arduino, f'g38.3 z-{pos} F{int(zMaxFedDown*(ZFD/100))}')
-        print(f'g38.3 z-{pos} F{int(zMaxFedDown*(ZFD/100))}')
+        #print(f'g38.3 z-{pos} F{int(zMaxFedDown*(ZFD/100))}')
         Fast.sendGCODE(arduino, f'g0 z{mm} F{zMaxFedUp}')
         #Fast.sendGCODE(arduino, f'm280 p{servo} s{angulo}')
         #Fast.sendGCODE(arduino, f'm43 t s10 l10 w{voltas*50}')
@@ -629,11 +638,12 @@ def Parafusa(pos, voltas=2, mm=0, ZFD=100, ZFU=100, dowLess=False):
         Fast.sendGCODE(arduino, f"M42 p32 s0")
         Fast.sendGCODE(arduino, 'g90')
         Fast.sendGCODE(arduino, f'g0 z{pos} F{int(zMaxFedUp*(ZFU/100))}')
-        print(f'g0 z{pos} F{int(zMaxFedUp*(ZFU/100))}')
-        Fast.M400(arduino)
+        #print(f'g0 z{pos} F{int(zMaxFedUp*(ZFU/100))}')
+        #Fast.M400(arduino)
 
 
 def descarte(valor="Errado", Deposito={"Errado":{"X":230, "Y":0}}):
+    global Total0
     pos = machineParamters["configuration"]["informations"]["machine"]["defaultPosition"]["descarte"+valor]
     Fast.sendGCODE(arduino, f"G90")
     Fast.sendGCODE(arduino, f"G0 Y{pos['Y']} f{yMaxFed}")
@@ -644,12 +654,18 @@ def descarte(valor="Errado", Deposito={"Errado":{"X":230, "Y":0}}):
     Fast.sendGCODE(arduino, f"G0 E{pos['E']} f{eMaxFed}")
     Fast.M400(arduino)
     Fast.sendGCODE(arduino, f"G28 Y")
+    print(">>> ", timer(int(timeit.default_timer()-Total0)))
 
+def timer(total):
+    horas = floor(total / 3600)
+    minutos = floor((total - (horas * 3600)) / 60)
+    segundos = floor(total % 60)
+    return f"{horas}:{minutos}:{segundos}"
 
 def PegaObjeto():
-    print("Indo pegar...")
+    global Total0
     pegaPos = machineParamters['configuration']['informations']['machine']['defaultPosition']['pegaTombador']
-    
+    Total0 = timeit.default_timer()
     Fast.sendGCODE(arduino, "G90")
     Fast.sendGCODE(arduino, f"G0 X{pegaPos['X']} E0 F{xMaxFed}")
     Fast.sendGCODE(arduino, f"G0 Y{pegaPos['Y']} F{yMaxFed}")
@@ -657,11 +673,17 @@ def PegaObjeto():
     Fast.sendGCODE(arduino, "M42 P31 S255")
     Fast.sendGCODE(arduino, "G4 S0.3")
     Fast.sendGCODE(arduino, "G28 Y")
-    print("Pegou")
+    alinhar()
 
 
+
+def alinhar():
+    alin = machineParamters['configuration']['informations']['machine']['defaultPosition']['alinhaPeca']
+    Fast.sendGCODE(arduino, 'G90')
+    Fast.sendGCODE(arduino, f"G0 X{alin['X']} f{xMaxFed}")
+    Fast.sendGCODE(arduino, f"G0 Y{alin['Y']} f{yMaxFed}")
+    
 def Process_Imagew_Scew(frames, lower, upper, AreaMin, AreaMax, name="ScrewCuts"):
-    print("Validando encaixe....")
     img_draw = frames.copy()
     # cv2.imshow("img_draw_original", cv2.resize(img_draw, None, fx=0.35, fy=0.35))
     finds = 0
@@ -698,7 +720,6 @@ def Process_Imagew_Scew(frames, lower, upper, AreaMin, AreaMax, name="ScrewCuts"
     cv2.putText(img_draw, str(finds), (200, 100), cv2.FONT_HERSHEY_DUPLEX, 5, (0, 0, 0), 10)
     # cv2.imshow(f"Draw_Copy", cv2.resize(img_draw, None, fx=0.25, fy=0.25))
     # cv2.waitKey(1)
-    print("Feito")
     return img_draw, finds
 
 
@@ -743,18 +764,17 @@ def Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues):
 
 
 def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
-    print("Iniciando busca pelos furos...")
     precicao = 0.4
     Pos = []
     parafusadas = 0
+    faltadeFuro = False
+    repetidos = [1, 4]
     #identificar = []
     path = f"Images/Process/{ids}"
     anlPos = machineParamters['configuration']['informations']['machine']['defaultPosition']['analisaFoto']
     cameCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['camera0Centro']
     parafCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusadeiraCentro'].copy()
-    print("parafCent['y'] (A):", parafCent['Y'])
     parafCent['Y'] = NLinearRegression(parafCent['Y'], reverse=True)
-    print("parafCent['y'] (D):", parafCent['Y'])
     # Pega a coordenada de inicio e aplica na formula, pra saber a quantos "mm" do "0" a maquina está.
     if not os.path.exists(path):
         os.makedirs(path)
@@ -762,7 +782,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
         os.makedirs(f"{path}/validar")
 
     for lados in range(6):
-        if not intencionalStop:
+        if not intencionalStop and not faltadeFuro:
             tentativas, dsts = 0, 0
             Fast.sendGCODE(arduino, "G90")
             Fast.sendGCODE(arduino, f"G0 X{anlPos['X']} F{xMaxFed}")
@@ -772,49 +792,52 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
             Fast.sendGCODE(arduino, "G91")
             defaultCoordY = machineParamters["configuration"]["informations"]["machine"]["defaultPosition"]["analisaFoto"]['Y']
             atualCoordY = NLinearRegression(defaultCoordY, reverse=True)
-
             while tentativas<=10 and not intencionalStop:
-                #print("Extraindo resultados")
                 frame = globals()['frame'+str(mainParamters["Cameras"]["Hole"]["Settings"]["id"])]
                 Resultados, R, per, img_draw = Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues)
+                if lados not in repetidos:
+                    dsts = 0
+                else:
+                    dsts = len(Resultados)-1
     #            cv2.imshow("Img_Process", cv2.resize(frame, None, fx=0.3, fy=0.3))
-                cv2.imshow("Fora_Hole", cv2.resize(img_draw, None, fx=0.3, fy=0.3))
-                cv2.waitKey(1)
-                if Resultados:
-                    print("Resultados:", Resultados)
+                if tentativas == 0:
+                    cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_draw.jpg", img_draw)
+                    cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_normal.jpg", frame)
+                # cv2.imshow("Fora_Hole", cv2.resize(img_draw, None, fx=0.3, fy=0.3))
+                # cv2.waitKey(1)
+                # if Resultados:
+                #     print("Resultados:", Resultados)
                 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
                 #                     Verifica a distância                   #
                 if Resultados:
                     try:
                         #yReal = round(Resultados[dsts][0]/2, 2)
-                        print("^^"*15)
-                        print(f"Coordenada atual {defaultCoordY};  {atualCoordY}mm do 0")
-                        print("Quer mover", Resultados[dsts][0],"em relação a coordenada atual")
+                        if DebugPrint:
+                            print("^^"*15)
+                            print(f"Coordenada atual {defaultCoordY};  {atualCoordY}mm do 0")
+                            print("Quer mover", Resultados[dsts][0],"em relação a coordenada atual")
                         MY = Resultados[dsts][0]
                         MX = Resultados[dsts][1]
                         # Calcula quantos mm tem que se mover, e soma com a posição atual, pra saber pra onde deve ir em relação ao zero
                         ajusteforcado = 1# if tentativas <= 4 else 2
                         yReal = (MY/ajusteforcado)+atualCoordY
-                        print("Ou seja, quer ir para: ", yReal)
+                        if DebugPrint:
+                            print("Ou seja, quer ir para: ", yReal)
                     except IndexError:
                         print("Falha de identificação, corrija o filtro..")
                         break
-                    print("MX:", MX, '\n yReal:', yReal)
+                    #print("MX:", MX, '\n yReal:', yReal)
     #                   MX += (randint(-int(abs(MX)/4),abs(int(MX))))
                     if abs(MX) > precicao:
                         Fast.sendGCODE(arduino, f"G0 X{MX} F{xMaxFed}", echo=True)
                         #print(f"G0 X{MX} F{xMaxFed}")
                         
                     elif abs(MY) > precicao:
-                        if yReal >=14:
-                            print("Ajuste a escala com mais pontos")
-                        elif yReal < 0:
-                            yReal = 0
-                            print("No limite do minimo ou menos")
                         yImaginario = NLinearRegression(abs(yReal))
                         atualCoordY = yReal
                         defaultCoordY = yImaginario
-                        print(f"Devera ir para coordenada {yImaginario}; {atualCoordY}mm em relação ao 0")
+                        if DebugPrint:
+                            print(f"Devera ir para coordenada {yImaginario}; {atualCoordY}mm em relação ao 0")
                         #yImaginario *= -1 if yReal < 0 else 1
                         Fast.sendGCODE(arduino, f"G90")
                         #Fast.sendGCODE(arduino, f"G0 X0 Y{yImaginario} F{yMaxFed}", echo=True)
@@ -825,64 +848,59 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
                     Fast.M400(arduino)
                     tentativas+=1
                     #time.sleep(0.2)
-                    print("Tentativa:", tentativas)
+                    if DebugPrint:
+                        print("Tentativa:", tentativas)
 
                     # Caso a precisão em ambos os eixos esteja ok, ou tnha exedido o numero de tentativas.
                     if abs(MY) <= precicao and abs(MX) <= precicao or tentativas >=9:
-                        cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_draw.jpg", img_draw)
-                        cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_normal.jpg", frame)
-                        # Faz os valores ficarem acima do permiido pra evita que entre no loop novamente.
-                        MY, MX, tentativas = 99, 99, 50
-                        print(f"tentativas ou valor atingido")
-                        posicao = Fast.M114(arduino)
-                        print(f"{Fast.ColorPrint.WARNING} VARLO DO E: {posicao['E']} {Fast.ColorPrint.ENDC}")
-                        Pos.append(posicao)
+                        if abs(MY) <= precicao and abs(MX) <= precicao:
+                            cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_draw.jpg", img_draw)
+                            cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_normal.jpg", frame)
+                            # Faz os valores ficarem acima do permiido pra evita que entre no loop novamente.
+                            MY, MX, tentativas = 99, 99, 50
+                            posicao = Fast.M114(arduino)
+                            #print(f"{Fast.ColorPrint.WARNING} VARLO DO E: {posicao['E']} {Fast.ColorPrint.ENDC}")
+                            Pos.append(posicao)
 
-                        # Ajusta define a coordenada do centro com base na distância da camera e da parafusadeira
-                        posicao = {
-                            'X':-round(cameCent['X']-posicao['X'], 2)+parafCent['X'],
-                            'Y':-round(cameCent['Y']-posicao['Y'], 2)+parafCent['Y'],
-                            'E':posicao['E']
-                        } 
-                        
-                        # Vai até a coordenada
-                        Fast.sendGCODE(arduino, 'g90')
-                        Fast.sendGCODE(arduino, f"g0 X{posicao['X']} E{posicao['E']} F{xMaxFed}")
-                        Fast.sendGCODE(arduino, f"g0 Y{posicao['Y']} F{yMaxFed}")
-                        print(f"Parafusando em: X{posicao['X']} E{posicao['E']} Y{posicao['Y']} F{xMaxFed}" )
-                        # Parafusa
-                        
-                        Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'],  parafusaCommand['mm'], zFRPD2, zFRPU2)
-                        Fast.sendGCODE(arduino, f"g0 Y{1} F{yMaxFed}")
-                        Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, dowLess=True)
-                        parafusadas +=1
-                        """
-                        Como tratamos só um furo por vez, ignoramos o index.
-                        """
-                        # if len(Resultados)==2:
-                        #     print("Lado com dois furos identificados")
-                        #     if dsts == 0:
-                        #         print("Estamos no furo 0, indo pro 1")
-                        #         tentativas = 0
-                        #         dsts += 1
-                        #     else:
-                        #         print("Todos os furos analizados")
-                        #         tentativas = 50
-                        # else:
-                        #     print("Era só um furo")
-                        #     tentativas = 50
+                            # Ajusta define a coordenada do centro com base na distância da camera e da parafusadeira
+                            posicao = {
+                                'X':-round(cameCent['X']-posicao['X'], 2)+parafCent['X'],
+                                'Y':-round(cameCent['Y']-posicao['Y'], 2)+parafCent['Y'],
+                                'E':posicao['E']
+                            } 
+                            
+                            # Vai até a coordenada
+                            Fast.sendGCODE(arduino, 'g90')
+                            Fast.sendGCODE(arduino, f"g0 X{posicao['X']} E{posicao['E']} F{xMaxFed}")
+                            Fast.sendGCODE(arduino, f"g0 Y{posicao['Y']} F{yMaxFed}")
+                            if DebugPrint:
+                                print(f"Parafusando em: X{posicao['X']} E{posicao['E']} Y{posicao['Y']} F{xMaxFed}" )
+                            # Parafusa
+                            
+                            Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'],  parafusaCommand['mm'], zFRPD2, zFRPU2)
+                            Fast.sendGCODE(arduino, f"g0 Y{1} F{yMaxFed}")
+                            Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, dowLess=True)
+                            parafusadas +=1
+                        else:
+                            faltadeFuro = True
+                            break
                 else:
                     tentativas+=1
             #identificar.append(timeit.default_timer()-tI0)G0 G91
-            print("Passando pro lado:", lados+1)
-            if lados != 1 and lados != 4:
+            #print("Passando pro lado:", lados+1)
+            if lados not in repetidos:
                 Fast.sendGCODE(arduino, f"G91")
                 Fast.sendGCODE(arduino, f"G0 E90 F{eMaxFed}")
                 Fast.M400(arduino)
-                
+
     #identificar = sum(identificar)
-    print("Busca finalizada")
+    #print("Busca finalizada")
     return Pos, parafusadas
+
+
+def sortSecond(val):
+    return val[1] 
+
 
 def shutdown_server():
     shutdown_function = request.environ.get('werkzeug.server.shutdown')
@@ -911,13 +929,24 @@ async def checkUpdate(branch="Auto_Pull"):
 
 
 async def sendParafusa(parms):
-    print(f"recebeu:, pos:{parms['pos']}, {parms['mm']}mm, voltas x {parms['voltas']}")
     Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'],  parafusaCommand['mm'])
 
 
 async def shutdown_raspberry():
-    print('F')
+    print('sys.shutdown - now')
     await asyncio.sleep(1)
+
+async def restart_raspberry():
+    print('sys.reboot')
+    await asyncio.sleep(1)
+
+async def popupTigger(parm):
+    if parm != "None":
+        try:
+            fun =eval(parm)
+            await fun()
+        except NameError:
+            pass
 
 async def refreshJson():
     global maxFeedP, maxFeedrate, stopReasons, nonStopCode, xMaxFed, yMaxFed, zMaxFedDown, zMaxFedUp, eMaxFed, zFRPD2, zFRPU2, parafusaCommand
@@ -1025,7 +1054,6 @@ async def logRequest(new_log=False):
             "date":int(round(datetime.now().timestamp()))
             }
         if new_log["listed"]:
-            print("Listed-True")
             await stopReasonsListRequest(new_logs)
         else:
             logList["log"].append(new_logs)
@@ -1179,131 +1207,6 @@ async def startProcess(qtd=9999):
     await sendWsMessage("startProcess_success")
     print(f"Pedido de montagem finalizado em {int(timeit.default_timer()-t0)}s")
 
-
-"""
-
-async def startProcessss(qtd=9999):
-    global intencionalStop, arduino, nano
-    await sendWsMessage("startProcess_success")
-
-    print(f"Foi requisitado a montagem de {qtd} peças certas.")
-    time.sleep(3)
-    erradas = 0
-    corretas = 0
-    rodada = 0
-    intencionalStop = False # Destrava a maquina quando um novo processo é iniciado.
-    descargaCompleta = timeit.default_timer()
-    cameCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['camera0Centro']
-    parafCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusadeiraCentro']
-
-    intervalo = {
-                'X':parafCent['X']-cameCent['X'],
-                'Y':parafCent['Y']-cameCent['Y']
-                }
-
-    infoCode = "ok"
-    infoCode = verificaCLP(nano)
-    print(infoCode)
-    #while qtd != corretas and not intencionalStop:
-    for rr in range(qtd):
-        if intencionalStop:
-            break
-        print("IntencionalStop:", intencionalStop)
-        rodada +=1
-        totalUnitario = timeit.default_timer()
-        try:
-            PegaObjeto()
-        except MyException as Mye:
-            print(Mye)
-            break
-        parcialFuro =['', '', '', '']
-
-        parcialFuro = Processo_Hole(None,
-                      mainParamters['Mask_Parameters']['Hole']['areaMin'],
-                      mainParamters['Mask_Parameters']['Hole']['areaMax'],
-                      mainParamters['Mask_Parameters']['Hole']['perimeter'],
-                      mainParamters['Filtros']['HSV']['Hole']['Valores'])
-
-        infoCode = verificaCLP(nano)
-        print("~~"*10)
-        print("604: Info code:", infoCode)
-        print("~~"*10)
-        if infoCode in nonStopCode:
-            if len(parcialFuro) >= 5:
-                print("Iniciando processo de montagem...")
-                montar = []
-                tM0 = timeit.default_timer()
-                finalFuro = []
-                for posicao in parcialFuro:
-                    print("Posicao: ", posicao)
-                    print(-round(cameCent['X']-posicao['X'], 2), intervalo['X'])
-                    finalFuro.append({
-                                'X':-round(cameCent['X']-posicao['X'], 2)+parafCent ['X'],
-                                'Y':-round(cameCent['Y']-posicao['Y'], 2)+parafCent['Y'],
-                                'E':posicao['E']} )
-
-                Fast.sendGCODE(arduino, 'g90')
-                for posicao in finalFuro:
-                    infoCode = verificaCLP(nano)
-                    print("~~"*10)
-                    print("625: Info code:", infoCode)
-                    print("~~"*10)
-                    if infoCode in nonStopCode:
-                        Fast.sendGCODE(arduino, f"g0 X{posicao['X']} E{posicao['E']} F{xMaxFed}")
-                        Fast.sendGCODE(arduino, f"g0 Y{posicao['Y']} F{yMaxFed}")
-                        Parafusa(160, mm=2, voltas=20)
-                        #Fast.sendGCODE(arduino, f"g0 X{122} F{xMaxFed}")
-                        Fast.sendGCODE(arduino, f"g0 Y{1} F{yMaxFed}")
-                        Parafusa(160, mm=5, voltas=20)
-                        montar.append(timeit.default_timer()-tM0)
-                    else:
-                        print("Prolema encontado no 625")
-                        break
-
-                if infoCode in nonStopCode:
-                    montar=sum(montar)
-                    print("Montagem finalizada.")
-                    print("Iniciando processo de validação.")
-                    Fast.sendGCODE(arduino, "G90")
-                    Fast.sendGCODE(arduino, "G28 Y")
-                    Fast.sendGCODE(arduino, "G0 X 230")
-                    validar = timeit.default_timer()
-                    _, encontrados = Process_Imagew_Scew(
-                                        globals()['frame'+str(mainParamters["Cameras"]["Screw"]["Settings"]["id"])],
-                                        Op.extractHSValue(mainParamters['Filtros']['HSV']['Screw']["Valores"], 'lower' ),
-                                        Op.extractHSValue(mainParamters['Filtros']['HSV']['Screw']["Valores"], 'upper' ),
-                                        mainParamters['Mask_Parameters']['Screw']['areaMin'],
-                                        mainParamters['Mask_Parameters']['Screw']['areaMax']
-                                        )
-                    validar = timeit.default_timer()-validar
-                    if encontrados == 6:
-                        descarte("Certo")
-                        corretas+=1
-                    else:
-                        print(f"Foram fixados apenas {encontrados} parafusos.")
-                        descarte("Errado")
-                        erradas+=1
-                else:
-                    print("Prolema encontado após 625")
-                    break
-            else:
-                print(f"Foram econtrados apenas {len(parcialFuro)} furos.")
-                descarte("Errado")
-                erradas+=1
-            totalUnitario = timeit.default_timer()-totalUnitario
-        else:
-            print("Prolema encontado no 607")
-            break 
-    for item in stopReasons:
-        if infoCode == item['code']:
-            print(f"Erro ao tentar montar a {rodada} peça")
-            print(item)
-            await sendWsMessage("error", item)
-
-    descargaCompleta = timeit.default_timer()-descargaCompleta
-    #intencionalStop = False
-
-"""
 
 
 async def updateFilter(zipped):
@@ -1460,6 +1363,7 @@ if __name__ == "__main__":
 
     @app.route('/exit', methods=['GET'])
     def shutdown():
+        cv2.destroyAllWindows()
         print("Pediu pra parar.")
         for x in range(10):
             try:
@@ -1515,14 +1419,21 @@ if __name__ == "__main__":
 
     async def actions(message):
         # Verifica se afunção requisita existe e executa.
-        print("Recebeu cahmado:", message)
+        if DebugPrint:
+            print("Recebeu chamado:", message)
         command = message["command"]
         try:
             funcs = eval(command)
             try:
                 await funcs(message["parameter"])
             except KeyError:
-                await funcs()
+                try:
+                    await funcs()
+                except Fast.MyException as my:
+                    await sendWsMessage(str(command)+"_success")
+                    for item in stopReasons:
+                        if my == item["description"]:
+                            await sendWsMessage("error", item)
         except NameError as nmr:
             print(nmr)
             print(command+"() não é uma função válida.")
@@ -1531,9 +1442,10 @@ if __name__ == "__main__":
         global ws_connection
         ws_connection = websocket
         async for message in ws_connection:
-            print(json.loads(message))
+            if DebugPrint:
+                print(json.loads(message))
+                print("~~~~~~~~~~~~~~"*20)
             await actions(json.loads(message))
-            print("~~~~~~~~~~~~~~"*20)
 
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      PreLaunch                             #
