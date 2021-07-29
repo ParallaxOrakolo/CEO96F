@@ -1332,9 +1332,9 @@ if __name__ == "__main__":
         ip = '.'.join(['.'.join(prefix[:len(prefix) - 1]),
                   str(int(prefix[len(prefix) - 1]) + offSetIp)])
     else:
-        gw = os.popen("ip -4 route show default").read().split()
+        gw = os.popen("ip -4 route show").read().split()
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect((gw[2], 0))
+        s.connect((gw[8], 0))
         ip = s.getsockname()[0]
         gateway = gw[2]
         host = socket.gethostname()

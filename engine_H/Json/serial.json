@@ -1,6 +1,6 @@
 {
   "Ramps 1.4": {
-    "porta": "COM12",
+    "porta": "/dev/ttyUSB0",
     "velocidade": 250000
   },
 
