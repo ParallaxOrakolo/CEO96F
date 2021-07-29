@@ -2,8 +2,11 @@ import cv2
 import OpencvPlus as Op
 import FastFunctions as Fast
 
-Op.ControlWindow((37, 106), (183, 255), (20, 227), (6090, 65555))
-def Process_Imagew_Scew(frames, lower, upper, AreaMin, AreaMax, name="ScrewCuts"):
+Op.ControlWindow((0, 179), (0, 69), (58, 144), (8000, 60000))
+def Process_Imagew_Scew(frame, lower, upper, AreaMin, AreaMax, name="ScrewCuts"):
+
+    frames = frame.copy()
+    cv2.drawMarker(frames, (int(frames.shape[1]/2), int(frames.shape[0]/2)), (0,0,255), thickness=30, markerSize=100000)
     img_draw = frames.copy()
     # cv2.imshow("img_draw_original", cv2.resize(img_draw, None, fx=0.35, fy=0.35))
     finds = 0
@@ -22,7 +25,7 @@ def Process_Imagew_Scew(frames, lower, upper, AreaMin, AreaMax, name="ScrewCuts"
         
         show = cv2.bitwise_or(show, show, None, mask)
         if Cnt_A:
-            finds += 1
+            finds += len(Cnt_A)
             for info in Cnt_A:
                 cv2.drawContours(show, [info['contour']], -1, (0, 255, 0), thickness=10,
                                  lineType=cv2.LINE_AA)
@@ -44,10 +47,13 @@ cap.set(3, 3264)
 cap.set(4, 2448)
 _, show = cap.read()
 ScrewCuts = Fast.readJson("../engine_H/Json/ScrewCuts.json")
-quem = "adohk"
-quant = 0
-#imgs = Op.Rois(show, 6, 0.25)
-img = cv2.imread(f"../engine_H/Images/Process/{quem}/validar/{quant}_normal.jpg")
+ScrewCuts = Fast.readJson("../engine_H/Cuts.json")
+quem = ["0mcG6", "1snHl","CBjzQ"]
+id = 2
+quant = 3
+
+img = cv2.imread(f"../engine_H/Images/Process/{quem[id]}/validar/{quant}_normal.jpg")
+#imgs = Op.Rois(img, 4, 0.25)
 while cv2.waitKey(1) != 27:
     #_, img = cap.read()
     
