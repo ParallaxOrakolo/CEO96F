@@ -51,7 +51,7 @@
 
     <router-link to="/config">
       <v-btn icon v-if="$route.name != 'settings'">
-        <v-icon dark id="tune">tune</v-icon>
+        <v-icon dark id="tune">mdi-tune</v-icon>
       </v-btn>
     </router-link>
   </v-app-bar>

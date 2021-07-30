@@ -1,4 +1,17 @@
+import cv2
 
+c0 = cv2.VideoCapture(0)
+c2 = cv2.VideoCapture(2)
+print("ok")
+c0.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M','J','P','G'))
+c2.set(cv2.CAP_PROP_FOURCC,cv2.VideoWriter_fourcc('M','J','P','G'))
+print("ok1")
+while cv2.waitKey(1) != 27:
+    _, img0 = c0.read()
+    _, img2 = c2.read()
+    cv2.imshow("0", cv2.resize(img0, None, fx=0.3, fy=0.3))
+    cv2.imshow("2", img2)
+exit()
 #S = raiz(l^2 - 4h^2)
 #S = raiz((l**2) - (4*(h**2)))
 #S = ((l^2) - (4*(h^2)))^0.5

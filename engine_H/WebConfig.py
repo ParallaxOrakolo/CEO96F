@@ -1154,15 +1154,19 @@ async def startAutoCheck():
             globals()["thread"+str(mainParamters["Cameras"]["Screw"]["Settings"]["id"])] = CamThread(str(mainParamters["Cameras"]["Screw"]["Settings"]["id"]), mainParamters["Cameras"]["Screw"])
             #stalker1 = ViewAnother(thread1, 5)
             globals()["thread"+str(mainParamters["Cameras"]["Hole"]["Settings"]["id"])] = CamThread(str(mainParamters["Cameras"]["Hole"]["Settings"]["id"]), mainParamters["Cameras"]["Hole"])
-            #stalker0 = ViewAnother(thread0, 5)
-            thread1.start()
-            # stalker1.start()
             thread0.start()
-            # stalker0.start()
+            thread2.start()
+#            for x in range(10):
+#                try:
+#                    globals()["thread"+str(x)].start()
+#                    print(f"Aguardando 'thread{str(x)}' iniciar..")
+#                    print(f"'thread{str(x)}' iniciou com sucesso.. \n")
+#                except (KeyError, RuntimeError):
+#                    pass
             tth0 = timeit.default_timer()
             while timeit.default_timer()-tth0 <= 10:
                 try:
-                    if type(globals()['frame1']) == np.ndarray and type(globals()['frame0']) == np.ndarray:
+                    if type(globals()['frame0']) == np.ndarray and type(globals()['frame2']) == np.ndarray:
                         appTh = AppThread(ip, portBack)
                         appTh.start()
                         print("Transmissão de vídeo iniciada.")
@@ -1171,8 +1175,14 @@ async def startAutoCheck():
                 except KeyError:
                     continue
             else:
-                thread1.stop()
-                thread0.stop()
+                for x in range(10):
+                    try:
+                        globals()["thread"+str(x)].stop()
+                        print(f"Aguardando 'thread{str(x)}' parar..")
+                        globals()["thread"+str(x)].join(timeout=3)
+                        print(f"'thread{str(x)}' parou com sucesso.. \n")
+                    except (KeyError, RuntimeError):
+                        pass
                 appTh.stop()
         except Exception as Exp:
             connection["connectionStatus"] = "Falha ao inicializar cameras!!!"

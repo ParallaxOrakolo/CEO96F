@@ -6,13 +6,8 @@ import {store} from './store/index'
 import VueTheMask from 'vue-the-mask'
 import VueHaptic from 'vue-haptic';
 import JsonEditor from 'vue-json-edit'
-import 'material-design-icons-iconfont/dist/material-design-icons.css'
 
 Vue.use(JsonEditor)
-
-Vue.use(vuetify, {
-  iconfont: 'md'
-})
 
 Vue.use(VueHaptic, {
   // Required. vue-haptic does not provide
