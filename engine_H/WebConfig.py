@@ -10,6 +10,7 @@ from FastFunctions import MyException
 from datetime import datetime
 from threading import Thread
 from math import floor
+from ast import literal_eval
 import FastFunctions as Fast
 import OpencvPlus as Op
 import numpy as np
@@ -1332,13 +1333,17 @@ if __name__ == "__main__":
         ip = '.'.join(['.'.join(prefix[:len(prefix) - 1]),
                   str(int(prefix[len(prefix) - 1]) + offSetIp)])
     else:
-        gw = os.popen("ip -4 route show").read().split()
+        gw = literal_eval(os.popen("ip -j route show").read())
+        for _ in gw:
+            if _["dev"] == "wlan0":
+                gw = _
+                break
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        s.connect((gw[8], 0))
+        s.connect((gw["prefsrc"], 0))
         ip = s.getsockname()[0]
-        gateway = gw[2]
+#        gateway = gw["gateway"]
         host = socket.gethostname()
-        print ("IP:", ip, " GW:", gateway, " Host:", host)
+        print ("IP:", ip," Host:", host)
 
     machineParamters["configuration"]["informations"]["ip"] = ip
     Fast.writeJson('Json/machineParamters.json', machineParamters)

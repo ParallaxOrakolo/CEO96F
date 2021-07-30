@@ -3,9 +3,12 @@ import OpencvPlus as Op
 import operator as opr
 import cv2
 import numpy as np
+cap = cv2.VideoCapture(0)
+while cv2.waitKey(1) != 27:
+    _, img = cap.read()
+    cv2.imshow("img", img)
 
-
-
+exit()
 def findCircle(circle_Mask, areaMinC, areaMaxC, perimeter_size, blur_Size=3):
     global raio
     circle_info = []

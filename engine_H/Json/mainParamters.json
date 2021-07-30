@@ -97,7 +97,7 @@
     "Cameras": {
         "Hole": {
             "Settings": {
-                "id": 1,
+                "id": 0,
                 "scale": 0.04276480601654536,
                 "frame_height": 2448,
                 "frame_width": 3264
@@ -115,7 +115,7 @@
         },
         "Edge": {
             "Settings": {
-                "id": 1,
+                "id": 0,
                 "scale": 0.04276480601654536,
                 "frame_height": 2448,
                 "frame_width": 3264
@@ -133,7 +133,7 @@
         },
         "Screw": {
             "Settings": {
-                "id": 0,
+                "id": 2,
                 "scale": 0.04276480601654536,
                 "frame_height": 2448,
                 "frame_width": 3264
