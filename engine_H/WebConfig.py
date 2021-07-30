@@ -79,10 +79,10 @@ class CamThread(threading.Thread):
         self.camID = camID
         self._running = True
 
-        self.Procs = {"Hole": False, "Edge": False,
+        self.Procs = {"Hole": False,
                       "Screw": False, "Normal": False}
 
-        self.Processos = ['Edge', 'Screw']
+        self.Processos = ['Screw']
         self.pFA = (50, 50)
         self.pFB = (100, 60)
         self.fixPoiint = (self.pFB[0], int(
@@ -148,13 +148,6 @@ class CamThread(threading.Thread):
 
     def ViewCam(self):
         while not self.stopped():
-            if self.Procs['Edge']:
-                _, frame = findScrew(globals()[
-                                     'frame'+self.previewName], mainParamters['Filtros']['HSV'], mainParamters, self.Processos, aba=0)
-                yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
-                       + cv2.imencode('.JPEG', frame,
-                                      [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
-                       + b'\r\n')
             if self.Procs['Screw']:
                 
                 frame, _ = Process_Imagew_Scew(
@@ -1355,6 +1348,27 @@ if __name__ == "__main__":
         host = socket.gethostname()
         print ("IP:", ip," Host:", host)
 
+    # "cameraList": [
+    #         {
+    #           "name": "Camera Furação",
+    #           "cameraId": 0,
+    #           "filter": "Hole"
+    #         },
+    #         {
+    #           "name": "Camera de Validação",
+    #           "cameraId": 1,
+    #           "filter": "Screw"
+    #         }
+    #       ],
+    cameraList = []
+    for filters, value in mainParamters["Cameras"].items():
+        cameraList.append({
+              "name": value['Settings']['title'],
+              "cameraId": value['Settings']['id'],
+              "filter": filters
+            }
+        )
+    machineParamters["configuration"]["cameraList"] = cameraList
     machineParamters["configuration"]["informations"]["ip"] = ip
     Fast.writeJson('Json/machineParamters.json', machineParamters)
 

@@ -16,21 +16,6 @@
                     }
                 }
             },
-            "Edge": {
-                "Application": "Edge",
-                "Valores": {
-                    "lower": {
-                        "h_min": 0,
-                        "s_min": 6,
-                        "v_min": 55
-                    },
-                    "upper": {
-                        "h_max": 186,
-                        "s_max": 155,
-                        "v_max": 255
-                    }
-                }
-            },
             "Screw": {
                 "Application": "Screw",
                 "Valores": {
@@ -78,11 +63,6 @@
             "areaMin": 3500,
             "areaMax": 5500
         },
-        "Edge": {
-            "perimeter": 0,
-            "areaMin": 10000,
-            "areaMax": 20000
-        },
         "Screw": {
             "perimeter": 0,
             "areaMin": 7000,
@@ -97,24 +77,7 @@
     "Cameras": {
         "Hole": {
             "Settings": {
-                "id": 0,
-                "scale": 0.04276480601654536,
-                "frame_height": 2448,
-                "frame_width": 3264
-            },
-            "Properties": {
-                "BRIGHTNESS": 0,
-                "SATURATION": 64,
-                "BACKLIGHT": 0,
-                "EXPOSURE": -4,
-                "CONTRAST": 32,
-                "GAMMA": 100,
-                "GAIN": 0,
-                "HUE": 0
-            }
-        },
-        "Edge": {
-            "Settings": {
+                "title": "Camera da Furação",
                 "id": 0,
                 "scale": 0.04276480601654536,
                 "frame_height": 2448,
@@ -133,6 +96,7 @@
         },
         "Screw": {
             "Settings": {
+                "title": "Camera Validação",
                 "id": 2,
                 "scale": 0.04276480601654536,
                 "frame_height": 2448,

@@ -113,6 +113,19 @@ const store = new Vuex.Store({
         // address: ['AAA C1', 'BBB C2']
       },
 
+      cameraList: [
+        {
+          name: "Camera Furação",
+          cameraId: 0,
+          filter: "Hole",
+        },
+        {
+          name: "Camera de Validação",
+          cameraId: 1,
+          filter: "Screw",
+        },
+      ],
+
       informations: {
         ip: machineJson.configuration.informations.ip,
         connectionId: 123456,

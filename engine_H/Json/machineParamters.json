@@ -1,7 +1,19 @@
 {
     "configuration": {
+        "cameraList": [
+            {
+                "name": "Camera da Furação",
+                "cameraId": 0,
+                "filter": "Hole"
+            },
+            {
+                "name": "Camera Validação",
+                "cameraId": 2,
+                "filter": "Screw"
+            }
+        ],
         "informations": {
-            "ip": "192.168.4.1",
+            "ip": "192.168.1.16",
             "connectionId": 123456,
             "port": 5000,
             "portStream": 8080,

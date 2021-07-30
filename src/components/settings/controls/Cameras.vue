@@ -2,7 +2,7 @@
   <div class="content mx-auto">
     <v-tabs>
       <v-tab
-        v-for="item in cameraList"
+        v-for="item in configuration.cameraList"
         :key="item.name"
         @click="
           selectedCamera = item.cameraId;
