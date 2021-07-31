@@ -8,6 +8,10 @@
       <template v-slot:item.date="{ item }">
         {{ timestampToData(item.date) }}
       </template>
+      <template v-slot:item.description="{ item }">
+        <v-icon small :color="item.type"> mdi-{{ icons[item.type] }} </v-icon>
+        {{ item.description }}
+      </template>
     </v-data-table>
   </v-card>
 </template>
@@ -38,19 +42,34 @@ export default {
       };
       return new Intl.DateTimeFormat("pt-BR", options).format(d);
     },
+
+    // getIcon(type) {
+    //   if (type = info) return "information-outline";
+    //   else if (type = warning) return "alert-outline";
+    //   else if (type = error) return "alert-octagon-outline";
+    //   else if (type = error) return "check-circle-outline";
+    //   else return "green";
+    // },
   },
 
   data() {
     return {
       actions,
+      icons: {
+        error: "alert-octagon",
+        warning: "alert",
+        info: "information",
+        success: "check-circle",
+      },
+
       headers: [
-        {
-          text: "Código",
-          value: "code",
-        },
         {
           text: "Descrição",
           value: "description",
+        },
+        {
+          text: "Código",
+          value: "code",
         },
         { text: "Data", value: "date" },
       ],
@@ -59,7 +78,7 @@ export default {
   },
 
   created: function () {
-      this.SEND_MESSAGE({ command: actions.LOG_REQUEST });
+    this.SEND_MESSAGE({ command: actions.LOG_REQUEST });
   },
 };
 </script>
