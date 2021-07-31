@@ -1,9 +1,10 @@
 <template>
   <v-card class="mt-10">
     <v-card-title>
-      Logs
+      Log 
       <v-spacer></v-spacer>
     </v-card-title>
+    <v-card-subtitle>Esse log tem duração maxima 3 meses</v-card-subtitle
     <v-data-table :headers="headers" :items="log" sort-by="date" dense>
       <template v-slot:item.date="{ item }">
         {{ timestampToData(item.date) }}
@@ -22,6 +23,7 @@ import { actions } from "../../../store/index";
 import { mapMutations } from "vuex";
 
 export default {
+  name: "Log",
   computed: {
     ...mapState(["log"]),
   },

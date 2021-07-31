@@ -10,7 +10,10 @@
         single-line
         hide-details
       ></v-text-field>
+      
     </v-card-title>
+        <v-card-subtitle>Esse lista tem duração maxima 3 meses</v-card-subtitle
+
     <v-data-table
       :headers="headers"
       :items="stopReasonsList"
@@ -35,6 +38,7 @@ import { actions } from "../../../store/index";
 import { mapMutations } from "vuex";
 
 export default {
+  name: "StopReasonsList",
   computed: {
     ...mapState(["stopReasonsList"]),
   },
