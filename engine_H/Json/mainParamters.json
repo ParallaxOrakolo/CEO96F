@@ -51,7 +51,7 @@
     "Debugs": {
         "all": false,
         "logs": true,
-        "print": false,
+        "print": true,
         "pictures": false,
         "markings": false,
         "realTime": false,
@@ -61,7 +61,7 @@
         "Hole": {
             "perimeter": 0,
             "areaMin": 3500,
-            "areaMax": 5500
+            "areaMax": 6500
         },
         "Screw": {
             "perimeter": 0,
@@ -80,8 +80,8 @@
                 "title": "Câmera - Furação",
                 "id": 0,
                 "scale": 0.04276480601654536,
-                "frame_height": 2448,
-                "frame_width": 3264
+                "frame_height": 1994,
+                "frame_width": 2592
             },
             "Properties": {
                 "BRIGHTNESS": 0,
@@ -99,8 +99,8 @@
                 "title": "Camera Validação",
                 "id": 2,
                 "scale": 0.04276480601654536,
-                "frame_height": 2448,
-                "frame_width": 3264
+                "frame_height": 1994,
+                "frame_width": 2592
             },
             "Properties": {
                 "BRIGHTNESS": 0,
