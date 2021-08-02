@@ -20,6 +20,7 @@ export const actions = {
   UPDATE_SLIDER:"updateSlider",
   STOP_PROCESS: "stopProcess",
   LOG_REQUEST: "logRequest",
+  STOP_REASONS_LIST_REQUEST:"stopReasonsListRequest",
   UPDATE_USER:"updateUser",
   SEND_GCODE: "sendGcode",
   START_SCAN: "startScan",
@@ -97,7 +98,14 @@ const store = new Vuex.Store({
     autoCheckComplete: false,
     scanConnectorsComplete: false,
 
-    log: [],
+    log: [
+      {
+        code: Number,
+        description: String,
+        type: String,
+        date: Number,
+    }
+    ],
 
     serialMonitor: [
       // {hour: 1611539081 ,sent: true, message:["ok","eaee","M117"]},

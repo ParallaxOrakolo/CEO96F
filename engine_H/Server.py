@@ -1,3 +1,11 @@
+distances = [(0,2), (3,1), (3,3)]
+
+def sortSecond(val):
+    return val[1] 
+
+distances.sort(key = sortSecond)
+print(distances)
+exit()
 import cv2
 
 c0 = cv2.VideoCapture(0)
