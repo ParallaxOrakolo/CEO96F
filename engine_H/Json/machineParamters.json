@@ -2,7 +2,7 @@
     "configuration": {
         "cameraList": [
             {
-                "name": "Camera da Furação",
+                "name": "Câmera - Furação",
                 "cameraId": 0,
                 "filter": "Hole"
             },
@@ -172,7 +172,7 @@
                 },
                 {
                     "code": 6,
-                    "description": "Camera 1 não pode ser iniciada.",
+                    "description": "Camera _id_ não pode ser iniciada.",
                     "listed": false,
                     "type": "error",
                     "button_text": "Reiniciar",

@@ -650,11 +650,13 @@ def descarte(valor="Errado", Deposito={"Errado":{"X":230, "Y":0}}):
     Fast.sendGCODE(arduino, f"G28 Y")
     print(">>> ", timer(int(timeit.default_timer()-Total0)))
 
+
 def timer(total):
     horas = floor(total / 3600)
     minutos = floor((total - (horas * 3600)) / 60)
     segundos = floor(total % 60)
     return f"{horas}:{minutos}:{segundos}"
+
 
 def PegaObjeto():
     global Total0
@@ -670,13 +672,13 @@ def PegaObjeto():
     alinhar()
 
 
-
 def alinhar():
     alin = machineParamters['configuration']['informations']['machine']['defaultPosition']['alinhaPeca']
     Fast.sendGCODE(arduino, 'G90')
     Fast.sendGCODE(arduino, f"G0 X{alin['X']} f{xMaxFed}")
     Fast.sendGCODE(arduino, f"G0 Y{alin['Y']} f{yMaxFed}")
-    
+
+
 def Process_Imagew_Scew(frames, lower, upper, AreaMin, AreaMax, name="ScrewCuts"):
     img_draw = frames.copy()
     # cv2.imshow("img_draw_original", cv2.resize(img_draw, None, fx=0.35, fy=0.35))
@@ -930,9 +932,11 @@ async def shutdown_raspberry():
     print('sys.shutdown - now')
     await asyncio.sleep(1)
 
+
 async def restart_raspberry():
     print('sys.reboot')
     await asyncio.sleep(1)
+
 
 async def popupTigger(parm):
     if parm != "None":
@@ -941,6 +945,7 @@ async def popupTigger(parm):
             await fun()
         except NameError:
             pass
+
 
 async def refreshJson():
     global maxFeedP, maxFeedrate, stopReasons, nonStopCode, xMaxFed, yMaxFed, zMaxFedDown, zMaxFedUp, eMaxFed, zFRPD2, zFRPU2, parafusaCommand
@@ -1212,7 +1217,6 @@ async def startProcess(qtd=9999):
     print(f"Pedido de montagem finalizado em {int(timeit.default_timer()-t0)}s")
 
 
-
 async def updateFilter(zipped):
     for xx in mainParamters["Filtros"]["HSV"]:
         if zipped['process'] in mainParamters["Filtros"]["HSV"][xx]["Application"]:
@@ -1348,18 +1352,6 @@ if __name__ == "__main__":
         host = socket.gethostname()
         print ("IP:", ip," Host:", host)
 
-    # "cameraList": [
-    #         {
-    #           "name": "Camera Furação",
-    #           "cameraId": 0,
-    #           "filter": "Hole"
-    #         },
-    #         {
-    #           "name": "Camera de Validação",
-    #           "cameraId": 1,
-    #           "filter": "Screw"
-    #         }
-    #       ],
     cameraList = []
     for filters, value in mainParamters["Cameras"].items():
         cameraList.append({
