@@ -3,12 +3,12 @@
         "cameraList": [
             {
                 "name": "Câmera - Furação",
-                "cameraId": 2,
+                "cameraId": 0,
                 "filter": "Hole"
             },
             {
                 "name": "Camera Validação",
-                "cameraId": 0,
+                "cameraId": 2,
                 "filter": "Screw"
             }
         ],

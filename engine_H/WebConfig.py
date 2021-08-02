@@ -248,6 +248,9 @@ class Process(threading.Thread):
             self.Mount()
             self.posMount()
         except Fast.MyException as my:
+            for item in stopReasons:
+                if my == item["description"]:
+                    asyncio.run(sendWsMessage("error", item))
             print("Erro meu:", my)
             return my
     def preMount(self):
@@ -444,7 +447,8 @@ def findHole(imgAnalyse, minArea, maxArea, c_perimeter, HSValues, fixed_Point, e
                     distances.append(distance_to_fix)
                     distances = list(dict.fromkeys(distances))
                     distances.sort(key = sortSecond)
-                    cv2.putText(chr_k, (len(distances)-1), (info_edge['centers'][0]), cv2.FONT_HERSHEY_COMPLEX_SMALL, 3, (255, 50, 100), 5)
+                    cv2.putText(chr_k, str(len(distances)-1), (info_edge['centers'][0]), cv2.FONT_HERSHEY_COMPLEX_SMALL, 3, (255, 50, 100), 5)
+                    cv2.drawContours(chr_k, [info_edge['contour']], -1, (255, 255, 255), 3)
             except KeyError:
                 print("KeyError:", info_edge)
     try:
@@ -670,7 +674,7 @@ def PegaObjeto():
     Fast.sendGCODE(arduino, "M42 P31 S255")
     Fast.sendGCODE(arduino, "G4 S0.3")
     Fast.sendGCODE(arduino, "G28 Y")
-    alinhar()
+#    alinhar()
 
 
 def alinhar():
@@ -765,6 +769,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
     Pos = []
     parafusadas = 0
     faltadeFuro = False
+    vazio = False
     repetidos = [1, 4]
     #identificar = []
     path = f"Images/Process/{ids}"
@@ -779,6 +784,8 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
         os.makedirs(f"{path}/validar")
 
     for lados in range(6):
+        if vazio:
+            break
         Fast.M400(arduino)
         if not intencionalStop and not faltadeFuro:
             tentativas, dsts = 0, 0
@@ -791,6 +798,8 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
             defaultCoordY = machineParamters["configuration"]["informations"]["machine"]["defaultPosition"]["analisaFoto"]['Y']
             atualCoordY = NLinearRegression(defaultCoordY, reverse=True)
             while tentativas<=10 and not intencionalStop:
+                if tentativas >=3 and vazio:
+                    break
                 frame = globals()['frame'+str(mainParamters["Cameras"]["Hole"]["Settings"]["id"])]
                 Resultados, R, per, img_draw = Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues)
                 if lados not in repetidos:
@@ -798,9 +807,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
                 else:
                     dsts = len(Resultados)-1
     #            cv2.imshow("Img_Process", cv2.resize(frame, None, fx=0.3, fy=0.3))
-                if tentativas == 0:
-                    cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_draw.jpg", img_draw)
-                    cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_normal.jpg", frame)
+#                if tentativas == 0:
                 # cv2.imshow("Fora_Hole", cv2.resize(img_draw, None, fx=0.3, fy=0.3))
                 # cv2.waitKey(1)
                 # if Resultados:
@@ -808,6 +815,9 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
                 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
                 #                     Verifica a distância                   #
                 if Resultados:
+                    vazio = False
+                    cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_draw.jpg", img_draw)
+                    cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_normal.jpg", frame)
                     try:
                         #yReal = round(Resultados[dsts][0]/2, 2)
                         if DebugPrint:
@@ -877,7 +887,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
                             
                             Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'],  parafusaCommand['mm'], zFRPD2, zFRPU2)
                             Fast.sendGCODE(arduino, f"g0 Y{1} F{yMaxFed}")
-                            Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, dowLess=True)
+                            Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1)
                             parafusadas +=1
                         else:
                             faltadeFuro = True
@@ -887,6 +897,9 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
 #                        cv2.imwrite(f"{path}/identificar/Errado_{lados}_{tentativas}_draw.jpg", img_draw)
 #                        cv2.imwrite(f"{path}/identificar/Errado_{lados}_{tentativas}_normal.jpg", frame)
                 else:
+                    cv2.imwrite(f"{path}/identificar/Errado_{lados}_{tentativas}_draw.jpg", img_draw)
+                    cv2.imwrite(f"{path}/identificar/Errado_{lados}_{tentativas}_normal.jpg", frame)
+                    vazio = True
                     tentativas+=1
             #identificar.append(timeit.default_timer()-tI0)G0 G91
             #print("Passando pro lado:", lados+1)
@@ -1168,7 +1181,7 @@ async def startAutoCheck():
 #                except (KeyError, RuntimeError):
 #                    pass
             tth0 = timeit.default_timer()
-            while timeit.default_timer()-tth0 <= 10:
+            while timeit.default_timer()-tth0 <= 20:
                 try:
                     if type(globals()['frame0']) == np.ndarray and type(globals()['frame2']) == np.ndarray:
                         appTh = AppThread(ip, portBack)

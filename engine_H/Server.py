@@ -1,80 +1,58 @@
-distances = [(0,2), (3,1), (3,3)]
-
-def sortSecond(val):
-    return val[1] 
-
-distances.sort(key = sortSecond)
-print(distances)
-exit()
 import cv2
 
-c0 = cv2.VideoCapture(0)
-c2 = cv2.VideoCapture(2)
-print("ok")
-c0.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M','J','P','G'))
-c2.set(cv2.CAP_PROP_FOURCC,cv2.VideoWriter_fourcc('M','J','P','G'))
-print("ok1")
-while cv2.waitKey(1) != 27:
-    _, img0 = c0.read()
-    _, img2 = c2.read()
-    cv2.imshow("0", cv2.resize(img0, None, fx=0.3, fy=0.3))
-    cv2.imshow("2", img2)
-exit()
-#S = raiz(l^2 - 4h^2)
-#S = raiz((l**2) - (4*(h**2)))
-#S = ((l^2) - (4*(h^2)))^0.5
-#S = ((l^2))^0.5 - (4*(h^2))^0.5
-#S-((l^2))^0.5 = -(4*(h^2))^0.5
-# S^2 =L^2 - 4H^2
-# RAIZ((S^2-L^2)/-4) = H
+def ScanWebcam(*args):
+    for X in range(*args):
+        cap = cv2.VideoCapture(X)
+        cap.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M','J','P','G'))
+        cap.set(cv2.CAP_PROP_FRAME_WIDTH, int(1280))
+        cap.set(cv2.CAP_PROP_FRAME_HEIGHT, int(720))
+        if cap.isOpened():
+            for Z in range(10):
+                _, img = cap.read()
+                print(X)
+                cv2.imshow("Cam ID:"+str(X), img)
+                cv2.waitKey(5)
+            print("ID: [" + str(X) + "] disponível")
+        else:
+            print("ID: [" + str(X) + "] Inválido")
 
 
-def NLinearRegression(x, c=160, aMin=152.61, reverse=False):
-    if not reverse:
-        return round(aMin-(c**2 - ((c**2-aMin**2)**0.5+x)**2)**0.5, 2)
+def OpenWebcam(ID, **kargs):
+    cap = cv2.VideoCapture(ID, cv2.CAP_DSHOW)
+    Pfx = kargs.get('Prefix')
+    Sfx = kargs.get('Sufix')
+    path = kargs.get('Save')
+    imgName = kargs.get('ImgName')
+    idn = ' [ID: ' + str(ID) + '] '
+    tecla = kargs.get('Trigger')
+    if Sfx or Pfx:
+        if Pfx and Sfx:
+            name = (str(Pfx) + idn + str(Sfx))
+        elif not Sfx:
+            name = (str(Pfx) + idn)
+        else:
+            name = (idn + str(Sfx))
     else:
-        return round(((c**2 - (aMin-x )**2)**0.5)-(c**2- aMin**2)**0.5, 2)
+        name = idn
+    if path:
+        print("Aperte "+ tecla +" para salvar em "+str(path))
+    if cap.isOpened():
+        while True:
+            _, img = cap.read()
 
-    
-    #return round((0.0051*(x**2)) + (0.302*x) + (0.5339), 2)        # 19/07 - 2/2 0->30
-    #return round((-0.0231*(x**2))+(2.4001*x)+0.4472, 2)            # Reversa 19/07
-    #return round(((x**2)*0.0035)+(0.3518*x)+0.1181,2)              # 20/07 - 0,2/0,2 0 -> 6,2
-    
-
-z = NLinearRegression(float(input()), reverse=True)
-print(z)
-print(NLinearRegression(z))
-exit()      
-import asyncio
-from time import sleep
-
-Sair = False
-async def A():
-    auto_exit = False
-    contador = 0
-    while not Sair and not auto_exit:
-        contador +=1
-        sleep(1)
-        print("A:", contador)
-        if contador >= 10:
-            print("Auto Exit")
-            auto_exit = True
+            cv2.imshow(name, img)
+            key = cv2.waitKey(1)
+            try:
+                print(ord(key))
+            except TypeError:
+                pass
+            if key == 27:
+                cv2.destroyAllWindows()
+                break
+            elif key == ord(tecla):
+                cv2.imwrite('../Master/Imagens/Teste/'+str(imgName)+'.jpg', img)
 
 
-async def B():
-    for x in range(5,-1,-1):
-        sleep(1)
-        print(x)
-
-async def Start():
-     await A()
-
-async def SUB():
-    asyncio.run(Start())
-
-async def RUN():
-    await SUB()
-    print("~~"*20)
 
 
-asyncio.run(RUN())
+ScanWebcam(10)

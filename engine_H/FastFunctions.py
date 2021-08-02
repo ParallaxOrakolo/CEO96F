@@ -180,7 +180,6 @@ def G28(serial, axis='E', endStop='filament', status='open',offset=-23, steps=5,
 
 
 def M400(arduino, pattern='', **kwargs):
-    print("Entrou m400")
     echoMessge, echoCaugth = " ", ['x', 'X']
     timeout= kwargs.get('timeout') if kwargs.get('timeout') else 20
     T0 = timeit.default_timer()
@@ -192,7 +191,6 @@ def M400(arduino, pattern='', **kwargs):
         else:
             print("Saiu m400")
             raise MyException(f"Movimento não pode ser concluido dentro de {timeout} segundos.")
-    print("Saiu m400")
 
 # Estabelece uma conexão com base em um arquivo de configuração personalizado.
 def SerialConnect(SerialPath='../Json/serial.json', name='arduino'):
