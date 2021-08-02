@@ -776,6 +776,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
         os.makedirs(f"{path}/validar")
 
     for lados in range(6):
+        Fast.M400(arduino)
         if not intencionalStop and not faltadeFuro:
             tentativas, dsts = 0, 0
             Fast.sendGCODE(arduino, "G90")
@@ -841,7 +842,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
 
                     Fast.M400(arduino)
                     tentativas+=1
-                    #time.sleep(0.2)
+                    time.sleep(0.3)
                     if DebugPrint:
                         print("Tentativa:", tentativas)
 
@@ -878,6 +879,10 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
                         else:
                             faltadeFuro = True
                             break
+                    else:
+                         time.sleep(0.2)
+#                        cv2.imwrite(f"{path}/identificar/Errado_{lados}_{tentativas}_draw.jpg", img_draw)
+#                        cv2.imwrite(f"{path}/identificar/Errado_{lados}_{tentativas}_normal.jpg", frame)
                 else:
                     tentativas+=1
             #identificar.append(timeit.default_timer()-tI0)G0 G91
@@ -927,11 +932,11 @@ async def sendParafusa(parms):
 
 
 async def shutdown_raspberry():
-    print('sys.shutdown - now')
+    subprocess.run(["reboot"])
     await asyncio.sleep(1)
 
 async def restart_raspberry():
-    print('sys.reboot')
+    subprocess.run(["reboot"])
     await asyncio.sleep(1)
 
 async def popupTigger(parm):
@@ -1245,9 +1250,9 @@ async def sendWsMessage(command, parameter=None):
     # ident deixa o objeto mostrando bonito
     cover_msg = json.dumps(ws_message, indent=2, ensure_ascii=False)
     await ws_connection.send(cover_msg)
-    if DebugPrint:
-        print(25*"-")
-        print("Enviado: " + cover_msg)
+#    if DebugPrint:
+#        print(25*"-")
+#        print("Enviado: " + cover_msg)
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                       Exec                                                           #
