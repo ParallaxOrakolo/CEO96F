@@ -2,7 +2,7 @@
   <div class="content mx-auto">
     <v-tabs>
       <v-tab
-        v-for="item in cameraList"
+        v-for="item in configuration.cameraList"
         :key="item.name"
         @click="
           selectedCamera = item.cameraId;
@@ -27,7 +27,7 @@
         class="cameraImg"
         alt="camera"
         :src="`http://${configuration.informations.ip}:${
-          configuration.informations.port + 1
+          configuration.informations.portStream
         }/${stringUrl}?${Math.floor(Math.random() * (1000 - 1 + 1)) + 1}`"
       >
       </v-img>

@@ -28,12 +28,14 @@
     <!-- <SnackBar /> -->
     <v-btn
       icon
+
       v-if="$route.name == 'settings'"
       v-on:click="
         () => {
           SEND_MESSAGE({
             command: actions.SHUTDOWN_RASPBERRY,
           });
+          request();
         }
       "
     >
@@ -49,7 +51,7 @@
 
     <router-link to="/config">
       <v-btn icon v-if="$route.name != 'settings'">
-        <v-icon dark id="tune">tune</v-icon>
+        <v-icon dark id="tune">mdi-tune</v-icon>
       </v-btn>
     </router-link>
   </v-app-bar>
@@ -69,6 +71,7 @@ export default {
     online: false,
     showOnlineMsg: false,
     alert: true,
+    url:"http://192.168.1.100:8080/exit",
   }),
 
   //checa se existe conexão tem a ver com o pwa
@@ -86,7 +89,11 @@ export default {
   },
   methods: {
     ...mapMutations(["SEND_MESSAGE"]),
-
+    request(){
+      fetch("http://"+this.configuration.informations.ip+":"+
+          this.configuration.informations.portStream+"/exit");
+      
+    },
     close() {
       const remote = require("electron").remote;
       var window = remote.getCurrentWindow();
@@ -101,7 +108,7 @@ export default {
   },
 
   computed: {
-    ...mapState(["isConnected"]),
+    ...mapState(["isConnected", "configuration"]),
   },
 };
 </script>
