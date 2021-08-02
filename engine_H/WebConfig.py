@@ -444,6 +444,7 @@ def findHole(imgAnalyse, minArea, maxArea, c_perimeter, HSValues, fixed_Point, e
                     distances.append(distance_to_fix)
                     distances = list(dict.fromkeys(distances))
                     distances.sort(key = sortSecond)
+                    cv2.putText(chr_k, (len(distances)-1), (info_edge['centers'][0]), cv2.FONT_HERSHEY_COMPLEX_SMALL, 3, (255, 50, 100), 5)
             except KeyError:
                 print("KeyError:", info_edge)
     try:
