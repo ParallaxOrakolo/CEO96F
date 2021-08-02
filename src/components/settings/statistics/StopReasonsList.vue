@@ -13,12 +13,17 @@
     </v-card-title>
     <v-data-table
       :headers="headers"
-      :items="configuration.statistics.stopReasonsList"
+      :items="stopReasonsList"
       sort-by="date"
       :search="search"
+      dense
     >
       <template v-slot:item.date="{ item }">
         {{ timestampToData(item.date) }}
+      </template>
+      <template v-slot:item.description="{ item }">
+        <v-icon small :color="item.type"> mdi-{{ icons[item.type] }} </v-icon>
+        {{ item.description }}
       </template>
     </v-data-table>
   </v-card>
@@ -26,15 +31,19 @@
 
 <script>
 import { mapState } from "vuex";
+import { actions } from "../../../store/index";
+import { mapMutations } from "vuex";
 
 export default {
   computed: {
-    ...mapState(["configuration"]),
+    ...mapState(["stopReasonsList"]),
   },
 
   methods: {
+    ...mapMutations(["SEND_MESSAGE"]),
+
     timestampToData(timestamp) {
-      var d = new Date(timestamp*1000);
+      var d = new Date(timestamp * 1000);
       var options = {
         year: "numeric",
         month: "numeric",
@@ -50,18 +59,28 @@ export default {
 
   data() {
     return {
+      actions,
+      icons: {
+        error: "alert-octagon",
+        warning: "alert",
+        info: "information",
+        success: "check-circle",
+      },
       headers: [
         {
           text: "Motivo",
-          value: "reason",
+          value: "description",
         },
         { text: "Data", value: "date" },
       ],
       search: "",
     };
   },
-};
 
+  created: function () {
+    this.SEND_MESSAGE({ command: actions.STOP_REASONS_LIST_REQUEST });
+  },
+};
 </script>
 
 <style>
