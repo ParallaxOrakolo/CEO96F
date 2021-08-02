@@ -1,8 +1,12 @@
 <template>
   <section class="content d-flex align-center flex-column">
     <!-- <ProgressStatus /> -->
-    <VideoProgress v-show="state.started"/>
-    <div v-show="state.started" v-text="numberParts" class="yellow--text text--darken-3 font-weight-light text-h2"></div>
+    <VideoProgress v-show="state.started" />
+    <div
+      v-show="state.started"
+      v-text="numberParts"
+      class="yellow--text text--darken-3 font-weight-light text-h2"
+    ></div>
     <div class="buttons">
       <v-btn
         v-if="!state.paused && !state.finished"
@@ -13,7 +17,7 @@
         dark
         ><v-icon left> mdi-pause </v-icon> pausar</v-btn
       >
-      <StartButton v-if="!state.playing"/>
+      <StartButton v-if="!state.playing" />
       <!-- <v-btn
         rounded
         x-large
@@ -62,26 +66,29 @@
         <h1 color="white" class="mb-16">
           Por favor selecione o motivo da parada
         </h1>
-        <v-btn
+        <span
           v-for="(reason, index) in state.configuration.statistics.stopReasons"
           :key="index"
-          :v-if="reason.listed"
-          class="white--text buttons"
-          color="warning"
-          rounded
-          x-large
-          @click="
-            () => {
-              SEND_MESSAGE({
-                command: actions.STOP_REASON_RESPONSE,
-                parameter: stopReasonsMessage(reason.code),
-              });
-              overlay = false;
-            }
-          "
         >
-          {{ reason.description }}
-        </v-btn>
+          <v-btn
+            class="white--text buttons"
+            color="warning"
+            rounded
+            v-if="reason.listed"
+            x-large
+            @click="
+              () => {
+                SEND_MESSAGE({
+                  command: actions.STOP_REASON_RESPONSE,
+                  parameter: stopReasonsMessage(reason.code),
+                });
+                overlay = false;
+              }
+            "
+          >
+            {{ reason.description }}
+          </v-btn>
+        </span>
       </v-overlay>
 
       <!-- end reasons -->
@@ -104,8 +111,8 @@
 //import ProgressStatus from "../components/ProgressStatus";
 import { mapGetters, mapMutations } from "vuex";
 import { actions } from "../store/index";
-import VideoProgress from "../components/VideoProgress"
-import StartButton from "../components/StartButton"
+import VideoProgress from "../components/VideoProgress";
+import StartButton from "../components/StartButton";
 
 export default {
   // mixins: [mixins],
@@ -117,25 +124,23 @@ export default {
     overlay: false,
     zIndex: 9,
     opacity: 1,
-    }),
+  }),
 
   components: {
     //ProgressStatus,
     VideoProgress,
-    StartButton
+    StartButton,
   },
 
   computed: {
     ...mapGetters(["state"]),
-    numberParts(){
-      
-      if(this.state.operation.total){
-        return this.state.operation.placed + "/" + this.state.operation.total
-      }else{
-        return this.state.operation.placed + "/Ilimitado"
+    numberParts() {
+      if (this.state.operation.total) {
+        return this.state.operation.placed + "/" + this.state.operation.total;
+      } else {
+        return this.state.operation.placed + "/Ilimitado";
       }
-      
-    }
+    },
   },
 
   methods: {
@@ -154,7 +159,6 @@ export default {
 
 <style lang="scss" >
 section {
-
   .buttons {
     display: flex;
     flex-flow: column;
@@ -165,7 +169,6 @@ section {
     button {
       margin-bottom: 2em;
     }
-
   }
 }
 </style>
