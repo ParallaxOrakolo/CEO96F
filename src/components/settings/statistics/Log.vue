@@ -4,7 +4,8 @@
       Logs
       <v-spacer></v-spacer>
     </v-card-title>
-    <v-data-table :headers="headers" :items="log" sort-by="date" dense>
+    <v-data-table :headers="headers" :items="log" sort-by="date" sort-desc="date"
+ dense>
       <template v-slot:item.date="{ item }">
         {{ timestampToData(item.date) }}
       </template>

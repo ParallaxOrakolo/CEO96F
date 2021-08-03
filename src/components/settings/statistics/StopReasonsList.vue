@@ -15,6 +15,7 @@
       :headers="headers"
       :items="stopReasonsList"
       sort-by="date"
+      sort-desc="date"
       :search="search"
       dense
     >
