@@ -771,9 +771,12 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
     faltadeFuro = False
     vazio = False
     repetidos = [1, 4]
+    angle = 0
+    changePos = 0
     #identificar = []
     path = f"Images/Process/{ids}"
-    anlPos = machineParamters['configuration']['informations']['machine']['defaultPosition']['analisaFoto']
+    anlPos = Fast.readJson("Json/Analise.json")
+    #machineParamters['configuration']['informations']['machine']['defaultPosition']['analisaFoto']
     cameCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['camera0Centro']
     parafCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusadeiraCentro'].copy()
     parafCent['Y'] = NLinearRegression(parafCent['Y'], reverse=True)
@@ -786,12 +789,13 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
     for lados in range(6):
         if vazio:
             break
+
         Fast.M400(arduino)
         if not intencionalStop and not faltadeFuro:
             tentativas, dsts = 0, 0
             Fast.sendGCODE(arduino, "G90")
-            Fast.sendGCODE(arduino, f"G0 X{anlPos['X']} F{xMaxFed}")
-            Fast.sendGCODE(arduino, f"G0 Y{anlPos['Y']} F{yMaxFed}")
+            Fast.sendGCODE(arduino, f"G0 X{anlPos[angle][changePos]['X']} F{xMaxFed}")
+            Fast.sendGCODE(arduino, f"G0 Y{anlPos[angle][changePos]['Y']} F{yMaxFed}")
             Fast.M400(arduino)
             Fast.sendGCODE(arduino, "M42 P34 S255")
             Fast.sendGCODE(arduino, "G91")
@@ -803,15 +807,11 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
                 frame = globals()['frame'+str(mainParamters["Cameras"]["Hole"]["Settings"]["id"])]
                 Resultados, R, per, img_draw = Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues)
                 if lados not in repetidos:
+                    changePos = not changePos
                     dsts = 0
-                else:
-                    dsts = len(Resultados)-1
-    #            cv2.imshow("Img_Process", cv2.resize(frame, None, fx=0.3, fy=0.3))
-#                if tentativas == 0:
-                # cv2.imshow("Fora_Hole", cv2.resize(img_draw, None, fx=0.3, fy=0.3))
-                # cv2.waitKey(1)
-                # if Resultados:
-                #     print("Resultados:", Resultados)
+                # else:
+                #     dsts = len(Resultados)-1
+
                 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
                 #                     Verifica a distância                   #
                 if Resultados:
@@ -819,7 +819,6 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
                     cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_draw.jpg", img_draw)
                     cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_normal.jpg", frame)
                     try:
-                        #yReal = round(Resultados[dsts][0]/2, 2)
                         if DebugPrint:
                             print("^^"*15)
                             print(f"Coordenada atual {defaultCoordY};  {atualCoordY}mm do 0")
@@ -834,8 +833,6 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
                     except IndexError:
                         print("Falha de identificação, corrija o filtro..")
                         break
-                    #print("MX:", MX, '\n yReal:', yReal)
-    #                   MX += (randint(-int(abs(MX)/4),abs(int(MX))))
                     if abs(MX) > precicao:
                         Fast.sendGCODE(arduino, f"G0 X{MX} F{xMaxFed}", echo=True)
                         #print(f"G0 X{MX} F{xMaxFed}")
@@ -906,6 +903,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
             if lados not in repetidos:
                 Fast.sendGCODE(arduino, f"G91")
                 Fast.sendGCODE(arduino, f"G0 E90 F{eMaxFed}")
+                angle += 90
                 Fast.M400(arduino)
 
     #identificar = sum(identificar)
