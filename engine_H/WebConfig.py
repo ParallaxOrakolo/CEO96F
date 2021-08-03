@@ -177,8 +177,10 @@ class CamThread(threading.Thread):
                        + b'\r\n')
             if self.Procs['Normal']:
                 # print("Normal")
+                frame = globals()['frame'+self.previewName].copy()
+                cv2.drawMarker(frame, (int(frame.shape[1]/2), int(frame.shape[0]/2)),(255,50,0),0,1000, 5)
                 yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
-                       + cv2.imencode('.JPEG', globals()['frame'+self.previewName],
+                       + cv2.imencode('.JPEG', frame,
                                       [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
                        + b'\r\n')
         print("Fechando Vizualizção")
