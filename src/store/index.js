@@ -230,7 +230,7 @@ const store = new Vuex.Store({
         filters: {
           hole: {
             name: "hole",
-            area: [20, 10],
+            area: [10, 20],
             gradient: {
               color: "#a02727",
               color2: "#e261ae",

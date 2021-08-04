@@ -70,6 +70,8 @@
       </div>
       <v-range-slider
         v-model="configuration.camera.filters[selectedFilter].area"
+        :max="area_max"
+        :min="area_min"
         hide-details
         class="slider"
         label="Area"
@@ -180,11 +182,13 @@ export default {
     selected: "",
     selectedColor1: true,
     dialog: false,
+    area_max:1000,
+    area_min:0
   }),
 
   methods: {
     ...mapMutations(["SEND_MESSAGE"]),
-    ...mapActions(["sendMessage"]),
+    // ...mapActions(["sendMessage"]),
   },
 
   computed: {
