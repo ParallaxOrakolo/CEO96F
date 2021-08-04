@@ -8,6 +8,7 @@ import os
 
 import string
 from random import choice
+from colorutils import Color
 
 def randomString(tamanho=20, pattern=''):
     valores = string.ascii_letters + string.digits
@@ -16,6 +17,46 @@ def randomString(tamanho=20, pattern=''):
         word += choice(valores)
     return pattern+word
 
+
+def Hex2HSVF(hexc, rd=3, **kargs):
+    CV_Range = [[0.0, 360.0],[0.0, 255],[0.0, 255]]
+    Hex_Range = [[0.0, 360.0],[0.0, 1.0],[0.0, 1.0]]
+    Output = []
+    c = Color(hex=hexc)
+    for  index in range(len(c.hsv)):
+        OldValue = c.hsv[index] 
+        NewValue = (((OldValue - Hex_Range[index][0]) * (CV_Range[index][1] - CV_Range[index][0])) / (Hex_Range[index][1] - Hex_Range[index][0])) + CV_Range[index][0]
+        if kargs.get("prints"):
+            print(f"[{c.hex}][{index}]:",OldValue,"->", NewValue)
+        if rd <= 0:
+            NewValue = int( round(NewValue, rd))
+        else:
+            NewValue = round(NewValue, rd)
+        Output.append(NewValue)        
+    if kargs.get("print"):
+        print(hexc, '->', c.hsv, '->', Output)
+    return Output
+
+
+def HSVF2Hex(hsvfc, rd=5, **kargs):
+    Hex_Range = [[0.0, 360.0],[0.0, 255],[0.0, 255]]
+    CV_Range = [[0.0, 360.0],[0.0, 1.0],[0.0, 1.0]]
+    Output = []
+    c = tuple(hsvfc)
+    for  index in range(len(c)):
+        OldValue = c[index] 
+        NewValue = (((OldValue - Hex_Range[index][0]) * (CV_Range[index][1] - CV_Range[index][0])) / (Hex_Range[index][1] - Hex_Range[index][0])) + CV_Range[index][0]
+        if kargs.get("prints"):
+            print(f"[{c.hex}][{index}]:",OldValue,"->", NewValue)
+        if rd <= 0:
+            NewValue = int( round(NewValue, rd))
+        else:
+            NewValue = round(NewValue, rd)
+        Output.append(NewValue)        
+    Output = tuple(Output)
+    if kargs.get("print"):
+        print(hsvfc, '->', Output, '->', Color(hsv=Output).hex)
+    return Color(hsv=Output).hex
 
 # Define cores e Tags para tratamento de exceções.
 class ColorPrint:
