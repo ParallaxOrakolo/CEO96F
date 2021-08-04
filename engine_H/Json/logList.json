@@ -3,5 +3,92 @@
         {
             "code": 4,
             "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1628023608
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1628023642
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1628023670
+        },
+        {
+            "code": 5,
+            "description": "Sem comunicação com a estação de montagem",
+            "type": "error",
+            "date": 1628083751
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1628083773
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1628084112
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1628084135
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1628085442
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1628085444
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1628085468
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1628085507
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1628085816
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1628085904
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1628091545
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1628091674
+        }
     ]
 }

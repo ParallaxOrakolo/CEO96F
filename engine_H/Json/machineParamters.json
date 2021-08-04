@@ -8,12 +8,12 @@
             },
             {
                 "name": "Camera Validação",
-                "cameraId": 2,
+                "cameraId": 1,
                 "filter": "Screw"
             }
         ],
         "informations": {
-            "ip": "192.168.4.1",
+            "ip": "192.168.1.36",
             "connectionId": 123456,
             "port": 5000,
             "portStream": 8080,
@@ -125,6 +125,34 @@
                         "mm": 1,
                         "voltas": 25
                     }
+                }
+            }
+        },
+        "camera": {
+            "process": null,
+            "filters": {
+                "hole": {
+                    "name": "hole",
+                    "area": [
+                        10,
+                        20
+                    ],
+                    "gradient": {
+                        "color": "#a02727",
+                        "color2": "#e261ae"
+                    },
+                    "hue": [
+                        2,
+                        50
+                    ],
+                    "sat": [
+                        0,
+                        250
+                    ],
+                    "val": [
+                        30,
+                        50
+                    ]
                 }
             }
         },
@@ -270,25 +298,6 @@
                     "type": "info"
                 }
             }
-        },
-        "camera": {
-            "process": "Normal",
-            "hue": [
-                0,
-                255
-            ],
-            "sat": [
-                0,
-                255
-            ],
-            "val": [
-                0,
-                0
-            ],
-            "are": [
-                2068,
-                8662
-            ]
         }
     }
 }
