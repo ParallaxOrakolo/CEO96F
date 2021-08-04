@@ -378,7 +378,6 @@ const store = new Vuex.Store({
     SCAN_COMPLETE_CHANGE: (state) => (state.scanConnectorsComplete = false),
 
     SEND_MESSAGE: (state, payload) => {
-      console.log("tentando: " + payload);
       state.ws_message.command = payload.command;
       state.ws_message.parameter = payload.parameter;
       wsConnection.send(JSON.stringify(state.ws_message));
@@ -474,8 +473,8 @@ const store = new Vuex.Store({
     restart: (context) => context.commit("RESTART"),
     stop: (context) => context.commit("STOP"),
 
-    sendMessage({ commit }, payload) {
-      () => commit("SEND_MESSAGE", payload)
+    sendMessage(context, payload) {
+      context.commit("SEND_MESSAGE", payload)
     }
     // sendMessage: ({ commit }, { command, parameter }) => commit("SEND_MESSAGE", { command, parameter }),
   },

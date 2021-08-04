@@ -8,7 +8,7 @@
     <div id="app">
       <v-expansion-panels multiple>
         <Infos />
-        <CameraConfig/>
+        <!-- <CameraConfig/> -->
         <Controls />
         <Advanced-settings />
         <Statistics />

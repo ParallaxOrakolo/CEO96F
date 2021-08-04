@@ -46,7 +46,7 @@
               <div class="d-flex align-center mb-6">
                 Cor 2<br />
                 {{
-                  configuration.camera.filters[selectedFilter].gradient.color2
+                  color2
                 }}
               </div>
             </div>
@@ -84,14 +84,7 @@
         "
       >
       </v-range-slider>
-
-      <!-- <v-slider
-        class="slider"
-        label="Area"
-        v-model="area"
-        thumb-label="always"
-      ></v-slider> -->
-
+      {{configuration.camera.filters[selectedFilter].area}}
       <v-row justify="center" class="mb-6">
         <v-dialog v-model="dialog" persistent max-width="400">
           <template v-slot:activator="{ on, attrs }">
@@ -165,6 +158,7 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
+        {{color1}}
       </v-row>
       <v-divider></v-divider>
     </v-expansion-panel-content>
@@ -186,11 +180,6 @@ export default {
     selected: "",
     selectedColor1: true,
     dialog: false,
-    b: null,
-    // gradient: {
-    //   color: "#a02727",
-    //   color2: "#e261ae",
-    // },
   }),
 
   methods: {
@@ -201,23 +190,41 @@ export default {
   computed: {
     ...mapState(["configuration", "selectedFilter"]),
 
-    camera: function () {
-      this.b = this.configuration.camera.filters.hole.gradient.color;
+    color1: function () {
+      let colorA = this.configuration.camera.filters.hole.gradient.color;
+      console.log("camera");
 
-      // this.$store.dispatch('sendMessage', {
-      //   command: this.actions.UPDATE_CAMERA,
-      //   parameter: this.configuration.camera,
-      // });
+      this.$store.dispatch('sendMessage', {
+        command: this.actions.UPDATE_CAMERA,
+        parameter: this.configuration.camera,
+      });
 
       // this.sendMessage({
       //   command: this.actions.UPDATE_CAMERA,
       //   parameter: this.configuration.camera,
       // })
 
-      console.log("DADAWDADAFASDKJFHAS");
-      return this.configuration.camera;
+      console.log("end camera");
+      return colorA
     },
-    // a computed getter
+
+    color2: function () {
+      let colorB = this.configuration.camera.filters.hole.gradient.color2;
+      console.log("camera2");
+
+      this.$store.dispatch('sendMessage', {
+        command: this.actions.UPDATE_CAMERA,
+        parameter: this.configuration.camera,
+      });
+
+      // this.sendMessage({
+      //   command: this.actions.UPDATE_CAMERA,
+      //   parameter: this.configuration.camera,
+      // })
+
+      console.log("end camera2");
+      return colorB
+    },
   },
 };
 </script>
