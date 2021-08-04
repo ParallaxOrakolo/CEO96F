@@ -1,7 +1,7 @@
 <template>
   <v-expansion-panel>
     <v-expansion-panel-header
-      >Informações </v-expansion-panel-header>
+      >Informações {{ configuration.camera.filters[selectedFilter].gradient.color}} </v-expansion-panel-header>
     <v-expansion-panel-content>
 
     <v-divider></v-divider>
@@ -55,7 +55,7 @@ export default {
   },
 
   computed: {
-    ...mapState(["configuration"]),
+    ...mapState(["configuration", "selectedFilter"]),
   },
 };
 </script>

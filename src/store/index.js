@@ -16,22 +16,24 @@ export const actions = {
   UPDATE_FILTER: "updateFilter",
   START_PROCESS: "startProcess",
   PAUSE_PROCESS: "pauseProcess",
-  PARAFUSA:"sendParafusa",
-  UPDATE_SLIDER:"updateSlider",
+  PARAFUSA: "sendParafusa",
+  UPDATE_SLIDER: "updateSlider",
   STOP_PROCESS: "stopProcess",
   LOG_REQUEST: "logRequest",
-  STOP_REASONS_LIST_REQUEST:"stopReasonsListRequest",
-  UPDATE_USER:"updateUser",
+  STOP_REASONS_LIST_REQUEST: "stopReasonsListRequest",
+  UPDATE_USER: "updateUser",
+  UPDATE_CAMERA: "updateCamera",
   SEND_GCODE: "sendGcode",
   START_SCAN: "startScan",
-  SAVE_HSV_FILTER: "saveHsvFilter",
-  SHOW_POPUP:"showPopup",
-  GENERATE_ERROR:"generateError",
-  SHUTDOWN_RASPBERRY:"shutdown_raspberry",
-  RESTORE_JSON:"restoreJson",
-  MODIFY_JSON:"modifyJson",
-  REQUEST_JSON:"requestJson",
-  POPUP_TRIGGER:"popupTigger"
+  SAVE_CAMERA: "saveCamera",
+  SHOW_POPUP: "showPopup",
+  GENERATE_ERROR: "generateError",
+  SHUTDOWN_RASPBERRY: "shutdown_raspberry",
+  RESTORE_JSON: "restoreJson",
+  RESTORE_CAMERA: "restoreCamera",
+  MODIFY_JSON: "modifyJson",
+  REQUEST_JSON: "requestJson",
+  POPUP_TRIGGER: "popupTigger"
 };
 
 const store = new Vuex.Store({
@@ -53,21 +55,21 @@ const store = new Vuex.Store({
       seconds: null,
     },
 
-    allJsons:{
+    allJsons: {
       "AVI": {
-      "code": 113,
-      "description": "Auto verificiação iniciou",
-      "listed": false,
-      "type": "info"
+        "code": 113,
+        "description": "Auto verificiação iniciou",
+        "listed": false,
+        "type": "info"
+      },
     },
-  },
 
     progress: 5.1,
     started: false,
     playing: false,
     paused: true,
     finished: false,
-    stoped:true,
+    stoped: true,
 
     idVar: null,
 
@@ -85,12 +87,12 @@ const store = new Vuex.Store({
     },
 
     dialogAlert: {
-      show:false,
+      show: false,
       code: 0,
       description: "",
       type: "error",
-      button_text:"None",
-      button_action:"None"
+      button_text: "None",
+      button_action: "None"
     },
 
     isConnecting: false,
@@ -104,17 +106,17 @@ const store = new Vuex.Store({
         description: String,
         type: String,
         date: Number,
-    }
+      }
     ],
 
     serialMonitor: [
       // {hour: 1611539081 ,sent: true, message:["ok","eaee","M117"]},
     ],
 
-   
-    
+    selectedFilter: "hole",
+
     configuration: {
-      allJsons:{
+      allJsons: {
         // name: 'mike',
         // age: 23,
         // phone: '419988756100',
@@ -165,54 +167,54 @@ const store = new Vuex.Store({
             aMax: null,
             bMax: null,
           },
-          defaultPosition:{
-            pegaTombador:{
-                X:2,
-                Y:49,
-                Z:null,
-                E:0
-            },
-            
-            analisaFoto:{
-              X:80,
-              Y:9,
-              Z:null,
-              E:null
+          defaultPosition: {
+            pegaTombador: {
+              X: 2,
+              Y: 49,
+              Z: null,
+              E: 0
             },
 
-            descarteErrado:{
-                X:230,
-                Y:0,
-                Z:null,
-                E:null
+            analisaFoto: {
+              X: 80,
+              Y: 9,
+              Z: null,
+              E: null
             },
 
-            descarteCerto:{
-                X:0,
-                Y:0,
-                Z:null,
-                E:0
+            descarteErrado: {
+              X: 230,
+              Y: 0,
+              Z: null,
+              E: null
             },
 
-            camera0Centro:{
-                X:74.5,
-                Y:7.5,
-                Z:null,
-                E:null
+            descarteCerto: {
+              X: 0,
+              Y: 0,
+              Z: null,
+              E: 0
             },
 
-            camera1Centro:{
-                X:230,
-                Y:0,
-                Z:null,
-                E:null
+            camera0Centro: {
+              X: 74.5,
+              Y: 7.5,
+              Z: null,
+              E: null
             },
-            
-            parafusadeiraCentro:{
-                X:240,
-                Y:16,
-                Z:null,
-                E:null
+
+            camera1Centro: {
+              X: 230,
+              Y: 0,
+              Z: null,
+              E: null
+            },
+
+            parafusadeiraCentro: {
+              X: 240,
+              Y: 16,
+              Z: null,
+              E: null
             },
           },
         },
@@ -220,17 +222,25 @@ const store = new Vuex.Store({
       statistics: {
         stopReasons: [],
         stopReasonsList: [
-          {"000":"Maquin ok"},
+          { "000": "Maquin ok" },
         ],
       },
       camera: {
         process: null,
+        filters: {
+          hole: {
+            name: "hole",
+            area: [20, 10],
+            gradient: {
+              color: "#a02727",
+              color2: "#e261ae",
+            },
+            hue: [2, 50],
+            sat: [0, 250],
+            val: [30, 50],
+          }
 
-        hue: [2, 50],
-        sat: [0, 250],
-        val: [30, 50],
-        are: [200, 50000]
-
+        },
       },
     },
   },
@@ -330,19 +340,19 @@ const store = new Vuex.Store({
           console.log(state.configuration)
           // code block
           break;
-        
+
         case "error":
-        console.log("Back-end constata falha: ")
-        console.log(message.parameter)
-        state.dialogAlert.show = true
-        state.dialogAlert.description = message.parameter.description
-        state.dialogAlert.type = message.parameter.type
-        state.dialogAlert.code = message.parameter.code
-        state.dialogAlert.button_action = message.parameter.button_action
-        state.dialogAlert.button_text = message.parameter.button_text
-        
-        // code block
-        break;
+          console.log("Back-end constata falha: ")
+          console.log(message.parameter)
+          state.dialogAlert.show = true
+          state.dialogAlert.description = message.parameter.description
+          state.dialogAlert.type = message.parameter.type
+          state.dialogAlert.code = message.parameter.code
+          state.dialogAlert.button_action = message.parameter.button_action
+          state.dialogAlert.button_text = message.parameter.button_text
+
+          // code block
+          break;
 
         case actions.SERIAL_MONITOR + "_response":
           //confere se a ultimo intem da lista é uma msg recebida, se sim.. 
@@ -368,6 +378,7 @@ const store = new Vuex.Store({
     SCAN_COMPLETE_CHANGE: (state) => (state.scanConnectorsComplete = false),
 
     SEND_MESSAGE: (state, payload) => {
+      console.log("tentando: " + payload);
       state.ws_message.command = payload.command;
       state.ws_message.parameter = payload.parameter;
       wsConnection.send(JSON.stringify(state.ws_message));
@@ -463,6 +474,9 @@ const store = new Vuex.Store({
     restart: (context) => context.commit("RESTART"),
     stop: (context) => context.commit("STOP"),
 
+    sendMessage({ commit }, payload) {
+      () => commit("SEND_MESSAGE", payload)
+    }
     // sendMessage: ({ commit }, { command, parameter }) => commit("SEND_MESSAGE", { command, parameter }),
   },
 });

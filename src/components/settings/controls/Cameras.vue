@@ -44,7 +44,7 @@ export default {
   data() {
     return {
       selectedCamera: "0",
-      selectedFilter: "Hole",
+      // selectedFilter: "Hole",
       filter: false,
       stringUrl: "Normal/0",
       cameraList: [
@@ -89,7 +89,7 @@ export default {
   },
 
   computed: {
-    ...mapState(["configuration"]),
+    ...mapState(["configuration", "selectedFilter"]),
   },
 };
 </script>
