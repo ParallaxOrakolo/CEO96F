@@ -767,6 +767,7 @@ def Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues):
 
 
 def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
+    global Analise
     precicao = 0.4
     Pos = []
     parafusadas = 0
@@ -774,10 +775,9 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
     vazio = False
     repetidos = [1, 4]
     angle = 0
-    changePos = 0
+    changePos = False
     #identificar = []
     path = f"Images/Process/{ids}"
-    anlPos = Fast.readJson("Json/Analise.json")
     #machineParamters['configuration']['informations']['machine']['defaultPosition']['analisaFoto']
     cameCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['camera0Centro']
     parafCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusadeiraCentro'].copy()
@@ -796,13 +796,14 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
         if not intencionalStop and not faltadeFuro:
             tentativas, dsts = 0, 0
             Fast.sendGCODE(arduino, "G90")
-            Fast.sendGCODE(arduino, f"G0 X{anlPos[angle][changePos]['X']} F{xMaxFed}")
-            Fast.sendGCODE(arduino, f"G0 Y{anlPos[angle][changePos]['Y']} F{yMaxFed}")
+            Fast.sendGCODE(arduino, f"G0 X{Analise[str(angle)][str(int(changePos))]['X']} F{xMaxFed}")
+            Fast.sendGCODE(arduino, f"G0 Y{Analise[str(angle)][str(int(changePos))]['Y']} F{yMaxFed}")
+            defaultCoordY = Analise[str(angle)][str(int(changePos))]['Y']
+            atualCoordY = NLinearRegression(defaultCoordY, reverse=True)
             Fast.M400(arduino)
             Fast.sendGCODE(arduino, "M42 P34 S255")
             Fast.sendGCODE(arduino, "G91")
-            defaultCoordY = machineParamters["configuration"]["informations"]["machine"]["defaultPosition"]["analisaFoto"]['Y']
-            atualCoordY = NLinearRegression(defaultCoordY, reverse=True)
+            SaveY = 99
             while tentativas<=10 and not intencionalStop:
                 if tentativas >=3 and vazio:
                     break
@@ -829,7 +830,11 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
                         MX = Resultados[dsts][1]
                         # Calcula quantos mm tem que se mover, e soma com a posição atual, pra saber pra onde deve ir em relação ao zero
                         ajusteforcado = 1# if tentativas <= 4 else 2
-                        yReal = (MY/ajusteforcado)+atualCoordY
+                        if atualCoordY >= MY:
+                            yReal = (MY/ajusteforcado)+atualCoordY
+                        else:
+                            print("Quer mover além do 0")
+                            yReal = 0
                         if DebugPrint:
                             print("Ou seja, quer ir para: ", yReal)
                     except IndexError:
@@ -854,7 +859,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
 
                     Fast.M400(arduino)
                     tentativas+=1
-                    time.sleep(0.3)
+                    time.sleep(0.5)
                     if DebugPrint:
                         print("Tentativa:", tentativas)
 
@@ -967,7 +972,7 @@ async def popupTigger(parm):
 
 
 async def refreshJson():
-    global maxFeedP, maxFeedrate, stopReasons, nonStopCode, xMaxFed, yMaxFed, zMaxFedDown, zMaxFedUp, eMaxFed, zFRPD2, zFRPU2, parafusaCommand
+    global maxFeedP, maxFeedrate, stopReasons, nonStopCode, xMaxFed, yMaxFed, zMaxFedDown, zMaxFedUp, eMaxFed, zFRPD2, zFRPU2, parafusaCommand, Analise
     maxFeedP = machineParamters["configuration"]["informations"]["machine"]["maxFeedratePercent"]
 
     maxFeedrate = machineParamters["configuration"]["informations"]["machine"]["maxFeedrate"]
@@ -994,7 +999,8 @@ async def refreshJson():
             "mainParamters":mainParamters,
             "machineParamters":machineParamters,
             "HoleCuts":HoleCuts,
-            "ScrewCuts":ScrewCuts
+            "ScrewCuts":ScrewCuts,
+            "Analise": Analise
         }
     }
 
@@ -1286,6 +1292,7 @@ if __name__ == "__main__":
     stopReasonsList = Fast.readJson('Json/stopReasonsList.json')
     HoleCuts = Fast.readJson("../engine_H/Json/HoleCuts.json")
     ScrewCuts = Fast.readJson("../engine_H/Json/ScrewCuts.json")
+    Analise = Fast.readJson("Json/Analise.json")
     parafusaCommand = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusar']
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Json-Variables                        #
