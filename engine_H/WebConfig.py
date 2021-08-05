@@ -1185,8 +1185,7 @@ async def logRefresh(timeout=1):
 
 async def startAutoCheck():
     global arduino, nano, conexaoStatusArdu, conexaoStatusNano, threadStatus, infoCode 
-    
-    #await updateSlider('Normal')
+   
     setCameraFilter()
     await logRefresh()
     await refreshJson()
@@ -1246,7 +1245,7 @@ async def startAutoCheck():
             #stalker1 = ViewAnother(thread1, 5)
             globals()["thread"+str(mainParamters["Cameras"]["Hole"]["Settings"]["id"])] = CamThread(str(mainParamters["Cameras"]["Hole"]["Settings"]["id"]), mainParamters["Cameras"]["Hole"])
             thread0.start()
-            thread2.start()
+            thread1.start()
 #            for x in range(10):
 #                try:
 #                    globals()["thread"+str(x)].start()
@@ -1257,7 +1256,7 @@ async def startAutoCheck():
             tth0 = timeit.default_timer()
             while timeit.default_timer()-tth0 <= 20:
                 try:
-                    if type(globals()['frame0']) == np.ndarray and type(globals()['frame2']) == np.ndarray:
+                    if type(globals()['frame0']) == np.ndarray and type(globals()['frame1']) == np.ndarray:
                         appTh = AppThread(ip, portBack)
                         appTh.start()
                         print("Transmissão de vídeo iniciada.")
