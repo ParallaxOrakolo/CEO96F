@@ -61,7 +61,7 @@
         "Hole": {
             "perimeter": 0,
             "areaMin": 3500,
-            "areaMax": 6500
+            "areaMax": 6000
         },
         "Screw": {
             "perimeter": 0,

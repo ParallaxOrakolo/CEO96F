@@ -177,8 +177,10 @@ class CamThread(threading.Thread):
                        + b'\r\n')
             if self.Procs['Normal']:
                 # print("Normal")
+                frame = globals()['frame'+self.previewName].copy()
+                cv2.drawMarker(frame, (int(frame.shape[1]/2), int(frame.shape[0]/2)),(255,50,0),0,1000, 5)
                 yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
-                       + cv2.imencode('.JPEG', globals()['frame'+self.previewName],
+                       + cv2.imencode('.JPEG', frame,
                                       [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
                        + b'\r\n')
         print("Fechando Vizualizção")
@@ -502,6 +504,73 @@ def findHole(imgAnalyse, minArea, maxArea, c_perimeter, HSValues, fixed_Point, e
 """
 
 
+def setCameraFilter():
+    global camera
+    print("Usando valores definidos no arquivo para setar o payload inicial da camera.")
+    for process in mainParamters["Filtros"]["HSV"]:
+        process = mainParamters["Filtros"]["HSV"][process]
+        tags = "lower", "upper"
+        index = 0
+        colorRange = []
+        for tag in tags:
+            colorItem = []
+            for id, item in process["Valores"][tag].items():
+                names = ["hue", "sat", "val"]
+                for n in names:
+                    if id[0:1] in n:
+                        id = n
+                        break
+                camera["filters"][process["Application"]]["hsv"][id][index] = item
+                colorItem.append(item)
+            colorRange.append(colorItem)
+            index = 1
+        camera["filters"][process["Application"]]["gradient"]["color"] = Fast.HSVF2Hex(colorRange[0])
+        camera["filters"][process["Application"]]["gradient"]["color2"] = Fast.HSVF2Hex(colorRange[1])
+
+
+def setCameraHsv(jsonPayload):
+    global camera
+    print("Alterando Payload da camera usando a  configuração do Front.")
+    newColors = []
+    for filters in jsonPayload["filters"]:
+        colorGroup= []
+        filterName = filters
+        filters = jsonPayload["filters"][filters]["gradient"]
+        for hexColor in filters:
+            hexColor = filters[hexColor]
+            colorGroup.append(Fast.Hex2HSVF(hexColor, print=True))
+        newColors.append(colorGroup)
+        for index in range(len(colorGroup)):
+            jsonPayload["filters"][filterName]["hsv"]["hue"][index] = colorGroup[index][0]
+            jsonPayload["filters"][filterName]["hsv"]["sat"][index] = colorGroup[index][1]
+            jsonPayload["filters"][filterName]["hsv"]["val"][index] = colorGroup[index][2]
+    return jsonPayload
+
+
+def setFilterWithCamera(jsonOrigin, jsonPayload):
+    global camera
+    print("Alterando valores da arquivo de configuração com base no payload da Camera")
+    for _ in jsonPayload["filters"]:
+        print("~"*20)
+        print(jsonOrigin["Filtros"]["HSV"][_]["Valores"])
+        lower = {}
+        upper = {}
+        for __ in jsonPayload["filters"][_]["hsv"]:
+            lower[f"{__[0:1]}_min"] = jsonPayload["filters"][_]["hsv"][__][0]
+            upper[f"{__[0:1]}_max"] = jsonPayload["filters"][_]["hsv"][__][1]
+        Valoroes = {"lower":lower, "upper":upper}
+        for k, v  in Valoroes.items():
+            for k1, v1  in v.items():
+                jsonOrigin["Filtros"]["HSV"][_]["Valores"][k][k1] = v1
+
+        print(jsonOrigin["Filtros"]["HSV"][_]["Valores"])
+
+
+async def updateCamera(payload):
+    global camera
+    camera = setCameraHsv(payload)
+    setFilterWithCamera(mainParamters["Filtros"], camera)
+
 
 def findCircle(circle_Mask, areaMinC, areaMaxC, perimeter_size, blur_Size=3):
     circle_info = []
@@ -765,15 +834,18 @@ def Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues):
 
 
 def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
+    global Analise
     precicao = 0.4
     Pos = []
     parafusadas = 0
     faltadeFuro = False
     vazio = False
     repetidos = [1, 4]
+    angle = 0
+    changePos = False
     #identificar = []
     path = f"Images/Process/{ids}"
-    anlPos = machineParamters['configuration']['informations']['machine']['defaultPosition']['analisaFoto']
+    #machineParamters['configuration']['informations']['machine']['defaultPosition']['analisaFoto']
     cameCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['camera0Centro']
     parafCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusadeiraCentro'].copy()
     parafCent['Y'] = NLinearRegression(parafCent['Y'], reverse=True)
@@ -786,32 +858,30 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
     for lados in range(6):
         if vazio:
             break
+
         Fast.M400(arduino)
         if not intencionalStop and not faltadeFuro:
             tentativas, dsts = 0, 0
             Fast.sendGCODE(arduino, "G90")
-            Fast.sendGCODE(arduino, f"G0 X{anlPos['X']} F{xMaxFed}")
-            Fast.sendGCODE(arduino, f"G0 Y{anlPos['Y']} F{yMaxFed}")
+            Fast.sendGCODE(arduino, f"G0 X{Analise[str(angle)][str(int(changePos))]['X']} F{xMaxFed}")
+            Fast.sendGCODE(arduino, f"G0 Y{Analise[str(angle)][str(int(changePos))]['Y']} F{yMaxFed}")
+            defaultCoordY = Analise[str(angle)][str(int(changePos))]['Y']
+            atualCoordY = NLinearRegression(defaultCoordY, reverse=True)
             Fast.M400(arduino)
             Fast.sendGCODE(arduino, "M42 P34 S255")
             Fast.sendGCODE(arduino, "G91")
-            defaultCoordY = machineParamters["configuration"]["informations"]["machine"]["defaultPosition"]["analisaFoto"]['Y']
-            atualCoordY = NLinearRegression(defaultCoordY, reverse=True)
+            SaveY = 99
             while tentativas<=10 and not intencionalStop:
                 if tentativas >=3 and vazio:
                     break
                 frame = globals()['frame'+str(mainParamters["Cameras"]["Hole"]["Settings"]["id"])]
                 Resultados, R, per, img_draw = Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues)
                 if lados not in repetidos:
+                    changePos = not changePos
                     dsts = 0
-                else:
-                    dsts = len(Resultados)-1
-    #            cv2.imshow("Img_Process", cv2.resize(frame, None, fx=0.3, fy=0.3))
-#                if tentativas == 0:
-                # cv2.imshow("Fora_Hole", cv2.resize(img_draw, None, fx=0.3, fy=0.3))
-                # cv2.waitKey(1)
-                # if Resultados:
-                #     print("Resultados:", Resultados)
+                # else:
+                #     dsts = len(Resultados)-1
+
                 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
                 #                     Verifica a distância                   #
                 if Resultados:
@@ -819,7 +889,6 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
                     cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_draw.jpg", img_draw)
                     cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_normal.jpg", frame)
                     try:
-                        #yReal = round(Resultados[dsts][0]/2, 2)
                         if DebugPrint:
                             print("^^"*15)
                             print(f"Coordenada atual {defaultCoordY};  {atualCoordY}mm do 0")
@@ -828,14 +897,16 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
                         MX = Resultados[dsts][1]
                         # Calcula quantos mm tem que se mover, e soma com a posição atual, pra saber pra onde deve ir em relação ao zero
                         ajusteforcado = 1# if tentativas <= 4 else 2
-                        yReal = (MY/ajusteforcado)+atualCoordY
+                        if atualCoordY >= MY:
+                            yReal = (MY/ajusteforcado)+atualCoordY
+                        else:
+                            print("Quer mover além do 0")
+                            yReal = 0
                         if DebugPrint:
                             print("Ou seja, quer ir para: ", yReal)
                     except IndexError:
                         print("Falha de identificação, corrija o filtro..")
                         break
-                    #print("MX:", MX, '\n yReal:', yReal)
-    #                   MX += (randint(-int(abs(MX)/4),abs(int(MX))))
                     if abs(MX) > precicao:
                         Fast.sendGCODE(arduino, f"G0 X{MX} F{xMaxFed}", echo=True)
                         #print(f"G0 X{MX} F{xMaxFed}")
@@ -855,7 +926,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
 
                     Fast.M400(arduino)
                     tentativas+=1
-                    time.sleep(0.3)
+                    time.sleep(0.5)
                     if DebugPrint:
                         print("Tentativa:", tentativas)
 
@@ -906,6 +977,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
             if lados not in repetidos:
                 Fast.sendGCODE(arduino, f"G91")
                 Fast.sendGCODE(arduino, f"G0 E90 F{eMaxFed}")
+                angle += 90
                 Fast.M400(arduino)
 
     #identificar = sum(identificar)
@@ -967,7 +1039,7 @@ async def popupTigger(parm):
 
 
 async def refreshJson():
-    global maxFeedP, maxFeedrate, stopReasons, nonStopCode, xMaxFed, yMaxFed, zMaxFedDown, zMaxFedUp, eMaxFed, zFRPD2, zFRPU2, parafusaCommand
+    global maxFeedP, maxFeedrate, stopReasons, nonStopCode, xMaxFed, yMaxFed, zMaxFedDown, zMaxFedUp, eMaxFed, zFRPD2, zFRPU2, parafusaCommand, Analise
     maxFeedP = machineParamters["configuration"]["informations"]["machine"]["maxFeedratePercent"]
 
     maxFeedrate = machineParamters["configuration"]["informations"]["machine"]["maxFeedrate"]
@@ -994,7 +1066,8 @@ async def refreshJson():
             "mainParamters":mainParamters,
             "machineParamters":machineParamters,
             "HoleCuts":HoleCuts,
-            "ScrewCuts":ScrewCuts
+            "ScrewCuts":ScrewCuts,
+            "Analise": Analise
         }
     }
 
@@ -1112,8 +1185,8 @@ async def logRefresh(timeout=1):
 
 async def startAutoCheck():
     global arduino, nano, conexaoStatusArdu, conexaoStatusNano, threadStatus, infoCode 
-    
-    # await updateSlider('Normal')
+   
+    setCameraFilter()
     await logRefresh()
     await refreshJson()
     AutoCheckStatus = True
@@ -1286,7 +1359,9 @@ if __name__ == "__main__":
     stopReasonsList = Fast.readJson('Json/stopReasonsList.json')
     HoleCuts = Fast.readJson("../engine_H/Json/HoleCuts.json")
     ScrewCuts = Fast.readJson("../engine_H/Json/ScrewCuts.json")
+    Analise = Fast.readJson("Json/Analise.json")
     parafusaCommand = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusar']
+    camera = machineParamters["configuration"]["camera"]
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Json-Variables                        #
 
