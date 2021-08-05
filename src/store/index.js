@@ -127,12 +127,12 @@ const store = new Vuex.Store({
         {
           name: "Camera Furação",
           cameraId: 0,
-          filter: "Hole",
+          filter: "hole",
         },
         {
           name: "Camera de Validação",
-          cameraId: 1,
-          filter: "Screw",
+          cameraId: 2,
+          filter: "screw",
         },
       ],
 

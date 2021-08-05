@@ -46,17 +46,17 @@ export default {
       selectedCamera: "0",
       // selectedFilter: "Hole",
       filter: false,
-      stringUrl: "Normal/0",
+      stringUrl: "normal/0",
       cameraList: [
         {
           name: "Camera Furação",
           cameraId: 0,
-          filter: "Hole",
+          filter: "hole",
         },
         {
           name: "Camera de Validação",
           cameraId: 1,
-          filter: "Screw",
+          filter: "screw",
         },
       ],
     };
