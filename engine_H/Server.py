@@ -1,4 +1,5 @@
 from FastFunctions import Hex2HSVF, HSVF2Hex
+import asyncio
 import json
 
 
@@ -104,6 +105,7 @@ Filtros = {
 }
 
 def setCameraFilter():
+    print("Usando valores definidos no arquivo para setar o payload inicial da camera.")
     for process in Filtros["HSV"]:
         process = Filtros["HSV"][process]
         tags = "lower", "upper"
@@ -124,9 +126,9 @@ def setCameraFilter():
         camera["filters"][process["Application"]]["gradient"]["color"] = HSVF2Hex(colorRange[0])
         camera["filters"][process["Application"]]["gradient"]["color2"] = HSVF2Hex(colorRange[1])
 
-#["Valores"]["lower"]
 
-def updateCamera(jsonPayload):
+def setCameraHsv(jsonPayload):
+    print("Alterando Payload da camera usando a  configuração do Front.")
     newColors = []
     for filters in jsonPayload["filters"]:
         colorGroup= []
@@ -141,8 +143,33 @@ def updateCamera(jsonPayload):
             jsonPayload["filters"][filterName]["hsv"]["sat"][index] = colorGroup[index][1]
             jsonPayload["filters"][filterName]["hsv"]["val"][index] = colorGroup[index][2]
     return jsonPayload
+
+
+def setFilterWithCamera(jsonOrigin, jsonPayload):
+    print("Alterando valores da arquivo de configuração com base no payload da Camera")
+    for _ in jsonPayload["filters"]:
+        print("~"*20)
+        print(jsonOrigin["HSV"][_]["Valores"])
+        lower = {}
+        upper = {}
+        for __ in jsonPayload["filters"][_]["hsv"]:
+            lower[f"{__[0:1]}_min"] = jsonPayload["filters"][_]["hsv"][__][0]
+            upper[f"{__[0:1]}_max"] = jsonPayload["filters"][_]["hsv"][__][1]
+        Valoroes = {"lower":lower, "upper":upper}
+        for k, v  in Valoroes.items():
+            for k1, v1  in v.items():
+                jsonOrigin["HSV"][_]["Valores"][k][k1] = v1
+
+        print(jsonOrigin["HSV"][_]["Valores"])
+
+async def updateCamera(payload):
+    camera = setCameraHsv(payload)
+    setFilterWithCamera(Filtros, camera)
+
 setCameraFilter()
-camera = updateCamera(camera)
+updateCamera
+        
+
 exit()
 # NewMax = 255
 # NewMin = 0
@@ -210,4 +237,7 @@ def OpenWebcam(ID, **kargs):
 
 
 ScanWebcam(10)
+
+
+
 
