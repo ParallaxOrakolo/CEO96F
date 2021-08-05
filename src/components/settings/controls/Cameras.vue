@@ -73,7 +73,7 @@ export default {
       } else {
         this.stringUrl = this.Normal + "/" + cameraId;
       }
-      console.log(this.stringUrl);
+      // console.log(this.stringUrl);
     },
 
     updateURL() {
@@ -84,7 +84,7 @@ export default {
       } else {
         this.stringUrl = "Normal" + "/" + this.selectedCamera;
       }
-      console.log(this.stringUrl);
+      // console.log(this.stringUrl);
     },
   },
 

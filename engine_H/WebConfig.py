@@ -1022,7 +1022,7 @@ async def updateSlider(processos):
                 mainParamters['Mask_Parameters'][processos]['areaMax']
             ]
         print(machineParamters['configuration']['camera'][x])
-    await sendWsMessage("update", machineParamters)
+    
 
 
 async def funcs():
@@ -1114,6 +1114,7 @@ async def startAutoCheck():
     global arduino, nano, conexaoStatusArdu, conexaoStatusNano, threadStatus, infoCode 
     
     # await updateSlider('Normal')
+    await sendWsMessage("update", machineParamters)
     await logRefresh()
     await refreshJson()
     AutoCheckStatus = True
