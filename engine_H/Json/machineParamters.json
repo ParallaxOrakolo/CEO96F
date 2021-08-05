@@ -20,11 +20,15 @@
             "userList": [
                 {
                     "name": "Henrycke",
-                    "id": "12462584986"
+                    "id": "12462584986",
+                    "lastAcess": 0,
+                    "level": 1
                 },
                 {
                     "name": "Rodrigo Gomes",
-                    "id": "123"
+                    "id": "123",
+                    "lastAcess": 0,
+                    "level": 1
                 }
             ],
             "version": {
