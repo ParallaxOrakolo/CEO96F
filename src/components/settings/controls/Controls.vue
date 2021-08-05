@@ -6,7 +6,7 @@
 <SerialMonitor></SerialMonitor> -->
 <v-row no-gutters>
       <Camera></Camera>
-      <ColorPikerHSV v-if="logged" />
+      <ColorPikerHSV v-if="configuration.logged" />
       </v-row>
       <ButtonsControls></ButtonsControls>
       
