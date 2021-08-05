@@ -149,7 +149,7 @@ def setFilterWithCamera(jsonOrigin, jsonPayload):
     print("Alterando valores da arquivo de configuração com base no payload da Camera")
     for _ in jsonPayload["filters"]:
         print("~"*20)
-        print(jsonOrigin["HSV"][_]["Valores"])
+        #print(jsonOrigin["HSV"][_]["Valores"])
         lower = {}
         upper = {}
         for __ in jsonPayload["filters"][_]["hsv"]:
@@ -160,14 +160,14 @@ def setFilterWithCamera(jsonOrigin, jsonPayload):
             for k1, v1  in v.items():
                 jsonOrigin["HSV"][_]["Valores"][k][k1] = v1
 
-        print(jsonOrigin["HSV"][_]["Valores"])
+        print(f"{_}:", jsonOrigin["HSV"][_]["Valores"])
 
-async def updateCamera(payload):
+def updateCamera(payload):
     camera = setCameraHsv(payload)
     setFilterWithCamera(Filtros, camera)
 
 setCameraFilter()
-updateCamera
+updateCamera(camera)
         
 
 exit()

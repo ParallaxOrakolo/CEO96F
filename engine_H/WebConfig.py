@@ -545,11 +545,11 @@ def setCameraHsv(jsonPayload):
     return jsonPayload
 
 
-def setFilterWithCamera(jsonOrigin, jsonPayload):
+def setFilterWithCamera(jsonOrigin, jsonPayload, restore=False):
     print("Alterando valores da arquivo de configuração com base no payload da Camera")
     for _ in jsonPayload["filters"]:
         print("~"*20)
-        print(jsonOrigin["Filtros"]["HSV"][_]["Valores"])
+        #print(jsonOrigin["Filtros"]["HSV"][_]["Valores"])
         lower = {}
         upper = {}
         for __ in jsonPayload["filters"][_]["hsv"]:
@@ -558,9 +558,12 @@ def setFilterWithCamera(jsonOrigin, jsonPayload):
         Valoroes = {"lower":lower, "upper":upper}
         for k, v  in Valoroes.items():
             for k1, v1  in v.items():
-                jsonOrigin["Filtros"]["HSV"][_]["Valores"][k][k1] = v1
+                if not restore:
+                    jsonOrigin["Filtros"]["HSV"][_]["Valores"][k][k1] = v1
+                else:
+                    jsonOrigin["Filtros"]["HSV"][_]["Valores"][k][k1] = globals()["tempFileFilter"][_]["Valores"][k][k1]
 
-        print(jsonOrigin["Filtros"]["HSV"][_]["Valores"])
+        print(_, ":", jsonOrigin["Filtros"]["HSV"][_]["Valores"])
 
 
 async def updateCamera(payload):
@@ -1305,29 +1308,14 @@ async def startProcess(qtd=9999):
     print(f"Pedido de montagem finalizado em {int(timeit.default_timer()-t0)}s")
 
 
-async def updateFilter(zipped):
-    for xx in mainParamters["Filtros"]["HSV"]:
-        if zipped['process'] in mainParamters["Filtros"]["HSV"][xx]["Application"]:
-            # mainParamters["Filtros"]["HSV"][xx]["Valores"]["lower"][zipped[1].key()] = [zipped[1]]
-            min = list(zipped.keys())[1]
-            max = list(zipped.keys())[2]
-            if min == "areaMin" and max == "areaMax":
-                mainParamters['Mask_Parameters'][xx][min] = zipped[min]
-                mainParamters['Mask_Parameters'][xx][max] = zipped[max]
-                print("Update Filter:",xx,mainParamters['Mask_Parameters'][xx])
-            else:
-                print(mainParamters["Filtros"]["HSV"][xx]["Valores"]
-                    ["lower"][min], '-> ', zipped[min])
-                print(mainParamters["Filtros"]["HSV"][xx]["Valores"]
-                    ["upper"][max], '-> ', zipped[max])
-                mainParamters["Filtros"]["HSV"][xx]["Valores"]["lower"][min] = zipped[min]
-                mainParamters["Filtros"]["HSV"][xx]["Valores"]["upper"][max] = zipped[max]
-        
-
-async def saveJson():
+async def saveCamera():
     Fast.writeJson('Json/mainParamters.json', mainParamters)
+    globals()["tempFileFilter"] = mainParamters["Filtros"]["HSV"]
     print("salvei")
 
+async def restoreCamera():
+    setFilterWithCamera(mainParamters, camera, True)
+    print('a')
 
 async def sendWsMessage(command, parameter=None):
     global ws_message
@@ -1358,6 +1346,7 @@ if __name__ == "__main__":
     Analise = Fast.readJson("Json/Analise.json")
     parafusaCommand = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusar']
     camera = machineParamters["configuration"]["camera"]
+    globals()["tempFileFilter"] = mainParamters["Filtros"]["HSV"]
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Json-Variables                        #
 
