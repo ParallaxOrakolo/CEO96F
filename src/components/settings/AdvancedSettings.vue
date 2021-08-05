@@ -4,7 +4,7 @@
       >Configurações avançadas
 
       <template v-slot:actions>
-        <span v-if="logged == true"
+        <span v-if="configuration.logged == true"
           >Olá, <b>{{ userLogged }}!</b>
           <v-btn x-small outlined color="warning" class="ma-2" @click="logout()"
             >Sair</v-btn
@@ -16,10 +16,10 @@
     <v-expansion-panel-content>
       <v-divider></v-divider>
 
-      <v-card-subtitle v-if="!logged"
+      <v-card-subtitle v-if="!configuration.logged"
         >Essa area é de acesso restrito
       </v-card-subtitle>
-      <v-card-text v-show="!logged">
+      <v-card-text v-show="!configuration.logged">
         <v-text-field
           outlined
           v-model="idInput"
@@ -34,6 +34,7 @@
           required
         >
         </v-text-field>
+        
         <!-- <v-btn
           color="primary"
           text
@@ -43,9 +44,9 @@
         </v-btn> -->
       </v-card-text>
 
-      <v-card-text v-show="logged">
+      <v-card-text v-show="configuration.logged">
         
-      <User-table v-if="logged"/>
+      <User-table v-if="configuration.logged"/>
       </v-card-text>
 
       <JsonEditor2/>
@@ -63,7 +64,7 @@ export default {
   name: "AdvancedSettings",
   data: () => ({
     userLogged: null,
-    logged: false,
+    // logged: false,
     show: false,
     idInput: null,
     id: 1234,
@@ -90,7 +91,7 @@ export default {
       this.configuration.informations.userList.forEach((user) => {
         if (user.id == parseInt(this.idInput)) {
           this.userLogged = user.name;
-          this.logged = true;
+          this.configuration.logged = true;
           const currentDate = new Date();
           user.lastAcess = currentDate.getTime();
         }
@@ -100,7 +101,7 @@ export default {
 
   methods: {
     logout() {
-      this.logged = !this.logged;
+      this.configuration.logged = !this.configuration.logged;
       this.idInput = "";
     },
   },

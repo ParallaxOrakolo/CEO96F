@@ -116,6 +116,7 @@ const store = new Vuex.Store({
     selectedFilter: "hole",
 
     configuration: {
+      logged : false,
       allJsons: {
         // name: 'mike',
         // age: 23,

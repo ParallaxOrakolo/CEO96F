@@ -160,7 +160,6 @@
             </v-card-actions>
           </v-card>
         </v-dialog>
-        {{color1}}
       </v-row>
       <v-divider></v-divider>
     </v-expansion-panel-content>
