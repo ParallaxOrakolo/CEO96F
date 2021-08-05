@@ -55,7 +55,7 @@ export default {
         },
         {
           name: "Camera de Validação",
-          cameraId: 1,
+          cameraId: 2,
           filter: "screw",
         },
       ],

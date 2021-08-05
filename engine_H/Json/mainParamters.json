@@ -32,6 +32,7 @@
                 }
             },
             "normal": {
+            "normal": {
                 "Application": "normal",
                 "Valores": {
                     "lower": {
@@ -97,7 +98,7 @@
         "screw": {
             "Settings": {
                 "title": "Camera Validação",
-                "id": 1,
+                "id": 2,
                 "scale": 0.04276480601654536,
                 "frame_height": 1994,
                 "frame_width": 2592
