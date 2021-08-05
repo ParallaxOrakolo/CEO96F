@@ -128,12 +128,12 @@ const store = new Vuex.Store({
         {
           name: "Camera Furação",
           cameraId: 0,
-          filter: "Hole",
+          filter: "hole",
         },
         {
           name: "Camera de Validação",
-          cameraId: 1,
-          filter: "Screw",
+          cameraId: 2,
+          filter: "screw",
         },
       ],
 
@@ -236,9 +236,11 @@ const store = new Vuex.Store({
               color: "#a02727",
               color2: "#e261ae",
             },
-            hue: [2, 50],
-            sat: [0, 250],
-            val: [30, 50],
+            hsv:{
+              hue: [2, 50],
+              sat: [0, 250],
+              val: [30, 50],
+            }
           }
 
         },

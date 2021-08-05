@@ -152,7 +152,7 @@ def Rois(img, n=4, escale=0.25, Save=True, show=False):
 
 # Cria uma mascara HSV apartir de um range pré-determinado.
 def HSVMask(img, lower, upper, invert=False):
-    return cv2.inRange(cv2.cvtColor(img, cv2.COLOR_BGR2HSV), lower, upper)
+    return cv2.inRange(cv2.cvtColor(img, cv2.COLOR_BGR2HSV_FULL), lower, upper)
 
 
 # Reduz ruídos os ruidos da mascara.

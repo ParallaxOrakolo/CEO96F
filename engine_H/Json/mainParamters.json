@@ -1,8 +1,8 @@
 {
     "Filtros": {
         "HSV": {
-            "Hole": {
-                "Application": "Hole",
+            "hole": {
+                "Application": "hole",
                 "Valores": {
                     "lower": {
                         "h_min": 15,
@@ -16,8 +16,8 @@
                     }
                 }
             },
-            "Screw": {
-                "Application": "Screw",
+            "screw": {
+                "Application": "screw",
                 "Valores": {
                     "lower": {
                         "h_min": 0,
@@ -31,8 +31,8 @@
                     }
                 }
             },
-            "Normal": {
-                "Application": "Normal",
+            "normal": {
+                "Application": "normal",
                 "Valores": {
                     "lower": {
                         "h_min": 0,
@@ -58,24 +58,24 @@
         "testControls": false
     },
     "Mask_Parameters": {
-        "Hole": {
+        "hole": {
             "perimeter": 0,
             "areaMin": 3500,
-            "areaMax": 6500
+            "areaMax": 6000
         },
-        "Screw": {
+        "screw": {
             "perimeter": 0,
             "areaMin": 7000,
             "areaMax": 33000
         },
-        "Normal": {
+        "normal": {
             "perimeter": 0,
             "areaMin": 2068,
             "areaMax": 8662
         }
     },
     "Cameras": {
-        "Hole": {
+        "hole": {
             "Settings": {
                 "title": "Câmera - Furação",
                 "id": 0,
@@ -94,10 +94,10 @@
                 "HUE": 0
             }
         },
-        "Screw": {
+        "screw": {
             "Settings": {
                 "title": "Camera Validação",
-                "id": 1,
+                "id": 2,
                 "scale": 0.04276480601654536,
                 "frame_height": 1994,
                 "frame_width": 2592

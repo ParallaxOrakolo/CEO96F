@@ -1,4 +1,185 @@
-import cv2
+from FastFunctions import Hex2HSVF, HSVF2Hex
+import asyncio
+import json
+
+
+def printJson(jsons):
+    print(json.dumps(jsons, sort_keys=True, indent=4))
+
+HSVF2Hex(Hex2HSVF("#47a6ff", print=True), print=True)
+
+camera={
+    "process": "hole",
+    "filters": {
+        "hole": {
+            "name": "hole",
+            "area": [10, 20],
+            "gradient": {
+                "color": "#a02727",
+                "color2": "#e261ae"
+            },
+            "hsv":{
+                "hue": [2, 50],
+                "sat": [0, 250],
+                "val": [30, 50]
+                }
+            },
+        "screw": {
+            "name": "screw",
+            "area": [10, 20],
+            "gradient": {
+                "color": "#a02727",
+                "color2": "#e261ae"
+            },
+            "hsv":{
+                "hue": [2, 50],
+                "sat": [0, 250],
+                "val": [30, 50]
+                }
+            },
+
+        "normal": {
+            "name": "normal",
+            "area": [10, 20],
+            "gradient": {
+                "color": "#a02727",
+                "color2": "#e261ae"
+            },
+            "hsv":{
+                "hue": [2, 50],
+                "sat": [0, 250],
+                "val": [30, 50]
+                }
+            }
+    },
+}
+
+Filtros = {
+    "HSV": {
+        "hole": {
+            "Application": "hole",
+            "Valores": {
+                "lower": {
+                    "h_min": 15,
+                    "s_min": 0,
+                    "v_min": 172
+                },
+                "upper": {
+                    "h_max": 71,
+                    "s_max": 152,
+                    "v_max": 255
+                }
+            }
+        },
+        "screw": {
+            "Application": "screw",
+            "Valores": {
+                "lower": {
+                    "h_min": 0,
+                    "s_min": 0,
+                    "v_min": 43
+                },
+                "upper": {
+                    "h_max": 164,
+                    "s_max": 87,
+                    "v_max": 243
+                }
+            }
+        },
+        "normal": {
+            "Application": "normal",
+            "Valores": {
+                "lower": {
+                    "h_min": 0,
+                    "s_min": 0,
+                    "v_min": 0
+                },
+                "upper": {
+                    "h_max": 255,
+                    "s_max": 255,
+                    "v_max": 0
+                }
+            }
+        }
+    }
+}
+
+def setCameraFilter():
+    print("Usando valores definidos no arquivo para setar o payload inicial da camera.")
+    for process in Filtros["HSV"]:
+        process = Filtros["HSV"][process]
+        tags = "lower", "upper"
+        index = 0
+        colorRange = []
+        for tag in tags:
+            colorItem = []
+            for id, item in process["Valores"][tag].items():
+                names = ["hue", "sat", "val"]
+                for n in names:
+                    if id[0:1] in n:
+                        id = n
+                        break
+                camera["filters"][process["Application"]]["hsv"][id][index] = item
+                colorItem.append(item)
+            colorRange.append(colorItem)
+            index = 1
+        camera["filters"][process["Application"]]["gradient"]["color"] = HSVF2Hex(colorRange[0])
+        camera["filters"][process["Application"]]["gradient"]["color2"] = HSVF2Hex(colorRange[1])
+
+
+def setCameraHsv(jsonPayload):
+    print("Alterando Payload da camera usando a  configuração do Front.")
+    newColors = []
+    for filters in jsonPayload["filters"]:
+        colorGroup= []
+        filterName = filters
+        filters = jsonPayload["filters"][filters]["gradient"]
+        for hexColor in filters:
+            hexColor = filters[hexColor]
+            colorGroup.append(Hex2HSVF(hexColor, print=True))
+        newColors.append(colorGroup)
+        for index in range(len(colorGroup)):
+            jsonPayload["filters"][filterName]["hsv"]["hue"][index] = colorGroup[index][0]
+            jsonPayload["filters"][filterName]["hsv"]["sat"][index] = colorGroup[index][1]
+            jsonPayload["filters"][filterName]["hsv"]["val"][index] = colorGroup[index][2]
+    return jsonPayload
+
+
+def setFilterWithCamera(jsonOrigin, jsonPayload):
+    print("Alterando valores da arquivo de configuração com base no payload da Camera")
+    for _ in jsonPayload["filters"]:
+        print("~"*20)
+        #print(jsonOrigin["HSV"][_]["Valores"])
+        lower = {}
+        upper = {}
+        for __ in jsonPayload["filters"][_]["hsv"]:
+            lower[f"{__[0:1]}_min"] = jsonPayload["filters"][_]["hsv"][__][0]
+            upper[f"{__[0:1]}_max"] = jsonPayload["filters"][_]["hsv"][__][1]
+        Valoroes = {"lower":lower, "upper":upper}
+        for k, v  in Valoroes.items():
+            for k1, v1  in v.items():
+                jsonOrigin["HSV"][_]["Valores"][k][k1] = v1
+
+        print(f"{_}:", jsonOrigin["HSV"][_]["Valores"])
+
+def updateCamera(payload):
+    camera = setCameraHsv(payload)
+    setFilterWithCamera(Filtros, camera)
+
+setCameraFilter()
+updateCamera(camera)
+        
+
+exit()
+# NewMax = 255
+# NewMin = 0
+
+# OldRange = (OldMax - OldMin)  
+# NewRange = (NewMax - NewMin)  
+# NewValue = (((0.5 - OldMin) * NewRange) / OldRange) + NewMin
+# print(color.hsv[1], "-> ", NewValue)
+# print(color2.hsv)
+# exit()
 
 def ScanWebcam(*args):
     for X in range(*args):
@@ -56,3 +237,7 @@ def OpenWebcam(ID, **kargs):
 
 
 ScanWebcam(10)
+
+
+
+
