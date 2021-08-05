@@ -79,10 +79,10 @@ class CamThread(threading.Thread):
         self.camID = camID
         self._running = True
 
-        self.Procs = {"Hole": False,
-                      "Screw": False, "Normal": False}
+        self.Procs = {"hole": False,
+                      "screw": False, "normal": False}
 
-        self.Processos = ['Screw']
+        self.Processos = ['screw']
         self.pFA = (50, 50)
         self.pFB = (100, 60)
         self.fixPoiint = (self.pFB[0], int(
@@ -148,14 +148,14 @@ class CamThread(threading.Thread):
 
     def ViewCam(self):
         while not self.stopped():
-            if self.Procs['Screw']:
+            if self.Procs['screw']:
                 
                 frame, _ = Process_Imagew_Scew(
                                     globals()['frame'+self.previewName],
-                                    Op.extractHSValue(mainParamters['Filtros']['HSV']['Screw']["Valores"], 'lower' ),
-                                    Op.extractHSValue(mainParamters['Filtros']['HSV']['Screw']["Valores"], 'upper' ),
-                                    mainParamters['Mask_Parameters']['Screw']['areaMin'],
-                                    mainParamters['Mask_Parameters']['Screw']['areaMax']
+                                    Op.extractHSValue(mainParamters['Filtros']['HSV']['screw']["Valores"], 'lower' ),
+                                    Op.extractHSValue(mainParamters['Filtros']['HSV']['screw']["Valores"], 'upper' ),
+                                    mainParamters['Mask_Parameters']['screw']['areaMin'],
+                                    mainParamters['Mask_Parameters']['screw']['areaMax']
                                     )
                 # _, frame = findScrew(globals()[
                 #                      'frame'+self.previewName], mainParamters['Filtros']['HSV'], mainParamters, self.Processos)
@@ -163,20 +163,20 @@ class CamThread(threading.Thread):
                        + cv2.imencode('.JPEG', frame,
                                       [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
                        + b'\r\n')
-            if self.Procs['Hole']:
+            if self.Procs['hole']:
                 _, _, _, frame = Process_Image_Hole(
                     globals()['frame' + self.previewName],
-                    mainParamters['Mask_Parameters']['Hole']['areaMin'],
-                    mainParamters['Mask_Parameters']['Hole']['areaMax'],
-                    mainParamters['Mask_Parameters']['Hole']['perimeter'],
-                    mainParamters['Filtros']['HSV']['Hole']['Valores']
+                    mainParamters['Mask_Parameters']['hole']['areaMin'],
+                    mainParamters['Mask_Parameters']['hole']['areaMax'],
+                    mainParamters['Mask_Parameters']['hole']['perimeter'],
+                    mainParamters['Filtros']['HSV']['hole']['Valores']
                     )
                 yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
                        + cv2.imencode('.JPEG', frame,
                                       [cv2.IMWRITE_JPEG_QUALITY, 100])[1].tobytes()
                        + b'\r\n')
-            if self.Procs['Normal']:
-                # print("Normal")
+            if self.Procs['normal']:
+                # print("normal")
                 frame = globals()['frame'+self.previewName].copy()
                 cv2.drawMarker(frame, (int(frame.shape[1]/2), int(frame.shape[0]/2)),(255,50,0),0,1000, 5)
                 yield (b'--frame\r\n'b'Content-Type: image/jpeg\r\n\r\n'
@@ -288,10 +288,10 @@ class Process(threading.Thread):
 
             # ------------ Acha as coordenadas parciais do furo ------------ #
             parcialFuro, parafusados = Processo_Hole(None,
-                        mainParamters['Mask_Parameters']['Hole']['areaMin'],
-                        mainParamters['Mask_Parameters']['Hole']['areaMax'],
-                        mainParamters['Mask_Parameters']['Hole']['perimeter'],
-                        mainParamters['Filtros']['HSV']['Hole']['Valores'],
+                        mainParamters['Mask_Parameters']['hole']['areaMin'],
+                        mainParamters['Mask_Parameters']['hole']['areaMax'],
+                        mainParamters['Mask_Parameters']['hole']['perimeter'],
+                        mainParamters['Filtros']['HSV']['hole']['Valores'],
                         ids=self.id)
 
 
@@ -345,13 +345,13 @@ class Process(threading.Thread):
                     
                     validar = timeit.default_timer()
                     for n in range(10):
-                        frame = globals()['frame'+str(mainParamters["Cameras"]["Screw"]["Settings"]["id"])]
+                        frame = globals()['frame'+str(mainParamters["Cameras"]["screw"]["Settings"]["id"])]
                         time.sleep(0.1)
                     _, encontrados = Process_Imagew_Scew(frame,
-                                        Op.extractHSValue(mainParamters['Filtros']['HSV']['Screw']["Valores"], 'lower' ),
-                                        Op.extractHSValue(mainParamters['Filtros']['HSV']['Screw']["Valores"], 'upper' ),
-                                        mainParamters['Mask_Parameters']['Screw']['areaMin'],
-                                        mainParamters['Mask_Parameters']['Screw']['areaMax']
+                                        Op.extractHSValue(mainParamters['Filtros']['HSV']['screw']["Valores"], 'lower' ),
+                                        Op.extractHSValue(mainParamters['Filtros']['HSV']['screw']["Valores"], 'upper' ),
+                                        mainParamters['Mask_Parameters']['screw']['areaMin'],
+                                        mainParamters['Mask_Parameters']['screw']['areaMax']
                                         )
                     cv2.imshow("Validador", cv2.resize(_, None, fx=0.3, fy=0.3))
                     if not os.path.exists(f'Images/Process/{self.id}/validar'):
@@ -874,7 +874,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
             while tentativas<=10 and not intencionalStop:
                 if tentativas >=3 and vazio:
                     break
-                frame = globals()['frame'+str(mainParamters["Cameras"]["Hole"]["Settings"]["id"])]
+                frame = globals()['frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])]
                 Resultados, R, per, img_draw = Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues)
                 if lados not in repetidos:
                     changePos = not changePos
@@ -1241,9 +1241,9 @@ async def startAutoCheck():
         await sendWsMessage("update", connection)
         await asyncio.sleep(0.1)
         try:
-            globals()["thread"+str(mainParamters["Cameras"]["Screw"]["Settings"]["id"])] = CamThread(str(mainParamters["Cameras"]["Screw"]["Settings"]["id"]), mainParamters["Cameras"]["Screw"])
+            globals()["thread"+str(mainParamters["Cameras"]["screw"]["Settings"]["id"])] = CamThread(str(mainParamters["Cameras"]["screw"]["Settings"]["id"]), mainParamters["Cameras"]["screw"])
             #stalker1 = ViewAnother(thread1, 5)
-            globals()["thread"+str(mainParamters["Cameras"]["Hole"]["Settings"]["id"])] = CamThread(str(mainParamters["Cameras"]["Hole"]["Settings"]["id"]), mainParamters["Cameras"]["Hole"])
+            globals()["thread"+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])] = CamThread(str(mainParamters["Cameras"]["hole"]["Settings"]["id"]), mainParamters["Cameras"]["hole"])
             thread0.start()
             thread1.start()
 #            for x in range(10):
@@ -1463,9 +1463,9 @@ if __name__ == "__main__":
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Start-Threads                         #
 
-    globals()["thread"+str(mainParamters["Cameras"]["Screw"]["Settings"]["id"])] = CamThread(str(mainParamters["Cameras"]["Screw"]["Settings"]["id"]), mainParamters["Cameras"]["Screw"])
+    globals()["thread"+str(mainParamters["Cameras"]["screw"]["Settings"]["id"])] = CamThread(str(mainParamters["Cameras"]["screw"]["Settings"]["id"]), mainParamters["Cameras"]["screw"])
     #stalker1 = ViewAnother(thread1, 5)
-    globals()["thread"+str(mainParamters["Cameras"]["Hole"]["Settings"]["id"])] = CamThread(str(mainParamters["Cameras"]["Hole"]["Settings"]["id"]), mainParamters["Cameras"]["Hole"])
+    globals()["thread"+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])] = CamThread(str(mainParamters["Cameras"]["hole"]["Settings"]["id"]), mainParamters["Cameras"]["hole"])
     #stalker0 = ViewAnother(thread0, 5)
     appTh = AppThread(ip, portBack)
     

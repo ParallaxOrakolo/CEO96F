@@ -4,12 +4,12 @@
             {
                 "name": "Câmera - Furação",
                 "cameraId": 0,
-                "filter": "Hole"
+                "filter": "hole"
             },
             {
                 "name": "Camera Validação",
                 "cameraId": 1,
-                "filter": "Screw"
+                "filter": "screw"
             }
         ],
         "informations": {
