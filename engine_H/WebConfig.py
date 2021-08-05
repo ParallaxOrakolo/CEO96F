@@ -505,7 +505,6 @@ def findHole(imgAnalyse, minArea, maxArea, c_perimeter, HSValues, fixed_Point, e
 
 
 def setCameraFilter():
-    global camera
     print("Usando valores definidos no arquivo para setar o payload inicial da camera.")
     for process in mainParamters["Filtros"]["HSV"]:
         process = mainParamters["Filtros"]["HSV"][process]
@@ -529,7 +528,6 @@ def setCameraFilter():
 
 
 def setCameraHsv(jsonPayload):
-    global camera
     print("Alterando Payload da camera usando a  configuração do Front.")
     newColors = []
     for filters in jsonPayload["filters"]:
@@ -548,7 +546,6 @@ def setCameraHsv(jsonPayload):
 
 
 def setFilterWithCamera(jsonOrigin, jsonPayload):
-    global camera
     print("Alterando valores da arquivo de configuração com base no payload da Camera")
     for _ in jsonPayload["filters"]:
         print("~"*20)
@@ -567,9 +564,8 @@ def setFilterWithCamera(jsonOrigin, jsonPayload):
 
 
 async def updateCamera(payload):
-    global camera
     camera = setCameraHsv(payload)
-    setFilterWithCamera(mainParamters["Filtros"], camera)
+    setFilterWithCamera(mainParamters, camera)
 
 
 def findCircle(circle_Mask, areaMinC, areaMaxC, perimeter_size, blur_Size=3):
@@ -1245,7 +1241,7 @@ async def startAutoCheck():
             #stalker1 = ViewAnother(thread1, 5)
             globals()["thread"+str(mainParamters["Cameras"]["Hole"]["Settings"]["id"])] = CamThread(str(mainParamters["Cameras"]["Hole"]["Settings"]["id"]), mainParamters["Cameras"]["Hole"])
             thread0.start()
-            thread1.start()
+            thread2.start()
 #            for x in range(10):
 #                try:
 #                    globals()["thread"+str(x)].start()
@@ -1256,7 +1252,7 @@ async def startAutoCheck():
             tth0 = timeit.default_timer()
             while timeit.default_timer()-tth0 <= 20:
                 try:
-                    if type(globals()['frame0']) == np.ndarray and type(globals()['frame1']) == np.ndarray:
+                    if type(globals()['frame0']) == np.ndarray and type(globals()['frame2']) == np.ndarray:
                         appTh = AppThread(ip, portBack)
                         appTh.start()
                         print("Transmissão de vídeo iniciada.")

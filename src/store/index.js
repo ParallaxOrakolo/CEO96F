@@ -235,9 +235,11 @@ const store = new Vuex.Store({
               color: "#a02727",
               color2: "#e261ae",
             },
-            hue: [2, 50],
-            sat: [0, 250],
-            val: [30, 50],
+            hsv:{
+              hue: [2, 50],
+              sat: [0, 250],
+              val: [30, 50],
+            }
           }
 
         },
