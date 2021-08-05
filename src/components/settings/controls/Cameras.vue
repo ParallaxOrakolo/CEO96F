@@ -82,7 +82,7 @@ export default {
       if (this.filter) {
         this.stringUrl = this.selectedFilter + "/" + this.selectedCamera;
       } else {
-        this.stringUrl = "Normal" + "/" + this.selectedCamera;
+        this.stringUrl = "normal" + "/" + this.selectedCamera;
       }
       console.log(this.stringUrl);
     },
