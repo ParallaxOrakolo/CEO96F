@@ -5,14 +5,14 @@
                 "Application": "hole",
                 "Valores": {
                     "lower": {
-                        "h_min": 15,
+                        "h_min": 0,
                         "s_min": 0,
-                        "v_min": 172
+                        "v_min": 0
                     },
                     "upper": {
-                        "h_max": 71,
-                        "s_max": 152,
-                        "v_max": 255
+                        "h_max": 357.662,
+                        "s_max": 236.64,
+                        "v_max": 82.875
                     }
                 }
             },

@@ -834,7 +834,7 @@ def Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues):
 
 def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
     global Analise
-    precicao = 0.4
+    precicao = 0.5
     Pos = []
     parafusadas = 0
     faltadeFuro = False
@@ -870,6 +870,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
             Fast.sendGCODE(arduino, "M42 P34 S255")
             Fast.sendGCODE(arduino, "G91")
             SaveY = 99
+            forceThisY = 0
             while tentativas<=10 and not intencionalStop:
                 if tentativas >=3 and vazio:
                     break
@@ -896,13 +897,16 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
                         MX = Resultados[dsts][1]
                         # Calcula quantos mm tem que se mover, e soma com a posição atual, pra saber pra onde deve ir em relação ao zero
                         ajusteforcado = 1# if tentativas <= 4 else 2
-                        if atualCoordY >= MY:
+                        if (MY+atualCoordY) >= 0:
                             yReal = (MY/ajusteforcado)+atualCoordY
                         else:
                             print("Quer mover além do 0")
                             yReal = 0
+                            forceThisY = MY
+                            MY=0
                         if DebugPrint:
                             print("Ou seja, quer ir para: ", yReal)
+                        print(f"\n AtualCoorY:{atualCoordY}\n MY:{MY}\n yReal:{yReal}\n")
                     except IndexError:
                         print("Falha de identificação, corrija o filtro..")
                         break
@@ -943,7 +947,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
                             # Ajusta define a coordenada do centro com base na distância da camera e da parafusadeira
                             posicao = {
                                 'X':-round(cameCent['X']-posicao['X'], 2)+parafCent['X'],
-                                'Y':-round(cameCent['Y']-posicao['Y'], 2)+parafCent['Y'],
+                                'Y':-round((cameCent['Y']-posicao['Y'])+forceThisY, 2)+parafCent['Y'],
                                 'E':posicao['E']
                             } 
                             
@@ -1308,7 +1312,7 @@ async def startProcess(qtd=9999):
     print(f"Pedido de montagem finalizado em {int(timeit.default_timer()-t0)}s")
 
 
-async def saveCamera():
+async def saveCamera(none):
     Fast.writeJson('Json/mainParamters.json', mainParamters)
     globals()["tempFileFilter"] = mainParamters["Filtros"]["HSV"]
     print("salvei")
