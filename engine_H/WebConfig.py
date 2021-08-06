@@ -965,10 +965,11 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
                             
                             Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'],  parafusaCommand['mm'], zFRPD2, zFRPU2)
                             Fast.sendGCODE(arduino, f"g0 Y{1} F{yMaxFed}")
-                            if globals()["pecaReset"] >= 4:
+                            if globals()["pecaReset"] >= 3:
                                 Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, reset=True)
                                 globals()["pecaReset"] = 0
-                            Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1)
+                            else:
+                                Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1)
                             parafusadas +=1
                         else:
                             faltadeFuro = True

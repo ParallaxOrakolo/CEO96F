@@ -191,6 +191,42 @@
             "description": "Sem comunicação com o CLP",
             "type": "error",
             "date": 1628257593
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1628260727
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1628261348
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1628264763
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1628264789
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1628266915
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1628268804
         }
     ]
 }

@@ -6,13 +6,13 @@
                 "Valores": {
                     "lower": {
                         "h_min": 0,
-                        "s_min": 116,
+                        "s_min": 113,
                         "v_min": 0
                     },
                     "upper": {
-                        "h_max": 34,
-                        "s_max": 210,
-                        "v_max": 140
+                        "h_max": 50,
+                        "s_max": 229,
+                        "v_max": 141
                     }
                 }
             },
