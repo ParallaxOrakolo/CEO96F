@@ -294,7 +294,7 @@ class Process(threading.Thread):
                         mainParamters['Filtros']['HSV']['hole']['Valores'],
                         ids=self.id)
 
-
+            globals()["pecaReset"] += 1
             # ------------ Verifica e inicia processo de parafusar  ------------ #
             # self.infoCode = verificaCLP(nano)
             # if self.infoCode in nonStopCode and not intencionalStop:
@@ -685,7 +685,7 @@ def verificaCLP(serial):
     #return random.choice(["ok","ok","ok","ok","ok","ok","ok","ok","ok","ok",1,"ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok","ok",])
 
 
-def Parafusa(pos, voltas=2, mm=0, ZFD=100, ZFU=100, dowLess=False):
+def Parafusa(pos, voltas=2, mm=0, ZFD=100, ZFU=100, dowLess=False, reset=False):
         Fast.M400(arduino)
         #print(pos, mm, voltas)
         Fast.sendGCODE(arduino, f'g91')
@@ -695,7 +695,6 @@ def Parafusa(pos, voltas=2, mm=0, ZFD=100, ZFU=100, dowLess=False):
         Fast.M400(arduino)
         Fast.sendGCODE(arduino, f"M42 p32 s255")
         Fast.sendGCODE(arduino, f'g38.3 z-{pos} F{int(zMaxFedDown*(ZFD/100))}')
-        #print(f'g38.3 z-{pos} F{int(zMaxFedDown*(ZFD/100))}')
         Fast.sendGCODE(arduino, f'g0 z{mm} F{zMaxFedUp}')
         #Fast.sendGCODE(arduino, f'm280 p{servo} s{angulo}')
         #Fast.sendGCODE(arduino, f'm43 t s10 l10 w{voltas*50}')
@@ -703,6 +702,8 @@ def Parafusa(pos, voltas=2, mm=0, ZFD=100, ZFU=100, dowLess=False):
         
         time.sleep(int((voltas*50/1000)))
         Fast.sendGCODE(arduino, f"M42 p32 s0")
+        if reset:
+            Fast.sendGCODE(arduino, "G28 Z")
         Fast.sendGCODE(arduino, 'g90')
         Fast.sendGCODE(arduino, f'g0 z{pos} F{int(zMaxFedUp*(ZFU/100))}')
         #print(f'g0 z{pos} F{int(zMaxFedUp*(ZFU/100))}')
@@ -834,7 +835,7 @@ def Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues):
 
 def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
     global Analise
-    precicao = 0.5
+    precicao = 0.4
     Pos = []
     parafusadas = 0
     faltadeFuro = False
@@ -871,14 +872,17 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
             Fast.sendGCODE(arduino, "G91")
             SaveY = 99
             forceThisY = 0
+            if lados in repetidos:
+                changePos = not changePos
+            else:
+                changePos = False
             while tentativas<=10 and not intencionalStop:
                 if tentativas >=3 and vazio:
                     break
                 frame = globals()['frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])]
                 Resultados, R, per, img_draw = Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues)
-                if lados not in repetidos:
-                    changePos = not changePos
-                    dsts = 0
+
+#                    dsts = 0
                 # else:
                 #     dsts = len(Resultados)-1
 
@@ -961,6 +965,9 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
                             
                             Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'],  parafusaCommand['mm'], zFRPD2, zFRPU2)
                             Fast.sendGCODE(arduino, f"g0 Y{1} F{yMaxFed}")
+                            if globals()["pecaReset"] >= 4:
+                                Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, reset=True)
+                                globals()["pecaReset"] = 0
                             Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1)
                             parafusadas +=1
                         else:
@@ -1353,6 +1360,7 @@ if __name__ == "__main__":
     parafusaCommand = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusar']
     camera = machineParamters["configuration"]["camera"]
     globals()["tempFileFilter"] = mainParamters["Filtros"]["HSV"]
+    globals()["pecaReset"] = 0
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Json-Variables                        #
 

@@ -60,8 +60,8 @@
     "Mask_Parameters": {
         "hole": {
             "perimeter": 0,
-            "areaMin": 3500,
-            "areaMax": 6000
+            "areaMin": 3200,
+            "areaMax": 6500
         },
         "screw": {
             "perimeter": 0,
