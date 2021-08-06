@@ -101,8 +101,8 @@ def ControlWindow(H=(0, 255), S=(0, 255), V=(0, 255), A=(5000, 3000)):
         pass
     cv2.namedWindow("Controle")
     cv2.resizeWindow("Controle", 600, 600)
-    cv2.createTrackbar("H Min", "Controle", H[0], 255, empty)
-    cv2.createTrackbar("H Max", "Controle", H[1], 255, empty)
+    cv2.createTrackbar("H Min", "Controle", H[0], 360, empty)
+    cv2.createTrackbar("H Max", "Controle", H[1], 360, empty)
     cv2.createTrackbar("S Min", "Controle", S[0], 255, empty)
     cv2.createTrackbar("S Max", "Controle", S[1], 255, empty)
     cv2.createTrackbar("V Min", "Controle", V[0], 255, empty)
@@ -125,8 +125,21 @@ def GetControlWindow():
     Amax = cv2.getTrackbarPos("A Max", "Controle")
     return {"lower": np.array([h_min, s_min, v_min]),
             "upper": np.array([h_max, s_max, v_max]),
-            "a_min": Amin, "a_max": Amax}
-
+            "a_min": Amin, "a_max": Amax}, {
+                 "lower": {
+                        "h_min": h_min,
+                        "s_min": s_min,
+                        "v_min": v_min
+                    },
+                    "upper": {
+                        "h_max": h_max,
+                        "s_max": s_max,
+                        "v_max": v_max
+                    }
+             }
+    
+             
+    
 
 def Rois(img, n=4, escale=0.25, Save=True, show=False):
     output = []
