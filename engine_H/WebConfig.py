@@ -592,7 +592,8 @@ def setFilterWithCamera(jsonOrigin, jsonPayload, restore=False):
                     jsonOrigin["Filtros"]["HSV"][_]["Valores"][k][k1] = v1
                 else:
                     jsonOrigin["Filtros"]["HSV"][_]["Valores"][k][k1] = globals()["tempFileFilter"][_]["Valores"][k][k1]
-
+                    jsonOrigin["Mask_Parameters"][_]["areaMin"] = jsonPayload["filters"][_]["area"][0]
+                    jsonOrigin["Mask_Parameters"][_]["areaMax"] = jsonPayload["filters"][_]["area"][1]
         print(_, ":", jsonOrigin["Filtros"]["HSV"][_]["Valores"])
 
 
