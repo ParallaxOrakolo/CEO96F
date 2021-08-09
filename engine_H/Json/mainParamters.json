@@ -52,7 +52,7 @@
         "all": false,
         "logs": true,
         "print": true,
-        "pictures": false,
+        "pictures": true,
         "markings": false,
         "realTime": false,
         "testControls": false

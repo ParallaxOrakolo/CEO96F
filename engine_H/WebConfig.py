@@ -359,16 +359,18 @@ class Process(threading.Thread):
                         frame = globals()['frame'+str(mainParamters["Cameras"]["screw"]["Settings"]["id"])]
                         time.sleep(0.1)
                     print("Antes")
-                    if not os.path.exists(f'Images/Process/{self.id}/validar'):
-                        os.mkdir(f"Images/Process/{self.id}/validar")
                     _, encontrados = Process_Imagew_Scew(frame,
                                         Op.extractHSValue({'lower': {'h_min': 0, 's_min': 73, 'v_min': 97}}, 'lower' ),
                                         Op.extractHSValue({'upper': {'h_max': 59, 's_max': 191, 'v_max': 233}}, 'upper' ),
                                         mainParamters['Mask_Parameters']['screw']['areaMin'],
                                         mainParamters['Mask_Parameters']['screw']['areaMax']
                                         )
-                    cv2.imwrite(f"Images/Process/F1_{self.id}/validar/{encontrados}_draw.jpg", _)
-                    cv2.imwrite(f"Images/Process/F1_{self.id}/validar/{encontrados}_normal.jpg", frame)
+
+                    if DebugPictures:
+                        if not os.path.exists(f'Images/Process/{self.id}/validar'):
+                            os.mkdir(f"Images/Process/{self.id}/validar")
+                        cv2.imwrite(f"Images/Process/F1_{self.id}/validar/{encontrados}_draw.jpg", _)
+                        cv2.imwrite(f"Images/Process/F1_{self.id}/validar/{encontrados}_normal.jpg", frame)
                     if encontrados >=3:
                         pass
                     else:
@@ -379,11 +381,11 @@ class Process(threading.Thread):
                                             mainParamters['Mask_Parameters']['screw']['areaMax']
                                          )
                     print("Depois")
-                    cv2.imshow("Validador", cv2.resize(_, None, fx=0.3, fy=0.3))
-
-                    cv2.imwrite(f"Images/Process/{self.id}/validar/{encontrados}_draw.jpg", _)
-                    cv2.imwrite(f"Images/Process/{self.id}/validar/{encontrados}_normal.jpg", frame)
-                    cv2.waitKey(1)
+                    if DebugPictures:
+                        cv2.imshow("Validador", cv2.resize(_, None, fx=0.3, fy=0.3))
+                        cv2.imwrite(f"Images/Process/{self.id}/validar/{encontrados}_draw.jpg", _)
+                        cv2.imwrite(f"Images/Process/{self.id}/validar/{encontrados}_normal.jpg", frame)
+                        cv2.waitKey(1)
                     validar = timeit.default_timer()-validar
                     if encontrados == 6:
                         self.status_estribo = "Certo"
@@ -925,8 +927,9 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                 #                     Verifica a distância                   #
                 if Resultados:
                     vazio = False
-                    cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_draw.jpg", img_draw)
-                    cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_normal.jpg", frame)
+                    if DebugPictures:
+                        cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_draw.jpg", img_draw)
+                        cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_normal.jpg", frame)
                     try:
                         if DebugPrint:
                             print("^^"*15)
@@ -975,8 +978,9 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                     # Caso a precisão em ambos os eixos esteja ok, ou tnha exedido o numero de tentativas.
                     if abs(MY) <= precicao and abs(MX) <= precicao or tentativas >=9:
                         if abs(MY) <= precicao and abs(MX) <= precicao:
-                            cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_draw.jpg", img_draw)
-                            cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_normal.jpg", frame)
+                            if DebugPictures:
+                                cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_draw.jpg", img_draw)
+                                cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_normal.jpg", frame)
                             # Faz os valores ficarem acima do permiido pra evita que entre no loop novamente.
                             MY, MX, tentativas = 99, 99, 50
                             posicao = Fast.M114(arduino)
