@@ -1,10 +1,46 @@
-from FastFunctions import Hex2HSVF, HSVF2Hex
+from FastFunctions import Hex2HSVF, HSVF2Hex, readJson, writeJson
+from random import randint, random
+import datetime
 import asyncio
 import json
 
-
 def printJson(jsons):
     print(json.dumps(jsons, sort_keys=True, indent=4))
+production = readJson("Json/production.json")
+current_time  = datetime.datetime.now()
+for n in range(randint(5, 10)):
+    production["production"]["today"]["timesPerCicles"].append(random())
+
+if int(production["production"]["today"]["day"]) != int(current_time.day):
+    production["production"]["yesterday"] = production["production"]["today"]
+    # Zera o dia de hoje
+    production["production"]["today"] = {"day": int(current_time.day),"total": 0,"rigth": 0,"wrong": 0,"timePerCicle": 0,"timesPerCicles": []}
+    production["production"]["dailyAvarege"]["week_times"].append(production["production"]["yesterday"]["timePerCicle"])
+    production["production"]["dailyAvarege"]["week_total"].append(production["production"]["yesterday"]["total"])
+    production["production"]["dailyAvarege"]["week_rigth"].append(production["production"]["yesterday"]["rigth"])
+    production["production"]["dailyAvarege"]["week_wrong"].append(production["production"]["yesterday"]["wrong"])
+    week_time = production["production"]["dailyAvarege"]["week_times"]
+    week_total = production["production"]["dailyAvarege"]["week_total"]
+    week_rigth = production["production"]["dailyAvarege"]["week_rigth"]
+    week_wrong = production["production"]["dailyAvarege"]["week_wrong"]
+    appends = {"times":week_time, "total":week_total, "rigth":week_rigth, "wrong":week_wrong}
+    if week_time:
+        for k, v in appends.items():
+            while len(v) > 5:
+                v.pop(0)
+            media =  sum(v) /len(v)
+            print(k, v, media)
+            production["production"]["dailyAvarege"][k] = media
+
+valores = production["production"]["today"]["timesPerCicles"]
+if valores:
+    media =  sum(valores) /len(valores)
+    production["production"]["today"]["timePerCicle"] = media
+writeJson("Json/production.json", production)
+
+exit()
+
+
 
 HSVF2Hex(Hex2HSVF("#47a6ff", print=True), print=True)
 

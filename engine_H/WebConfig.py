@@ -34,6 +34,17 @@ ws_message = {
     "parameter": ""
 }
 
+operation = {
+    "operation": {
+        "name": "Estribo",
+        "type": "",
+        "panel": "",
+        "timeSeconds": 0,
+        "total": 0,
+        "placed": 0,
+    },
+}
+
 """
     Inicia -> Escuta a conexão.
 
@@ -363,6 +374,7 @@ class Process(threading.Thread):
                     if encontrados == 6:
                         self.status_estribo = "Certo"
                         self.corretas+=1
+                        operation["operation"]["placed"] = self.corretas
                     else:
                         print(f"Foram fixados apenas {encontrados} parafusos.")
                         self.status_estribo = "Errado"
@@ -374,7 +386,9 @@ class Process(threading.Thread):
                 self.status_estribo = "Errado"
                 print("Problema encontrado antes de validar a montagem")
                 break
+            asyncio.run(sendWsMessage("update", operation))
             descarte(self.status_estribo)
+
         #     else:
         #         print("Problema encontrado depois do processo de Scan ")
         #         print(f"Foram econtrados apenas {len(parcialFuro)} furos.")
@@ -673,6 +687,9 @@ def HomingAll():
 
 
 def verificaCLP(serial):
+    global wrongSequence
+    if wrongSequence >= limitWrongSequence:
+        return 9
     echo = Fast.sendGCODE(serial, 'F', echo=True)
     echo = str(echo[len(echo)-1])
     if echo == "Comando não enviado, falha na conexão com a serial.":
@@ -711,7 +728,7 @@ def Parafusa(pos, voltas=2, mm=0, ZFD=100, ZFU=100, dowLess=False, reset=False):
 
 
 def descarte(valor="Errado", Deposito={"Errado":{"X":230, "Y":0}}):
-    global Total0
+    global Total0, wrongSequence
     pos = machineParamters["configuration"]["informations"]["machine"]["defaultPosition"]["descarte"+valor]
     Fast.sendGCODE(arduino, f"G90")
     Fast.sendGCODE(arduino, f"G0 Y{pos['Y']} f{yMaxFed}")
@@ -722,8 +739,12 @@ def descarte(valor="Errado", Deposito={"Errado":{"X":230, "Y":0}}):
     Fast.sendGCODE(arduino, f"G0 E{pos['E']} f{eMaxFed}")
     Fast.M400(arduino)
     Fast.sendGCODE(arduino, f"G28 Y")
-    print(">>> ", timer(int(timeit.default_timer()-Total0)))
-
+    cicleSeconds = timeit.default_timer()-Total0
+    asyncio.run(updateProduction())
+    if valor == "Errado":
+        wrongSequence += 1
+    else:
+        wrongSequence = 0
 
 def timer(total):
     horas = floor(total / 3600)
@@ -1321,6 +1342,51 @@ async def startProcess(qtd=9999):
     await sendWsMessage("startProcess_success")
     print(f"Pedido de montagem finalizado em {int(timeit.default_timer()-t0)}s")
 
+async def updateProduction(cicleSeconds, valor):
+    production["procduction"]["today"]["total"]+=1
+    production["procduction"]["total"]["total"]+=1
+    if valor!="Errado":
+        production["procduction"]["today"]["rigth"]+=1
+        production["procduction"]["total"]["rigth"]+=1
+        
+        if cicleSeconds < production["procduction"]["total"]["timePerCicleMin"]:
+            production["procduction"]["total"]["timePerCicleMin"] = cicleSeconds
+        elif cicleSeconds > production["procduction"]["total"]["timePerCicleMax"]:
+            production["procduction"]["total"]["timePerCicleMax"] = cicleSeconds
+
+        production["procduction"]["today"]["timersPerCicles"].append(cicleSeconds)
+        print(">>> ", timer(cicleSeconds))
+    else:
+        production["procduction"]["today"]["wrong"]+=1
+        production["procduction"]["total"]["wrong"]+=1
+    current_time  = datetime.datetime.now()
+    if int(production["production"]["today"]["day"]) != int(current_time.day):
+        production["production"]["yesterday"] = production["production"]["today"]
+        # Zera o dia de hoje
+        production["production"]["today"] = {"day": int(current_time.day),"total": 0,"rigth": 0,"wrong": 0,"timePerCicle": 0,"timesPerCicles": []}
+        production["production"]["dailyAvarege"]["week_times"].append(production["production"]["yesterday"]["timePerCicle"])
+        production["production"]["dailyAvarege"]["week_total"].append(production["production"]["yesterday"]["total"])
+        production["production"]["dailyAvarege"]["week_rigth"].append(production["production"]["yesterday"]["rigth"])
+        production["production"]["dailyAvarege"]["week_wrong"].append(production["production"]["yesterday"]["wrong"])
+        week_time = production["production"]["dailyAvarege"]["week_times"]
+        week_total = production["production"]["dailyAvarege"]["week_total"]
+        week_rigth = production["production"]["dailyAvarege"]["week_rigth"]
+        week_wrong = production["production"]["dailyAvarege"]["week_wrong"]
+        appends = {"times":week_time, "total":week_total, "rigth":week_rigth, "wrong":week_wrong}
+        if week_time:
+            for k, v in appends.items():
+                while len(v) > 5:
+                    v.pop(0)
+                media =  sum(v) /len(v)
+                print(k, v, media)
+                production["production"]["dailyAvarege"][k] = media
+
+    valores = production["production"]["today"]["timesPerCicles"]
+    if valores:
+        media =  sum(valores) /len(valores)
+        production["production"]["today"]["timePerCicle"] = media
+
+    await sendWsMessage("update", production)
 
 async def saveCamera(none):
     Fast.writeJson('Json/mainParamters.json', mainParamters)
@@ -1358,6 +1424,7 @@ if __name__ == "__main__":
     HoleCuts = Fast.readJson("../engine_H/Json/HoleCuts.json")
     ScrewCuts = Fast.readJson("../engine_H/Json/ScrewCuts.json")
     Analise = Fast.readJson("Json/Analise.json")
+    production = Fast.readJson("Json/production.json")
     parafusaCommand = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusar']
     camera = machineParamters["configuration"]["camera"]
     globals()["tempFileFilter"] = mainParamters["Filtros"]["HSV"]
@@ -1424,7 +1491,8 @@ if __name__ == "__main__":
     AP = True
     nano = "lixo"
     arduino = "lixo"
-
+    wrongSequence = 0
+    limitWrongSequence = 5
     portFront = machineParamters["configuration"]["informations"]["port"]
     portBack = machineParamters["configuration"]["informations"]["portStream"]
     offSetIp = 0

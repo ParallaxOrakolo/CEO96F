@@ -22,12 +22,12 @@
                     "lower": {
                         "h_min": 0,
                         "s_min": 0,
-                        "v_min": 43.095
+                        "v_min": 39
                     },
                     "upper": {
-                        "h_max": 163.373,
-                        "s_max": 87.21,
-                        "v_max": 243.015
+                        "h_max": 286,
+                        "s_max": 86,
+                        "v_max": 218
                     }
                 }
             },
@@ -65,8 +65,8 @@
         },
         "screw": {
             "perimeter": 0,
-            "areaMin": 7000,
-            "areaMax": 33000
+            "areaMin": 8000,
+            "areaMax": 65000
         },
         "normal": {
             "perimeter": 0,

@@ -4,11 +4,12 @@ import FastFunctions as Fast
 import numpy as np
 
 #Op.ControlWindow((0, 179), (0, 69), (58, 144), (8000, 60000))
-Op.ControlWindow((0, 34), (116, 210), (0, 140), (3600, 6500))
+#Op.ControlWindow((0, 34), (116, 210), (0, 140), (3600, 6500))
+Op.ControlWindow((0, 286), (0, 86), (39, 218), (8000, 6200))
 def Process_Imagew_Scew(frame, lower, upper, AreaMin, AreaMax, name="ScrewCuts"):
 
     frames = frame.copy()
-    cv2.drawMarker(frames, (int(frames.shape[1]/2), int(frames.shape[0]/2)), (0,0,255), thickness=30, markerSize=100000)
+    #cv2.drawMarker(frames, (int(frames.shape[1]/2), int(frames.shape[0]/2)), (0,0,255), thickness=30, markerSize=100000)
     img_draw = frames.copy()
     # cv2.imshow("img_draw_original", cv2.resize(img_draw, None, fx=0.35, fy=0.35))
     finds = 0
@@ -146,18 +147,19 @@ def sortSecond(val):
 # cap = cv2.VideoCapture(1)
 # cap.set(3, 3264)
 # cap.set(4, 2448)
-# _, show = cap.read()
-ScrewCuts = Fast.readJson("../engine_H/Json/ScrewCuts.json")
+# # _, show = cap.read()
+# ScrewCuts = Fast.readJson("../engine_H/Json/ScrewCuts.json")
 ScrewCuts = Fast.readJson("../engine_H/Cuts.json")
-HoleCuts = Fast.readJson("../engine_H/Json/HoleCuts.json")
+# HoleCuts = Fast.readJson("../engine_H/Json/HoleCuts.json")
 quem = ["0mcG6", "1snHl","CBjzQ"]
 id = 2
 quant = 3
 
-img = cv2.imread(f"../engine_H/Images/Process/{quem[id]}/validar/{quant}_normal.jpg")
+#img = cv2.imread(f"../engine_H/Images/Process/{quem[id]}/validar/{quant}_normal.jpg")
 # img = cv2.imread('c:/Users/55419/Trabalho/Parallax/GitRepos/CEO96F/engine_H/Images/Errado_1_1_normal.jpg')
 # img = cv2.imread('c:/Users/55419/Trabalho/Parallax/GitRepos/CEO96F/engine_H/Images/0_3_normal.jpg')
-#imgs = Op.Rois(img, 4, 0.25)
+img = cv2.imread(f"../engine_H/Images/Teste.jpg")
+# imgs = Op.Rois(img, 6, 0.25)
 while cv2.waitKey(1) != 27:
     #_, img = cap.read()
     
