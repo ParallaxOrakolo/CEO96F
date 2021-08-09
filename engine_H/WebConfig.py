@@ -358,15 +358,29 @@ class Process(threading.Thread):
                     for n in range(10):
                         frame = globals()['frame'+str(mainParamters["Cameras"]["screw"]["Settings"]["id"])]
                         time.sleep(0.1)
+                    print("Antes")
+                    if not os.path.exists(f'Images/Process/{self.id}/validar'):
+                        os.mkdir(f"Images/Process/{self.id}/validar")
                     _, encontrados = Process_Imagew_Scew(frame,
-                                        Op.extractHSValue(mainParamters['Filtros']['HSV']['screw']["Valores"], 'lower' ),
-                                        Op.extractHSValue(mainParamters['Filtros']['HSV']['screw']["Valores"], 'upper' ),
+                                        Op.extractHSValue({'lower': {'h_min': 0, 's_min': 73, 'v_min': 97}}, 'lower' ),
+                                        Op.extractHSValue({'upper': {'h_max': 59, 's_max': 191, 'v_max': 233}}, 'upper' ),
                                         mainParamters['Mask_Parameters']['screw']['areaMin'],
                                         mainParamters['Mask_Parameters']['screw']['areaMax']
                                         )
+                    cv2.imwrite(f"Images/Process/F1_{self.id}/validar/{encontrados}_draw.jpg", _)
+                    cv2.imwrite(f"Images/Process/F1_{self.id}/validar/{encontrados}_normal.jpg", frame)
+                    if encontrados >=3:
+                        pass
+                    else:
+                        _, encontrados = Process_Imagew_Scew(frame,
+                                            Op.extractHSValue(mainParamters['Filtros']['HSV']['screw']["Valores"], 'lower' ),
+                                            Op.extractHSValue(mainParamters['Filtros']['HSV']['screw']["Valores"], 'upper' ),
+                                            mainParamters['Mask_Parameters']['screw']['areaMin'],
+                                            mainParamters['Mask_Parameters']['screw']['areaMax']
+                                         )
+                    print("Depois")
                     cv2.imshow("Validador", cv2.resize(_, None, fx=0.3, fy=0.3))
-                    if not os.path.exists(f'Images/Process/{self.id}/validar'):
-                        os.mkdir(f"Images/Process/{self.id}/validar")
+
                     cv2.imwrite(f"Images/Process/{self.id}/validar/{encontrados}_draw.jpg", _)
                     cv2.imwrite(f"Images/Process/{self.id}/validar/{encontrados}_normal.jpg", frame)
                     cv2.waitKey(1)
@@ -740,7 +754,7 @@ def descarte(valor="Errado", Deposito={"Errado":{"X":230, "Y":0}}):
     Fast.M400(arduino)
     Fast.sendGCODE(arduino, f"G28 Y")
     cicleSeconds = timeit.default_timer()-Total0
-    asyncio.run(updateProduction())
+    asyncio.run(updateProduction(cicleSeconds, valor))
     if valor == "Errado":
         wrongSequence += 1
     else:
@@ -1343,23 +1357,23 @@ async def startProcess(qtd=9999):
     print(f"Pedido de montagem finalizado em {int(timeit.default_timer()-t0)}s")
 
 async def updateProduction(cicleSeconds, valor):
-    production["procduction"]["today"]["total"]+=1
-    production["procduction"]["total"]["total"]+=1
+    production["production"]["today"]["total"]+=1
+    production["production"]["total"]["total"]+=1
     if valor!="Errado":
-        production["procduction"]["today"]["rigth"]+=1
-        production["procduction"]["total"]["rigth"]+=1
+        production["production"]["today"]["rigth"]+=1
+        production["production"]["total"]["rigth"]+=1
         
-        if cicleSeconds < production["procduction"]["total"]["timePerCicleMin"]:
-            production["procduction"]["total"]["timePerCicleMin"] = cicleSeconds
-        elif cicleSeconds > production["procduction"]["total"]["timePerCicleMax"]:
-            production["procduction"]["total"]["timePerCicleMax"] = cicleSeconds
+        if cicleSeconds < production["production"]["total"]["timePerCicleMin"]:
+            production["production"]["total"]["timePerCicleMin"] = cicleSeconds
+        elif cicleSeconds > production["production"]["total"]["timePerCicleMax"]:
+            production["production"]["total"]["timePerCicleMax"] = cicleSeconds
 
-        production["procduction"]["today"]["timersPerCicles"].append(cicleSeconds)
+        production["production"]["today"]["timersPerCicles"].append(cicleSeconds)
         print(">>> ", timer(cicleSeconds))
     else:
-        production["procduction"]["today"]["wrong"]+=1
-        production["procduction"]["total"]["wrong"]+=1
-    current_time  = datetime.datetime.now()
+        production["production"]["today"]["wrong"]+=1
+        production["production"]["total"]["wrong"]+=1
+    current_time  = datetime.now()
     if int(production["production"]["today"]["day"]) != int(current_time.day):
         production["production"]["yesterday"] = production["production"]["today"]
         # Zera o dia de hoje
