@@ -240,7 +240,7 @@ class ViewAnother(threading.Thread):
             time.sleep(self.look_time)
 
 class Process(threading.Thread):
-    def __init__(self, quantidad, id):
+    def __init__(self, quantidad, id, model):
         threading.Thread.__init__(self)
         global intencionalStop, arduino, nano
         self.qtd = quantidad
@@ -251,7 +251,7 @@ class Process(threading.Thread):
         intencionalStop = False # Destrava a maquina quando um novo processo é iniciado.
         self.arduino = arduino
         self.nano = nano
-
+        self.model = model
         self.id = id
         self.cor = getattr(Fast.ColorPrint, random.choice(["YELLOW", "GREEN", "BLUE", "RED"]))
 
@@ -303,7 +303,7 @@ class Process(threading.Thread):
                         mainParamters['Mask_Parameters']['hole']['areaMax'],
                         mainParamters['Mask_Parameters']['hole']['perimeter'],
                         mainParamters['Filtros']['HSV']['hole']['Valores'],
-                        ids=self.id)
+                        ids=self.id, model=self.model)
 
             globals()["pecaReset"] += 1
             # ------------ Verifica e inicia processo de parafusar  ------------ #
@@ -868,7 +868,7 @@ def Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues):
     return Resultados, R, per, img_draw
 
 
-def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
+def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model="A"):
     global Analise
     precicao = 0.4
     Pos = []
@@ -898,9 +898,9 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
         if not intencionalStop and not faltadeFuro:
             tentativas, dsts = 0, 0
             Fast.sendGCODE(arduino, "G90")
-            Fast.sendGCODE(arduino, f"G0 X{Analise[str(angle)][str(int(changePos))]['X']} F{xMaxFed}")
-            Fast.sendGCODE(arduino, f"G0 Y{Analise[str(angle)][str(int(changePos))]['Y']} F{yMaxFed}")
-            defaultCoordY = Analise[str(angle)][str(int(changePos))]['Y']
+            Fast.sendGCODE(arduino, f"G0 X{Analise[model][str(angle)][str(int(changePos))]['X']} F{xMaxFed}")
+            Fast.sendGCODE(arduino, f"G0 Y{Analise[model][str(angle)][str(int(changePos))]['Y']} F{yMaxFed}")
+            defaultCoordY = Analise[model][str(angle)][str(int(changePos))]['Y']
             atualCoordY = NLinearRegression(defaultCoordY, reverse=True)
             Fast.M400(arduino)
             Fast.sendGCODE(arduino, "M42 P34 S255")
@@ -980,6 +980,10 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
                             # Faz os valores ficarem acima do permiido pra evita que entre no loop novamente.
                             MY, MX, tentativas = 99, 99, 50
                             posicao = Fast.M114(arduino)
+
+                            Analise[model][str(angle)][str(int(changePos))]['X'] = posicao['X']
+                            Analise[model][str(angle)][str(int(changePos))]['Y'] = posicao['Y']
+    
                             #print(f"{Fast.ColorPrint.WARNING} VARLO DO E: {posicao['E']} {Fast.ColorPrint.ENDC}")
                             Pos.append(posicao)
 
@@ -999,7 +1003,12 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None):
                             # Parafusa
                             
                             Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'],  parafusaCommand['mm'], zFRPD2, zFRPU2)
-                            Fast.sendGCODE(arduino, f"g0 Y{1} F{yMaxFed}")
+                            try:
+                                Fast.sendGCODE(arduino, "G90")
+                                Fast.sendGCODE(arduino, f"G0 X{Analise[model][str(angle+90)][str(int(changePos))]['X']} F{xMaxFed}")
+                                Fast.sendGCODE(arduino, f"G0 Y{Analise[model][str(angle+90)][str(int(changePos))]['Y']} F{yMaxFed}")
+                            except KeyError:
+                                Fast.sendGCODE(arduino, f"g0 Y{1} F{yMaxFed}")
                             if globals()["pecaReset"] >= 3:
                                 Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, reset=True)
                                 globals()["pecaReset"] = 0
@@ -1349,9 +1358,9 @@ async def startAutoCheck():
     return AutoCheckStatus
 
 
-async def startProcess(qtd=9999):
+async def startProcess(qtd=9999, model="A"):
     t0 = timeit.default_timer()
-    NewMont = Process(qtd, Fast.randomString(tamanho=5 ,pattern=""))
+    NewMont = Process(qtd, Fast.randomString(tamanho=5 ,pattern=""), model=model)
     NewMont.start()
     await sendWsMessage("startProcess_success")
     print(f"Pedido de montagem finalizado em {int(timeit.default_timer()-t0)}s")
@@ -1400,6 +1409,7 @@ async def updateProduction(cicleSeconds, valor):
         media =  sum(valores) /len(valores)
         production["production"]["today"]["timePerCicle"] = media
 
+    Fast.writeJson("Json/production.json", production)
     await sendWsMessage("update", production)
 
 async def saveCamera(none):
