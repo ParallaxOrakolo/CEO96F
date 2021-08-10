@@ -136,9 +136,9 @@ export default {
     ...mapGetters(["state"]),
     numberParts() {
       if (this.state.operation.total) {
-        return this.state.operation.placed + "/" + this.state.operation.total;
+        return this.state.operation.placed + " de " + this.state.operation.total;
       } else {
-        return this.state.operation.placed + "/Ilimitado";
+        return this.state.operation.placed + " de infinitas";
       }
     },
   },

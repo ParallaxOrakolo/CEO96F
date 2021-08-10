@@ -6,7 +6,7 @@
 <SerialMonitor></SerialMonitor> -->
 <v-row no-gutters>
       <Camera></Camera>
-      <ColorPikerHSV v-if="configuration.logged" />
+      <ColorPikerHSV v-show="configuration.logged" />
       </v-row>
       <ButtonsControls></ButtonsControls>
       
@@ -139,7 +139,7 @@ export default {
   },
 
   computed: {
-    ...mapState(["configuration", "logged"]),
+    ...mapState(["configuration"]),
   },
 };
 </script>

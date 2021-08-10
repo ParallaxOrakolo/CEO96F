@@ -279,7 +279,8 @@ const store = new Vuex.Store({
         state.connectionStatus = state.connectionStatusList.connected;
         state.isConnected = true;
         // wsConnection.send(actions.START_AUTOCHECK);
-        store.commit("SEND_MESSAGE", { command: actions.START_AUTOCHECK });
+        store.commit("SEND_MESSAGE", { command: actions.START_AUTOCHECK, parameter:Date() });
+        // store.commit("SEND_MESSAGE", { command: actions.START_AUTOCHECK });
         state.isConnecting = false;
       };
 

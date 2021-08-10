@@ -49,7 +49,7 @@
       <User-table v-if="configuration.logged"/>
       </v-card-text>
 
-      <JsonEditor2/>
+      <JsonEditor2 v-if="configuration.logged"/>
     </v-expansion-panel-content>
   </v-expansion-panel>
 </template>
