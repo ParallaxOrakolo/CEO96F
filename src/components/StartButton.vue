@@ -61,7 +61,14 @@
                 value=""
                 v-on:click="
                   () => {
-                    SEND_MESSAGE({ command: actions.START_PROCESS });
+                    SEND_MESSAGE({
+			command: actions.START_PROCESS,
+			parameter: {
+                            total: 9999,
+                            onlyCorrectParts: onlyCorrectParts,
+                            partId: selectedPart,
+                          }
+			});
                     //startStatusChage
                     dialog = false;
                     state.operation.total = 0;

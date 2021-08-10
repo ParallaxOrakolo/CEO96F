@@ -1371,7 +1371,9 @@ async def startAutoCheck(date=None):
     return AutoCheckStatus
 
 
-async def startProcess(qtd=9999, model="A"):
+async def startProcess(parm):
+
+    qtd, only, model = parm['total'], parm['onlyCorrectParts'], str(parm['partId'])
     t0 = timeit.default_timer()
     NewMont = Process(qtd, Fast.randomString(tamanho=5 ,pattern=""), model=model)
     NewMont.start()
