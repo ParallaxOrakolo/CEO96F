@@ -677,6 +677,48 @@
             "description": "Garra não pegou",
             "type": "error",
             "date": 1628517370
+        },
+        {
+            "code": 1,
+            "description": "Garra não pegou",
+            "type": "error",
+            "date": 1628601552
+        },
+        {
+            "code": 3,
+            "description": "Troca de turno",
+            "type": "info",
+            "date": 1628601565
+        },
+        {
+            "code": 1,
+            "description": "Garra não pegou",
+            "type": "error",
+            "date": 1628617367
+        },
+        {
+            "code": 3,
+            "description": "Troca de turno",
+            "type": "info",
+            "date": 1628617474
+        },
+        {
+            "code": 3,
+            "description": "Troca de turno",
+            "type": "info",
+            "date": 1628617861
+        },
+        {
+            "code": 3,
+            "description": "Troca de turno",
+            "type": "info",
+            "date": 1628618190
+        },
+        {
+            "code": 1,
+            "description": "Garra não pegou",
+            "type": "error",
+            "date": 1628618248
         }
     ]
 }

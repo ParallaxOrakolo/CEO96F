@@ -86,7 +86,6 @@
         "
       >
       </v-range-slider>
-      {{configuration.camera.filters[selectedFilter].area}}
       <v-row justify="center" class="mb-6">
         <v-dialog v-model="dialog" persistent max-width="400">
           <template v-slot:activator="{ on, attrs }">
