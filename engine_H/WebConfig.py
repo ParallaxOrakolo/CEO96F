@@ -303,7 +303,7 @@ class Process(threading.Thread):
                         mainParamters['Mask_Parameters']['hole']['areaMax'],
                         mainParamters['Mask_Parameters']['hole']['perimeter'],
                         mainParamters['Filtros']['HSV']['hole']['Valores'],
-                        ids=self.id, model=self.model)
+                        ids=self.id, model=self.model, rodada=self.rodada)
 
             globals()["pecaReset"] += 1
             # ------------ Verifica e inicia processo de parafusar  ------------ #
@@ -360,8 +360,8 @@ class Process(threading.Thread):
                         time.sleep(0.1)
                     print("Antes")
                     _, encontrados = Process_Imagew_Scew(frame,
-                                        Op.extractHSValue({'lower': {'h_min': 0, 's_min': 73, 'v_min': 97}}, 'lower' ),
-                                        Op.extractHSValue({'upper': {'h_max': 59, 's_max': 191, 'v_max': 233}}, 'upper' ),
+                                        Op.extractHSValue(mainParamters['Filtros']['HSV']['screw']["Valores"], 'lower' ),
+                                        Op.extractHSValue(mainParamters['Filtros']['HSV']['screw']["Valores"], 'upper' ),
                                         mainParamters['Mask_Parameters']['screw']['areaMin'],
                                         mainParamters['Mask_Parameters']['screw']['areaMax']
                                         )
@@ -369,22 +369,21 @@ class Process(threading.Thread):
                     if DebugPictures:
                         if not os.path.exists(f'Images/Process/{self.id}/validar'):
                             os.mkdir(f"Images/Process/{self.id}/validar")
-                        cv2.imwrite(f"Images/Process/F1_{self.id}/validar/{encontrados}_draw.jpg", _)
-                        cv2.imwrite(f"Images/Process/F1_{self.id}/validar/{encontrados}_normal.jpg", frame)
-                    if encontrados >=3:
-                        pass
-                    else:
+                        cv2.imwrite(f"Images/Process/{self.id}/validar/F1_R{self.rodada}_E{encontrados}_draw.jpg", _)
+                        cv2.imwrite(f"Images/Process/{self.id}/validar/F1_R{self.rodada}_E{encontrados}_normal.jpg", frame)
+                    if encontrados == 0:
                         _, encontrados = Process_Imagew_Scew(frame,
-                                            Op.extractHSValue(mainParamters['Filtros']['HSV']['screw']["Valores"], 'lower' ),
-                                            Op.extractHSValue(mainParamters['Filtros']['HSV']['screw']["Valores"], 'upper' ),
+                                            Op.extractHSValue({'lower': {'h_min': 7, 's_min': 85, 'v_min': 92}}, 'lower' ),
+                                            Op.extractHSValue({'upper': {'h_max': 57, 's_max': 230, 'v_max': 242}}, 'upper' ),
                                             mainParamters['Mask_Parameters']['screw']['areaMin'],
                                             mainParamters['Mask_Parameters']['screw']['areaMax']
                                          )
+                        if DebugPictures:
+                            cv2.imwrite(f"Images/Process/{self.id}/validar/F2_R{self.rodada}_E{encontrados}_draw.jpg", _)
+                            cv2.imwrite(f"Images/Process/{self.id}/validar/F2_R{self.rodada}_E{encontrados}_normal.jpg", frame)
                     print("Depois")
                     if DebugPictures:
                         cv2.imshow("Validador", cv2.resize(_, None, fx=0.3, fy=0.3))
-                        cv2.imwrite(f"Images/Process/{self.id}/validar/{encontrados}_draw.jpg", _)
-                        cv2.imwrite(f"Images/Process/{self.id}/validar/{encontrados}_normal.jpg", frame)
                         cv2.waitKey(1)
                     validar = timeit.default_timer()-validar
                     if encontrados == 6:
@@ -402,7 +401,9 @@ class Process(threading.Thread):
                 self.status_estribo = "Errado"
                 print("Problema encontrado antes de validar a montagem")
                 break
+            print("update Operation")
             asyncio.run(sendWsMessage("update", operation))
+            print("update Operation - Finish")
             descarte(self.status_estribo)
 
         #     else:
@@ -700,12 +701,13 @@ def HomingAll():
     Fast.sendGCODE(arduino, "G92 X0 Y0 Z0 E0")
     Fast.sendGCODE(arduino, "G92.1")
     Fast.sendGCODE(arduino, "M17 X Y Z E")
-    Parafusa(152, mm=5, voltas=20)
+    Parafusa(132, mm=5, voltas=20)
 
 
 def verificaCLP(serial):
     global wrongSequence
     if wrongSequence >= limitWrongSequence:
+        wrongSequence = 0
         return 9
     echo = Fast.sendGCODE(serial, 'F', echo=True)
     echo = str(echo[len(echo)-1])
@@ -758,6 +760,7 @@ def descarte(valor="Errado", Deposito={"Errado":{"X":230, "Y":0}}):
     Fast.sendGCODE(arduino, f"G28 Y")
     cicleSeconds = timeit.default_timer()-Total0
     asyncio.run(updateProduction(cicleSeconds, valor))
+    print("updateProducion - Finish")
     if valor == "Errado":
         wrongSequence += 1
     else:
@@ -871,12 +874,13 @@ def Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues):
     return Resultados, R, per, img_draw
 
 
-def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model="A"):
+def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model="A", rodada=0):
     global Analise
     precicao = 0.4
     Pos = []
     parafusadas = 0
     faltadeFuro = False
+    possivelErro = 0
     vazio = False
     repetidos = [1, 4]
     angle = 0
@@ -915,7 +919,8 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             else:
                 changePos = False
             while tentativas<=10 and not intencionalStop:
-                if tentativas >=3 and vazio:
+                if possivelErro >=3 and vazio:
+                    possivelErro = 0
                     break
                 frame = globals()['frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])]
                 Resultados, R, per, img_draw = Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues)
@@ -928,9 +933,9 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                 #                     Verifica a distância                   #
                 if Resultados:
                     vazio = False
-                    if DebugPictures:
-                        cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_draw.jpg", img_draw)
-                        cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_normal.jpg", frame)
+#                    if DebugPictures:
+                        #cv2.imwrite(f"{path}/identificar/R{rodada}_L{lados}_T{tentativas}_draw.jpg", img_draw)
+                        #cv2.imwrite(f"{path}/identificar/R{rodada}_L{lados}_T{tentativas}_normal.jpg", frame)
                     try:
                         if DebugPrint:
                             print("^^"*15)
@@ -986,8 +991,8 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                             MY, MX, tentativas = 99, 99, 50
                             posicao = Fast.M114(arduino)
 
-                            Analise[model][str(angle)][str(int(changePos))]['X'] = posicao['X']
-                            Analise[model][str(angle)][str(int(changePos))]['Y'] = posicao['Y']
+#                            Analise[model][str(angle)][str(int(changePos))]['X'] = posicao['X']
+#                            Analise[model][str(angle)][str(int(changePos))]['Y'] = posicao['Y']
     
                             #print(f"{Fast.ColorPrint.WARNING} VARLO DO E: {posicao['E']} {Fast.ColorPrint.ENDC}")
                             Pos.append(posicao)
@@ -1008,12 +1013,13 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                             # Parafusa
                             
                             Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'],  parafusaCommand['mm'], zFRPD2, zFRPU2)
-                            try:
-                                Fast.sendGCODE(arduino, "G90")
-                                Fast.sendGCODE(arduino, f"G0 X{Analise[model][str(angle+90)][str(int(changePos))]['X']} F{xMaxFed}")
-                                Fast.sendGCODE(arduino, f"G0 Y{Analise[model][str(angle+90)][str(int(changePos))]['Y']} F{yMaxFed}")
-                            except KeyError:
-                                Fast.sendGCODE(arduino, f"g0 Y{1} F{yMaxFed}")
+#                            try:
+#                                if lados not in repetidos:
+#                                    Fast.sendGCODE(arduino, "G90")
+#                                    Fast.sendGCODE(arduino, f"G0 X{Analise[model][str(angle+90)][str(int(changePos))]['X']} F{xMaxFed}")
+#                                    Fast.sendGCODE(arduino, f"G0 Y{Analise[model][str(angle+90)][str(int(changePos))]['Y']} F{yMaxFed}")
+#                            except KeyError:
+                            Fast.sendGCODE(arduino, f"g0 Y{1} F{yMaxFed}")
                             if globals()["pecaReset"] >= 3:
                                 Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, reset=True)
                                 globals()["pecaReset"] = 0
@@ -1032,6 +1038,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                     cv2.imwrite(f"{path}/identificar/Errado_{lados}_{tentativas}_normal.jpg", frame)
                     vazio = True
                     tentativas+=1
+                    possivelErro += 1
             #identificar.append(timeit.default_timer()-tI0)G0 G91
             #print("Passando pro lado:", lados+1)
             if lados not in repetidos:
@@ -1243,9 +1250,11 @@ async def logRefresh(timeout=1):
             Fast.writeJson('Json/logList.json', logList)
 
 
+#async def startAutoCheck(date=None):
 async def startAutoCheck():
     global arduino, nano, conexaoStatusArdu, conexaoStatusNano, threadStatus, infoCode 
-    
+#    if date:
+#        subprocess.run(["date", "-s", f"{date[:len(date)-len('(Horário Padrão de Brasília)')]}"])
     # await updateSlider('Normal')
     await sendWsMessage("update", machineParamters)
     setCameraFilter()
@@ -1371,9 +1380,11 @@ async def startProcess(qtd=9999, model="A"):
     print(f"Pedido de montagem finalizado em {int(timeit.default_timer()-t0)}s")
 
 async def updateProduction(cicleSeconds, valor):
+    print("updateProducion")
     production["production"]["today"]["total"]+=1
     production["production"]["total"]["total"]+=1
     if valor!="Errado":
+        print("Valor Certo")
         production["production"]["today"]["rigth"]+=1
         production["production"]["total"]["rigth"]+=1
         
@@ -1382,12 +1393,14 @@ async def updateProduction(cicleSeconds, valor):
         elif cicleSeconds > production["production"]["total"]["timePerCicleMax"]:
             production["production"]["total"]["timePerCicleMax"] = cicleSeconds
 
-        production["production"]["today"]["timersPerCicles"].append(cicleSeconds)
+        production["production"]["today"]["timesPerCicles"].append(cicleSeconds)
         print(">>> ", timer(cicleSeconds))
     else:
+        print("Valor Errado")
         production["production"]["today"]["wrong"]+=1
         production["production"]["total"]["wrong"]+=1
     current_time  = datetime.now()
+    print(f"{current_time} vs {int(production['production']['today']['day'])}")
     if int(production["production"]["today"]["day"]) != int(current_time.day):
         production["production"]["yesterday"] = production["production"]["today"]
         # Zera o dia de hoje
@@ -1413,8 +1426,8 @@ async def updateProduction(cicleSeconds, valor):
     if valores:
         media =  sum(valores) /len(valores)
         production["production"]["today"]["timePerCicle"] = media
-
-    Fast.writeJson("Json/production.json", production)
+    print("Escrevendo")
+    Fast.writeJson('Json/production.json', production)
     await sendWsMessage("update", production)
 
 async def saveCamera(none):

@@ -20,14 +20,14 @@
                 "Application": "screw",
                 "Valores": {
                     "lower": {
-                        "h_min": 0,
-                        "s_min": 0,
-                        "v_min": 39
+                        "h_min": 11,
+                        "s_min": 17,
+                        "v_min": 69
                     },
                     "upper": {
-                        "h_max": 286,
-                        "s_max": 86,
-                        "v_max": 218
+                        "h_max": 54,
+                        "s_max": 189,
+                        "v_max": 255
                     }
                 }
             },
@@ -65,7 +65,7 @@
         },
         "screw": {
             "perimeter": 0,
-            "areaMin": 8000,
+            "areaMin": 7000,
             "areaMax": 65000
         },
         "normal": {
