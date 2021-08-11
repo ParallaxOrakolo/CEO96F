@@ -7,6 +7,7 @@ import Settings from '@/views/Settings'
 import Intro from '@/views/Intro'
 import Scan from '@/views/Scan'
 import Progress from '@/views/Progress'
+import Dashboard from '@/views/Dashboard'
 
 Vue.use(Router)
 
@@ -35,6 +36,11 @@ const routes = [
         name: 'progress',
         path:'/progress',
         component: Progress,
+    },
+    {
+        name: 'dashboard',
+        path:'/dashboard',
+        component: Dashboard,
     },
 ]
 
