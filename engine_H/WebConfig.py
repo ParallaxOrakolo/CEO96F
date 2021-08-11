@@ -794,11 +794,11 @@ def alinhar():
     Fast.sendGCODE(arduino, f"G0 Y{alin['Y']} f{yMaxFed}")
 
 
-def Process_Imagew_Scew(frames, lower, upper, AreaMin, AreaMax, name="ScrewCuts"):
+def Process_Imagew_Scew(frames, lower, upper, AreaMin, AreaMax, name="ScrewCuts", model="1"):
     img_draw = frames.copy()
     # cv2.imshow("img_draw_original", cv2.resize(img_draw, None, fx=0.35, fy=0.35))
     finds = 0
-    for Pontos in globals()[name]:
+    for Pontos in globals()[name][model]:
         pa, pb = tuple(Pontos["P0"]), (Pontos["P0"][0]+Pontos["P1"][0],
                                        Pontos["P0"][1]+Pontos["P1"][1])
 
@@ -876,7 +876,7 @@ def Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues):
 
 def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model="A", rodada=0):
     global Analise
-    precicao = 0.4
+    precicao = 0.52
     Pos = []
     parafusadas = 0
     faltadeFuro = False
@@ -933,9 +933,9 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                 #                     Verifica a distância                   #
                 if Resultados:
                     vazio = False
-#                    if DebugPictures:
-                        #cv2.imwrite(f"{path}/identificar/R{rodada}_L{lados}_T{tentativas}_draw.jpg", img_draw)
-                        #cv2.imwrite(f"{path}/identificar/R{rodada}_L{lados}_T{tentativas}_normal.jpg", frame)
+                    if DebugPictures:
+                        cv2.imwrite(f"{path}/identificar/R{rodada}_L{lados}_T{tentativas}_draw.jpg", img_draw)
+                        cv2.imwrite(f"{path}/identificar/R{rodada}_L{lados}_T{tentativas}_normal.jpg", frame)
                     try:
                         if DebugPrint:
                             print("^^"*15)
@@ -1253,7 +1253,7 @@ async def logRefresh(timeout=1):
 async def startAutoCheck(date=None):
     global arduino, nano, conexaoStatusArdu, conexaoStatusNano, threadStatus, infoCode 
     if date:
-        subprocess.run(["date", "-s", f"{date[:len(date)-len('(Horário Padrão de Brasília)')]}"])
+        subprocess.run(["sudo","date", "-s", f"{date[:len(date)-len('(Horário Padrão de Brasília)')]}"])
     # await updateSlider('Normal')
     await sendWsMessage("update", machineParamters)
     setCameraFilter()
