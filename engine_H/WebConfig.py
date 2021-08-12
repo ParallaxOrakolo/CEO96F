@@ -1275,8 +1275,8 @@ async def logRefresh(timeout=1):
 
 async def startAutoCheck(date=None):
     global arduino, nano, conexaoStatusArdu, conexaoStatusNano, threadStatus, infoCode 
-    if date:
-        subprocess.run(["sudo","date", "-s", f"{date[:len(date)-len('(Horário Padrão de Brasília)')]}"])
+    if date and platform.system() == "Linux":
+        subprocess.run(["date", "-s", f"{date[:len(date)-len('(Horário Padrão de Brasília)')]}"])
     # await updateSlider('Normal')
     await sendWsMessage("update", machineParamters)
     setCameraFilter()

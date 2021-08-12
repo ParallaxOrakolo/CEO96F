@@ -10,15 +10,27 @@
       >
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
+      <!-- issso foi nojento -->
+      <v-btn
+        icon
+        class="hidden-xs-only"
+        v-on:click="$router.go(-1)"
+        alt
+        v-if="$route.name == 'dashboard'"
+      >
+        <v-icon>mdi-arrow-left</v-icon>
+      </v-btn>
       <img
         class="logo"
         src="../assets/img/parallax-logo-06.svg"
         alt
         v-if="$route.name != 'settings'"
+        v-show="$route.name != 'dashboard'"
       />
     </router-link>
     <v-spacer>
       <h3 v-if="$route.name == 'settings'">Configurações</h3>
+      <h3 v-if="$route.name == 'dashboard'">Dashboard</h3>
       <!-- <h3 v-if="online">Online </h3> -->
       <!-- <h3 v-if="!online">Offline </h3> -->
     </v-spacer>

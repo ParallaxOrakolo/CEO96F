@@ -12,10 +12,11 @@
             >Escolha o tamanho da peça!</v-card-title
           >
           <v-card-title class="text-h5 pt-6 pb-8" v-else
-            ><v-btn class="mr-2" text icon small @click="step1 = true"><v-icon>mdi-arrow-left</v-icon></v-btn> Quantas peças
-            deseja produzir?</v-card-title
+            ><v-btn class="mr-2" text icon small @click="step1 = true"
+              ><v-icon>mdi-arrow-left</v-icon></v-btn
+            >
+            Quantas peças deseja produzir?</v-card-title
           >
-
           <v-item-group v-if="step1">
             <v-container>
               <v-row class="d-flex flex-row align-center justify-space-around">
@@ -52,6 +53,7 @@
             class="flex-column d-flex justify-center mt-6"
             v-if="!step1"
           >
+          
             <v-btn-toggle
               v-model="selection"
               color="warning"
@@ -62,23 +64,22 @@
                 v-on:click="
                   () => {
                     SEND_MESSAGE({
-			command: actions.START_PROCESS,
-			parameter: {
-                            total: 9999,
-                            onlyCorrectParts: onlyCorrectParts,
-                            partId: selectedPart,
-                          }
-			});
+                      command: actions.START_PROCESS,
+                      parameter: {
+                        total: 99999,
+                        onlyCorrectParts: onlyCorrectParts,
+                        partId: selectedPart,
+                      },
+                    });
                     //startStatusChage
                     dialog = false;
                     state.operation.total = 0;
                   }
                 "
               >
-                <span>ilimitada</span>
+                <span>ilimitadas</span>
               </v-btn>
-
-              <v-btn :value="state.operation.total">
+              <v-btn >
                 <span>quantidade especifica</span>
               </v-btn>
             </v-btn-toggle>
@@ -88,7 +89,7 @@
 
             <v-row
               class="mt-6 ml-n7 d-flex justify-center mb-4"
-              v-if="selection"
+              v-if="selection == 1"
             >
               <div>
                 <v-row class="d-flex align-baseline mb-6">
@@ -234,7 +235,7 @@ export default {
 
 .partItem {
   height: 320px;
-  width: 290px;
+  width: 250px;
 }
 .v-card--link:focus:before {
   opacity: 0;

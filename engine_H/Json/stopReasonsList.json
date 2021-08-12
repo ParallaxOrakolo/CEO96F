@@ -70,7 +70,7 @@
             "code": 1,
             "description": "Garra não pegou",
             "type": "error",
-            "date": 1628625733
+            "date": 1628625456
         },
         {
             "code": 1,
@@ -430,13 +430,13 @@
             "code": 3,
             "description": "Troca de turno",
             "type": "info",
-            "date": 1628795146
+            "date": 1628625888
         },
         {
             "code": 3,
             "description": "Troca de turno",
             "type": "info",
-            "date": 1628796177
+            "date": 1628625977
         }
     ]
 }

@@ -100,6 +100,26 @@ const store = new Vuex.Store({
     autoCheckComplete: false,
     scanConnectorsComplete: false,
 
+    production: {
+      total: {
+        total: 110,
+        rigth: 19,
+        wrong: 91,
+        timePerCicleMax: 121.08227848299975,
+        timePerCicleMin: 107.77431201700028
+      },
+      yesterday: {
+        day: 9,
+        total: 40,
+        rigth: 2,
+        wrong: 38,
+        timePerCicle: 115.87580769000033,
+        timesPerCicles: [
+            115.87580769000033
+        ]
+      }
+    },
+
     log: [
       {
         code: Number,
@@ -116,7 +136,7 @@ const store = new Vuex.Store({
     selectedFilter: "hole",
 
     configuration: {
-      logged : false,
+      logged: false,
       allJsons: {
         // name: 'mike',
         // age: 23,
@@ -236,7 +256,7 @@ const store = new Vuex.Store({
               color: "#a02727",
               color2: "#e261ae",
             },
-            hsv:{
+            hsv: {
               hue: [2, 50],
               sat: [0, 250],
               val: [30, 50],
@@ -279,7 +299,7 @@ const store = new Vuex.Store({
         state.connectionStatus = state.connectionStatusList.connected;
         state.isConnected = true;
         // wsConnection.send(actions.START_AUTOCHECK);
-        store.commit("SEND_MESSAGE", { command: actions.START_AUTOCHECK, parameter:Date() });
+        store.commit("SEND_MESSAGE", { command: actions.START_AUTOCHECK, parameter: Date() });
         // store.commit("SEND_MESSAGE", { command: actions.START_AUTOCHECK });
         state.isConnecting = false;
       };
