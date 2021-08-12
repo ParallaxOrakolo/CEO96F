@@ -6,13 +6,13 @@
                 "Valores": {
                     "lower": {
                         "h_min": 0,
-                        "s_min": 113,
+                        "s_min": 0,
                         "v_min": 0
                     },
                     "upper": {
-                        "h_max": 50,
-                        "s_max": 229,
-                        "v_max": 141
+                        "h_max": 49.924,
+                        "s_max": 236.895,
+                        "v_max": 141.015
                     }
                 }
             },
@@ -20,13 +20,13 @@
                 "Application": "screw",
                 "Valores": {
                     "lower": {
-                        "h_min": 11,
-                        "s_min": 17,
-                        "v_min": 69
+                        "h_min": 12,
+                        "s_min": 18.36,
+                        "v_min": 69.105
                     },
                     "upper": {
                         "h_max": 54,
-                        "s_max": 189,
+                        "s_max": 189.975,
                         "v_max": 255
                     }
                 }

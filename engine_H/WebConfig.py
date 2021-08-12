@@ -351,7 +351,7 @@ class Process(threading.Thread):
                     ValidaPos = machineParamters['configuration']['informations']['machine']['defaultPosition']['validaParafuso']
                     Fast.sendGCODE(arduino, f"G0 Y{ValidaPos['Y']} f{yMaxFed}")
                     Fast.sendGCODE(arduino, f"G0 X{ValidaPos['X']}, f{xMaxFed}")
-                    Fast.sendGCODE(arduino, f"G0 E{ValidaPos['E']}, f{eMaxFed}")
+                    #Fast.sendGCODE(arduino, f"G0 E{ValidaPos['E']}, f{eMaxFed}")
                     Fast.M400(arduino)
                     
                     validar = timeit.default_timer()
@@ -363,7 +363,8 @@ class Process(threading.Thread):
                                         Op.extractHSValue(mainParamters['Filtros']['HSV']['screw']["Valores"], 'lower' ),
                                         Op.extractHSValue(mainParamters['Filtros']['HSV']['screw']["Valores"], 'upper' ),
                                         mainParamters['Mask_Parameters']['screw']['areaMin'],
-                                        mainParamters['Mask_Parameters']['screw']['areaMax']
+                                        mainParamters['Mask_Parameters']['screw']['areaMax'],
+                                        model = str(self.model)
                                         )
 
                     if DebugPictures:
@@ -376,15 +377,16 @@ class Process(threading.Thread):
                                             Op.extractHSValue({'lower': {'h_min': 7, 's_min': 85, 'v_min': 92}}, 'lower' ),
                                             Op.extractHSValue({'upper': {'h_max': 57, 's_max': 230, 'v_max': 242}}, 'upper' ),
                                             mainParamters['Mask_Parameters']['screw']['areaMin'],
-                                            mainParamters['Mask_Parameters']['screw']['areaMax']
+                                            mainParamters['Mask_Parameters']['screw']['areaMax'],
+                                            model = str(self.model)
                                          )
                         if DebugPictures:
                             cv2.imwrite(f"Images/Process/{self.id}/validar/F2_R{self.rodada}_E{encontrados}_draw.jpg", _)
                             cv2.imwrite(f"Images/Process/{self.id}/validar/F2_R{self.rodada}_E{encontrados}_normal.jpg", frame)
                     print("Depois")
-                    if DebugPictures:
-                        cv2.imshow("Validador", cv2.resize(_, None, fx=0.3, fy=0.3))
-                        cv2.waitKey(1)
+#                    if DebugPictures:
+#                        cv2.imshow("Validador", cv2.resize(_, None, fx=0.3, fy=0.3))
+#                        cv2.waitKey(1)
                     validar = timeit.default_timer()-validar
                     if encontrados == 6:
                         self.status_estribo = "Certo"
@@ -755,7 +757,7 @@ def descarte(valor="Errado", Deposito={"Errado":{"X":230, "Y":0}}):
     Fast.M400(arduino)
     Fast.sendGCODE(arduino, "M42 P31 S0")
     Fast.sendGCODE(arduino, "M42 P33 S0")
-    Fast.sendGCODE(arduino, f"G0 E{pos['E']} f{eMaxFed}")
+    Fast.sendGCODE(arduino, f"G0 E0 f{eMaxFed}")
     Fast.M400(arduino)
     Fast.sendGCODE(arduino, f"G28 Y")
     cicleSeconds = timeit.default_timer()-Total0
@@ -885,6 +887,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
     repetidos = [1, 4]
     angle = 0
     changePos = False
+    Reverse = False
     #identificar = []
     path = f"Images/Process/{ids}"
     #machineParamters['configuration']['informations']['machine']['defaultPosition']['analisaFoto']
@@ -905,14 +908,19 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
         if not intencionalStop and not faltadeFuro:
             tentativas, dsts = 0, 0
             Fast.sendGCODE(arduino, "G90")
-            Fast.sendGCODE(arduino, f"G0 X{Analise[model][str(angle)][str(int(changePos))]['X']} F{xMaxFed}")
-            Fast.sendGCODE(arduino, f"G0 Y{Analise[model][str(angle)][str(int(changePos))]['Y']} F{yMaxFed}")
+            if Reverse and angle in (0, 180):
+                indexPos = "1"
+            else:
+                indexPos = str(int(changePos))
+            Fast.sendGCODE(arduino, f"G0 X{Analise[model][str(angle)][indexPos]['X']} F{xMaxFed}")
+            Fast.sendGCODE(arduino, f"G0 Y{Analise[model][str(angle)][indexPos]['Y']} F{yMaxFed}")
             defaultCoordY = Analise[model][str(angle)][str(int(changePos))]['Y']
             atualCoordY = NLinearRegression(defaultCoordY, reverse=True)
             Fast.M400(arduino)
             Fast.sendGCODE(arduino, "M42 P34 S255")
             Fast.sendGCODE(arduino, "G91")
             SaveY = 99
+            breakNext = False
             forceThisY = 0
             if lados in repetidos:
                 changePos = not changePos
@@ -921,7 +929,22 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             while tentativas<=10 and not intencionalStop:
                 if possivelErro >=3 and vazio:
                     possivelErro = 0
-                    break
+                    if model == "1":
+                        break
+                    elif not breakNext:
+                        Fast.sendGCODE(arduino, f"G0 X{Analise[model][str(angle)]['1']['X']} F{xMaxFed}")
+                        Fast.sendGCODE(arduino, f"G0 Y{Analise[model][str(angle)]['1']['Y']} F{yMaxFed}")
+                        Fast.M400(arduino)
+                        Reverse = True
+                        possivelErro = 0
+                        tentativas = 0
+                        vazio = False
+                        Reverse = True
+                        breakNext = True
+                    else:
+                        break
+
+                        
                 frame = globals()['frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])]
                 Resultados, R, per, img_draw = Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues)
 
@@ -933,9 +956,9 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                 #                     Verifica a distância                   #
                 if Resultados:
                     vazio = False
-                    if DebugPictures:
-                        cv2.imwrite(f"{path}/identificar/R{rodada}_L{lados}_T{tentativas}_draw.jpg", img_draw)
-                        cv2.imwrite(f"{path}/identificar/R{rodada}_L{lados}_T{tentativas}_normal.jpg", frame)
+#                    if DebugPictures:
+#                        cv2.imwrite(f"{path}/identificar/R{rodada}_L{lados}_T{tentativas}_draw.jpg", img_draw)
+#                        cv2.imwrite(f"{path}/identificar/R{rodada}_L{lados}_T{tentativas}_normal.jpg", frame)
                     try:
                         if DebugPrint:
                             print("^^"*15)
@@ -990,7 +1013,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                             # Faz os valores ficarem acima do permiido pra evita que entre no loop novamente.
                             MY, MX, tentativas = 99, 99, 50
                             posicao = Fast.M114(arduino)
-
+                            print(f"model:{model}, angle:{angle}, index:{str(int(changePos))}",posicao['X'], posicao['Y'], "vs", Analise[model][str(angle)][str(int(changePos))]['X'], Analise[model][str(angle)][str(int(changePos))]['Y'])
 #                            Analise[model][str(angle)][str(int(changePos))]['X'] = posicao['X']
 #                            Analise[model][str(angle)][str(int(changePos))]['Y'] = posicao['Y']
     
@@ -1031,11 +1054,11 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                             break
                     else:
                          time.sleep(0.2)
-#                        cv2.imwrite(f"{path}/identificar/Errado_{lados}_{tentativas}_draw.jpg", img_draw)
-#                        cv2.imwrite(f"{path}/identificar/Errado_{lados}_{tentativas}_normal.jpg", frame)
+#                        cv2.imwrite(f"{path}/identificar/Errado_R{rodada}_L{lados}_T{tentativas}_draw.jpg", img_draw)
+#                        cv2.imwrite(f"{path}/identificar/Errado_R{rodada}_L{lados}_T{tentativas}_normal.jpg", frame)
                 else:
-                    cv2.imwrite(f"{path}/identificar/Errado_{lados}_{tentativas}_draw.jpg", img_draw)
-                    cv2.imwrite(f"{path}/identificar/Errado_{lados}_{tentativas}_normal.jpg", frame)
+                    cv2.imwrite(f"{path}/identificar/Errado_R{rodada}_L{lados}_T{tentativas}_draw.jpg", img_draw)
+                    cv2.imwrite(f"{path}/identificar/Errado_R{rodada}_L{lados}_T{tentativas}_normal.jpg", frame)
                     vazio = True
                     tentativas+=1
                     possivelErro += 1
