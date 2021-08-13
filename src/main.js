@@ -6,6 +6,10 @@ import {store} from './store/index'
 import VueTheMask from 'vue-the-mask'
 import VueHaptic from 'vue-haptic';
 import JsonEditor from 'vue-json-edit'
+import VueApexCharts from 'vue-apexcharts'
+Vue.use(VueApexCharts)
+
+Vue.component('apexchart', VueApexCharts)
 
 Vue.use(JsonEditor)
 
