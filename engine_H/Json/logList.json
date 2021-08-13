@@ -1361,6 +1361,18 @@
             "description": "Sem comunicação com o CLP",
             "type": "error",
             "date": 1628796176
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1628860996
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1628861243
         }
     ]
 }

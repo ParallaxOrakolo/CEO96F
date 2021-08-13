@@ -45,7 +45,8 @@
 
 <script>
 //import ProgressStatus from "../components/ProgressStatus";
-import { mapGetters, mapMutations } from "vuex";
+//import { mapGetters, mapMutations } from "vuex"; mapMutation não tem uso.
+import { mapGetters } from "vuex";
 // import VideoProgress from "../components/VideoProgress"; Remove VideoProgress
 
 export default {
