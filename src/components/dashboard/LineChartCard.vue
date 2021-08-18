@@ -6,15 +6,14 @@
           <div class="text--secondary ml-3">{{ title }}</div>
         </v-row>
         <v-row>
-          <v-row class="pr-5">
-            <v-col
-              cols="3"
-              class="d-flex justify-center"
-              v-for="item in infoList"
+          <div class="pr-5 pl-3 d-flex  justify-space-around statistics">
+            <div
+              class="d-flex  justify-space-around
+"              v-for="item in infoList"
               :key="item.text"
             >
               <div>
-                <span class="text-h4 text--primary">
+                <span class="text-h5 text--primary">
                   <v-icon class="ml-4" :color="item.color" large>{{
                     item.icon
                   }}</v-icon>
@@ -25,8 +24,8 @@
                   {{ item.text }}
                 </div>
               </div>
-            </v-col>
-          </v-row>
+            </div>
+          </div>
         </v-row>
 
         <!-- <v-divider class="ml-2"></v-divider> -->
@@ -235,8 +234,8 @@ export default {
           result.setDate(result.getDate() + i);
           result = result.getTime();
           this.chartOptions.xaxis.categories.push(result);
-          console.log(this.chartOptions.xaxis.categories);
-          console.log(this.series[0].data);
+          // console.log(this.chartOptions.xaxis.categories);
+          // console.log(this.series[0].data);
         }
         this.$refs.sampleGender = i;
         window.dispatchEvent(new Event("resize"));
@@ -249,4 +248,8 @@ export default {
 </script>
 
 <style lang="scss" scopped>
+
+.statistics{
+ width: 100%; 
+}
 </style>

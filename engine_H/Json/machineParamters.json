@@ -13,8 +13,126 @@
                 "filter": "screw"
             }
         ],
+        "assembly": {
+            "listOfParts": [
+                {
+                    "index": 0,
+                    "partName": "Peça Menor",
+                    "frontImg": "estribo-quadrado-front.png",
+                    "perspectiveImg": "estribo-quadrado.png",
+                    "listed": true,
+                    "listOfHoles": [
+                        {
+                            "index": 1,
+                            "checkboxPosition": {
+                                "top": "8.3%",
+                                "left": "50%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 2,
+                            "checkboxPosition": {
+                                "top": "25%",
+                                "left": "83%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 3,
+                            "checkboxPosition": {
+                                "top": "57%",
+                                "left": "83%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 4,
+                            "checkboxPosition": {
+                                "top": "72%",
+                                "left": "50%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 5,
+                            "checkboxPosition": {
+                                "top": "25%",
+                                "left": "11%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 6,
+                            "checkboxPosition": {
+                                "top": "57%",
+                                "left": "11%"
+                            },
+                            "mount": true
+                        }
+                    ]
+                },
+                {
+                    "index": 1,
+                    "partName": "Peça Maior",
+                    "frontImg": "estribo-retangular-front.png",
+                    "perspectiveImg": "estribo-retangular.png",
+                    "listed": true,
+                    "listOfHoles": [
+                        {
+                            "index": 1,
+                            "checkboxPosition": {
+                                "top": "0",
+                                "left": "50%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 2,
+                            "checkboxPosition": {
+                                "top": "18%",
+                                "left": "83%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 3,
+                            "checkboxPosition": {
+                                "top": "55%",
+                                "left": "83%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 4,
+                            "checkboxPosition": {
+                                "top": "72%",
+                                "left": "50%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 5,
+                            "checkboxPosition": {
+                                "top": "18%",
+                                "left": "11%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 6,
+                            "checkboxPosition": {
+                                "top": "55%",
+                                "left": "11%"
+                            },
+                            "mount": true
+                        }
+                    ]
+                }
+            ]
+        },
         "informations": {
-            "ip": "192.168.4.1",
+            "ip": "192.168.1.36",
             "connectionId": 123456,
             "port": 5000,
             "portStream": 8080,

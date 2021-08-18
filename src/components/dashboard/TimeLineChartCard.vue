@@ -6,27 +6,29 @@
           <div class="text--secondary ml-3">{{ title }}</div>
         </v-row>
         <v-row>
-          <v-row class="pr-5">
-            <v-col
-              cols="3"
+          <div class="pr-5 pl-3 d-flex justify-space-around statistics">
+            <div
               class="d-flex justify-center"
               v-for="item in infoList"
               :key="item.text"
             >
-              <div>
-                <span class="text-h4 text--primary">
-                  <v-icon class="ml-4" :color="item.color" large>{{
-                    item.icon
-                  }}</v-icon>
-                  {{ item.number }}</span
-                ><span class="text--secondary">{{ item.unit }}</span>
+              <div class="d-flex justify-center flex-column">
+                <div>
+                  <span class="text-h5 text--primary">
+                    <v-icon class="ml-4" :color="item.color" large>{{
+                      item.icon
+                    }}</v-icon>
+                    {{ item.number }}</span
+                  ><span class="text--secondary">{{ item.unit }}</span>
+                </div>
+
                 <!-- <v-divider class="ml-2"></v-divider> -->
                 <div class="text--secondary caption ml-3 d-flex justify-center">
                   {{ item.text }}
                 </div>
               </div>
-            </v-col>
-          </v-row>
+            </div>
+          </div>
         </v-row>
 
         <!-- <v-divider class="ml-2"></v-divider> -->
@@ -105,10 +107,12 @@ export default {
       xaxis: {
         // type: "datetime",
       },
-      yaxis:{
-         labels: {
-          formatter: (value) => { return value.toFixed(1) },
-      }
+      yaxis: {
+        labels: {
+          formatter: (value) => {
+            return value.toFixed(1);
+          },
+        },
       },
 
       tooltip: {
@@ -134,7 +138,7 @@ export default {
         },
       ];
 
-      return data
+      return data;
     },
 
     infoList: function () {
@@ -179,4 +183,7 @@ export default {
 </script>
 
 <style lang="scss" scopped>
+.statistics {
+  width: 100%;
+}
 </style>
