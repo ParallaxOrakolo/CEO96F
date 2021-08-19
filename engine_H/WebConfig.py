@@ -141,6 +141,7 @@ class CamThread(threading.Thread):
         while rval and not self.stopped():                                   # Verifica e camera ta 'ok'
 
             rval, frame = cam.read()                  # Atualiza
+#            frame = cv2.blur(frame, (3,3))
             globals()[f'frame{previewName}'] = frame
             if cv2.waitKey(1) == 27:
                 break
@@ -457,7 +458,7 @@ def findHole(imgAnalyse, minArea, maxArea, c_perimeter, HSValues, fixed_Point, e
     if edge:
         for info_edge in edge:
             try:
-                if 20 <= int(info_edge['dimension'][0]/2) <= 80:
+                if 20 <= int(info_edge['dimension'][0]/2):
 
                     cv2.drawMarker(chr_k,(info_edge['centers'][0]), (0,255,0), thickness=3)
                     cv2.circle(chr_k, (info_edge['centers'][0]), int(info_edge['dimension'][0]/2),
@@ -763,13 +764,15 @@ def descarte(valor="Errado", Deposito={"Errado":{"X":230, "Y":0}}):
     Fast.sendGCODE(arduino, "M42 P33 S0")
     Fast.sendGCODE(arduino, f"G0 E0 f{eMaxFed}")
     Fast.M400(arduino)
-    Fast.sendGCODE(arduino, f"G28 Y")
+#    Fast.sendGCODE(arduino, f"G28 Y")
     cicleSeconds = timeit.default_timer()-Total0
     asyncio.run(updateProduction(cicleSeconds, valor))
     print("updateProducion - Finish")
     if valor == "Errado" and not intencionalStop:
         wrongSequence += 1
+        print(f"{Fast.ColorPrint.YELLOW}Errado: {wrongSequence}{Fast.ColorPrint.ENDC}")
     else:
+        print(f"{Fast.ColorPrint.GREEN}Certo{Fast.ColorPrint.ENDC}")
         wrongSequence = 0
 
 def timer(total):
@@ -887,7 +890,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
     changePos = False
     possivelErro = 0
     parafusadas = 0
-    precicao = 0.52
+    precicao = 0.2
     Reverse = False
     vazio = False
     angle = 0
@@ -927,14 +930,14 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
 
             Fast.sendGCODE(arduino, f"G0 X{Analise[model][str(angle)][indexPos]['X']} F{xMaxFed}")
             Fast.sendGCODE(arduino, f"G0 Y{Analise[model][str(angle)][indexPos]['Y']} F{yMaxFed}")
-
+            Fast.M400(arduino)
             defaultCoordY = Analise[model][str(angle)][str(int(changePos))]['Y']
             atualCoordY = NLinearRegression(defaultCoordY, reverse=True)
 
-            Fast.M400(arduino)
+            
             Fast.sendGCODE(arduino, "M42 P34 S255")
             Fast.sendGCODE(arduino, "G91")
-
+            #Fast.M400(arduino)
             breakNext = False
             forceThisY = 0
             SaveY = 99
@@ -947,31 +950,34 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             while tentativas<=10 and not intencionalStop:
                 if possivelErro >=3 and vazio:
                     possivelErro = 0
-                    if model == "1" or breakNext:
-                        break 
-                    elif not breakNext:
-                        model = "0.2"
-                        modelo_atual = "0.2"
-                        Fast.sendGCODE(arduino, "G90")
-                        Fast.sendGCODE(arduino, f"G0 X{Analise[model][str(angle)]['0']['X']} F{xMaxFed}")
-                        Fast.sendGCODE(arduino, f"G0 Y{Analise[model][str(angle)]['0']['Y']} F{yMaxFed}")
-                        Fast.M400(arduino)
-                        print('\n'*5)
-                        print(f"Peça invertida -> G0 X{Analise[model][str(angle)]['0']['X']}")
-                        time. sleep(1)
-                        possivelErro = 0
-                        breakNext = True
-                        tentativas = 0
-                        Reverse = True
-                        vazio = False
+                    break
+#                    if model == "1" or breakNext:
+#                        break 
+#                    elif not breakNext:
+#                        model = "0.2"
+#                        modelo_atual = "0.2"
+#                        Fast.sendGCODE(arduino, "G90")
+#                        Fast.sendGCODE(arduino, f"G0 X{Analise[model][str(angle)]['0']['X']} F{xMaxFed}")
+#                        Fast.sendGCODE(arduino, f"G0 Y{Analise[model][str(angle)]['0']['Y']} F{yMaxFed}")
+#                        Fast.M400(arduino)
+#                        print('\n'*5)
+#                        print(f"Peça invertida -> G0 X{Analise[model][str(angle)]['0']['X']}")
+#                        time.sleep(1)
+#                        possivelErro = 0
+#                        breakNext = True
+#                        tentativas = 0
+#                        Reverse = True
+#                        vazio = False
+#
+#                    else:
+#                        break
 
-                    else:
-                        break
-
-                        
+                tt = timeit.default_timer()
+                while timeit.default_timer()-tt <= 1.2:
+                    pass
                 frame = globals()['frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])]
                 Resultados, R, per, img_draw = Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues)
-
+                
                 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
                 #                     Verifica a distância                   #
                 if Resultados:
@@ -1042,7 +1048,12 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                             # Faz os valores ficarem acima do permiido pra evita que entre no loop novamente.
                             MY, MX, tentativas = 99, 99, 50
                             posicao = Fast.M114(arduino)
-                            print(f"model:{model}, angle:{angle}, index:{str(int(changePos))}",posicao['X'], posicao['Y'], "vs", Analise[model][str(angle)][str(int(changePos))]['X'], Analise[model][str(angle)][str(int(changePos))]['Y'])
+                            print("angle:", angle, type(angle), str(angle))
+                            print("model:", model, type(model))
+                            print("changePos:", changePos, type(changePos),str(int(changePos)))
+                            print(Analise[model][str(angle)][str(int(changePos))])
+                            print('\n')
+#                            print(f"model:{model}, angle:{angle}, index:{str(int(changePos))}",posicao['X'], posicao['Y'], "vs", Analise[model][str(angle)][str(int(changePos))]['X'], Analise[model][str(angle)][str(int(changePos))]['Y'])
 
 #                            Analise[model][str(angle)][str(int(changePos))]['X'] = posicao['X']
 #                            Analise[model][str(angle)][str(int(changePos))]['Y'] = posicao['Y']
@@ -1586,7 +1597,7 @@ if __name__ == "__main__":
     nano = "lixo"
     arduino = "lixo"
     wrongSequence = 0
-    limitWrongSequence = 5
+    limitWrongSequence = 3
     portFront = machineParamters["configuration"]["informations"]["port"]
     portBack = machineParamters["configuration"]["informations"]["portStream"]
     offSetIp = 0

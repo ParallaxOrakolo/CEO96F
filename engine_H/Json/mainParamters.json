@@ -10,9 +10,9 @@
                         "v_min": 0
                     },
                     "upper": {
-                        "h_max": 49.924,
-                        "s_max": 236.895,
-                        "v_max": 141.015
+                        "h_max": 23.774,
+                        "s_max": 255,
+                        "v_max": 159.12
                     }
                 }
             },
@@ -60,8 +60,8 @@
     "Mask_Parameters": {
         "hole": {
             "perimeter": 0,
-            "areaMin": 3200,
-            "areaMax": 6500
+            "areaMin": 15000,
+            "areaMax": 55000
         },
         "screw": {
             "perimeter": 0,
@@ -80,8 +80,8 @@
                 "title": "Câmera - Furação",
                 "id": 0,
                 "scale": 0.04276480601654536,
-                "frame_height": 1994,
-                "frame_width": 2592
+                "frame_height": 1080,
+                "frame_width": 1920
             },
             "Properties": {
                 "BRIGHTNESS": 0,
