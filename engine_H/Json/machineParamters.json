@@ -117,8 +117,8 @@
                         "E": null
                     },
                     "parafusadeiraCentro": {
-                        "X": 250,
-                        "Y": 10.5,
+                        "X": 250.3,
+                        "Y": 10.4,
                         "Z": 130,
                         "E": null
                     },
@@ -284,6 +284,14 @@
                     "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
                     "listed": false,
                     "type": "warning",
+                    "button_text": "Entendi",
+                    "button_action": "None"
+                },
+                {
+                    "code": 998,
+                    "description": "Parada para ajuste técnico",
+                    "listed": true,
+                    "type": "info",
                     "button_text": "Entendi",
                     "button_action": "None"
                 },

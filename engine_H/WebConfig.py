@@ -704,7 +704,8 @@ def HomingAll():
     Fast.sendGCODE(arduino, "G92 X0 Y0 Z0 E0")
     Fast.sendGCODE(arduino, "G92.1")
     Fast.sendGCODE(arduino, "M17 X Y Z E")
-    Parafusa(132, mm=5, voltas=20)
+    #Parafusa(132, mm=5, voltas=20)
+    Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1)
 
 
 def verificaCLP(serial):
@@ -732,15 +733,17 @@ def Parafusa(pos, voltas=2, mm=0, ZFD=100, ZFU=100, dowLess=False, reset=False):
             Fast.sendGCODE(arduino, f"g38.3 Z-105 F{int(zMaxFedDown*(ZFD/100))}")
             ZFD = 50
         Fast.M400(arduino)
-        Fast.sendGCODE(arduino, f"M42 p32 s255")
+        
         Fast.sendGCODE(arduino, f'g38.3 z-{pos} F{int(zMaxFedDown*(ZFD/100))}')
         Fast.sendGCODE(arduino, f'g0 z{mm} F{zMaxFedUp}')
         #Fast.sendGCODE(arduino, f'm280 p{servo} s{angulo}')
         #Fast.sendGCODE(arduino, f'm43 t s10 l10 w{voltas*50}')
         #Fast.sendGCODE(arduino, f"M43 t s32 l32 w{voltas*50}")
-        
-        time.sleep(int((voltas*50/1000)))
+
+        Fast.sendGCODE(arduino, f"M42 p32 s255")
+        time.sleep(int((voltas*40/1000)))
         Fast.sendGCODE(arduino, f"M42 p32 s0")
+
         if reset:
             Fast.sendGCODE(arduino, "G28 Z")
         Fast.sendGCODE(arduino, 'g90')
@@ -764,7 +767,7 @@ def descarte(valor="Errado", Deposito={"Errado":{"X":230, "Y":0}}):
     cicleSeconds = timeit.default_timer()-Total0
     asyncio.run(updateProduction(cicleSeconds, valor))
     print("updateProducion - Finish")
-    if valor == "Errado":
+    if valor == "Errado" and not intencionalStop:
         wrongSequence += 1
     else:
         wrongSequence = 0
@@ -878,7 +881,7 @@ def Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues):
 
 
 def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model="A", rodada=0):
-    global Analise
+    global Analise, modelo_atual
     faltadeFuro = False
     repetidos = [1, 4]
     changePos = False
@@ -891,14 +894,13 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
     Pos = []
 
     path = f"Images/Process/{ids}"
-
+    Fast.removeEmptyFolders("Images/Process")
     cameCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['camera0Centro']
     parafCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusadeiraCentro'].copy()
     parafCent['Y'] = NLinearRegression(parafCent['Y'], reverse=True)
     # Pega a coordenada de inicio e aplica na formula, pra saber a quantos "mm" do "0" a maquina está.
 
     if not os.path.exists(path):
-        os.makedirs(path)
         d = datetime.now()
 
         os.makedirs(f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}")
@@ -945,15 +947,18 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             while tentativas<=10 and not intencionalStop:
                 if possivelErro >=3 and vazio:
                     possivelErro = 0
-                    if model == "1":
-                        break
+                    if model == "1" or breakNext:
+                        break 
                     elif not breakNext:
                         model = "0.2"
-
-                        Fast.sendGCODE(arduino, f"G0 X{Analise[model][str(angle)][0]['X']} F{xMaxFed}")
-                        Fast.sendGCODE(arduino, f"G0 Y{Analise[model][str(angle)][0]['Y']} F{yMaxFed}")
+                        modelo_atual = "0.2"
+                        Fast.sendGCODE(arduino, "G90")
+                        Fast.sendGCODE(arduino, f"G0 X{Analise[model][str(angle)]['0']['X']} F{xMaxFed}")
+                        Fast.sendGCODE(arduino, f"G0 Y{Analise[model][str(angle)]['0']['Y']} F{yMaxFed}")
                         Fast.M400(arduino)
-
+                        print('\n'*5)
+                        print(f"Peça invertida -> G0 X{Analise[model][str(angle)]['0']['X']}")
+                        time. sleep(1)
                         possivelErro = 0
                         breakNext = True
                         tentativas = 0
@@ -972,9 +977,10 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                 if Resultados:
                     vazio = False
 
-                    # if DebugPictures:
-                        # cv2.imwrite(f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/normal/L{lados}_T{tentativas}.jpg", frame)
-                        # cv2.imwrite(f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/filtro/L{lados}_T{tentativas}.jpg", img_draw)
+                    if DebugPictures:
+                        d = datetime.now()
+                        cv2.imwrite(f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/normal/L{lados}_T{tentativas}.jpg", frame)
+                        cv2.imwrite(f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/filtro/L{lados}_T{tentativas}.jpg", img_draw)
 
                     try:
                         if DebugPrint:
@@ -1027,6 +1033,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                     if abs(MY) <= precicao and abs(MX) <= precicao or tentativas >=9:
                         if abs(MY) <= precicao and abs(MX) <= precicao:
                             if DebugPictures:
+                                d = datetime.now()
                                 cv2.imwrite(f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_T{tentativas}_N.jpg", frame)
                                 cv2.imwrite(f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_T{tentativas}_F.jpg", img_draw)
 #                                cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_draw.jpg", img_draw)
@@ -1074,6 +1081,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
 #                        cv2.imwrite(f"{path}/identificar/Errado_R{rodada}_L{lados}_T{tentativas}_draw.jpg", img_draw)
 #                        cv2.imwrite(f"{path}/identificar/Errado_R{rodada}_L{lados}_T{tentativas}_normal.jpg", frame)
                 else:
+                    d = datetime.now()
                     cv2.imwrite(f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_T{tentativas}_NE.jpg", frame)
                     cv2.imwrite(f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_T{tentativas}_FE.jpg", img_draw)
                     vazio = True
@@ -1296,6 +1304,7 @@ async def startAutoCheck(date=None):
         subprocess.run(["date", "-s", f"{date[:len(date)-len('(Horário Padrão de Brasília)')]}"])
     # await updateSlider('Normal')
     await sendWsMessage("update", machineParamters)
+    await sendWsMessage("update", production)
     setCameraFilter()
     await logRefresh()
     await refreshJson()
@@ -1412,10 +1421,11 @@ async def startAutoCheck(date=None):
 
 
 async def startProcess(parm):
-
+    global modelo_atual
     qtd, only, model = parm['total'], parm['onlyCorrectParts'], str(parm['partId'])
+    modelo_atual = model
     t0 = timeit.default_timer()
-    NewMont = Process(qtd, Fast.randomString(tamanho=5 ,pattern=""), model=model)
+    NewMont = Process(qtd, Fast.randomString(tamanho=5 ,pattern=""), model=modelo_atual)
     NewMont.start()
     await sendWsMessage("startProcess_success")
     print(f"Pedido de montagem finalizado em {int(timeit.default_timer()-t0)}s")
@@ -1436,7 +1446,7 @@ async def updateProduction(cicleSeconds, valor):
 
         production["production"]["today"]["timesPerCicles"].append(cicleSeconds)
         print(">>> ", timer(cicleSeconds))
-    else:
+    elif not intencionalStop:
         print("Valor Errado")
         production["production"]["today"]["wrong"]+=1
         production["production"]["total"]["wrong"]+=1
@@ -1457,7 +1467,7 @@ async def updateProduction(cicleSeconds, valor):
         appends = {"times":week_time, "total":week_total, "rigth":week_rigth, "wrong":week_wrong}
         if week_time:
             for k, v in appends.items():
-                while len(v) > 5:
+                while len(v) > 7:
                     v.pop(0)
                 media =  sum(v) /len(v)
                 print(k, v, media)
@@ -1512,6 +1522,7 @@ if __name__ == "__main__":
     camera = machineParamters["configuration"]["camera"]
     globals()["tempFileFilter"] = mainParamters["Filtros"]["HSV"]
     globals()["pecaReset"] = 0
+    modelo_atual = "1"
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Json-Variables                        #
 

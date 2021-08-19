@@ -167,7 +167,8 @@
 
 <script>
 import ColorPicker from "vue-color-picker-wheel";
-import { mapState, mapMutations, mapActions } from "vuex";
+//import { mapState, mapMutations, mapActions } from "vuex"; mapActions sem uso.
+import { mapState, mapMutations} from "vuex";
 import { actions } from "@/store/index";
 
 export default {
