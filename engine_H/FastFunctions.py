@@ -124,6 +124,9 @@ def writeJson(json_local_save, json_data):
 def sendGCODE(serial, command, **kargs):
     # Verifica se é possivel enviar dados através da conexão informada.
     if serial and type(serial) not in [tuple, str, int, bool]:
+        
+        # Garante que os motores estarão travados
+#        serial.write(str("M17 X Y Z E" + '{0}'.format('\n')).encode('ascii'))
 
         # Limpa o buffer.
         serial.flush()
