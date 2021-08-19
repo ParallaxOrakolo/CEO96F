@@ -7,10 +7,11 @@
     </div>
     <div id="app">
       <v-expansion-panels multiple>
+        <Assembly />
         <Infos />
         <Controls />
-        <Advanced-settings />
         <Statistics />
+        <Advanced-settings />
       </v-expansion-panels>
     </div>
   </section>
@@ -22,9 +23,10 @@ import Infos from "../components/settings/Infos";
 import AdvancedSettings from "../components/settings/AdvancedSettings";
 import Statistics from "../components/settings/Statistics.vue";
 import Controls from "../components/settings/controls/Controls.vue";
+import Assembly from "../components/settings/Assembly.vue";
 
 export default {
-  components: { AdvancedSettings, Infos, Statistics, Controls },
+  components: { AdvancedSettings, Infos, Statistics, Controls, Assembly },
   name: "settings",
   methods: {
     sendMessage: function (message) {
