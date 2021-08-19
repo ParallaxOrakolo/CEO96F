@@ -219,6 +219,18 @@ const store = new Vuex.Store({
         },
       ],
 
+      health:{
+
+        listOfSystem:[
+          {
+            hardware:"CPL",
+            status:"Online ",
+            conected: true
+          }
+
+        ]
+      },
+
       assembly: {
         listOfParts: [
           {
