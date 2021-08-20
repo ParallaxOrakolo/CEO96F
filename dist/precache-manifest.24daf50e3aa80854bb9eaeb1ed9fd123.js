@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "8ac97ec73675b0f48e48",
-    "url": "/css/app.2677b6b0.css"
+    "revision": "2bc7bfae165183b67883",
+    "url": "/css/app.982d6a3e.css"
   },
   {
-    "revision": "bb1ae883d2be5b40cdb6",
+    "revision": "9b18f91083f3cb485a0e",
     "url": "/css/chunk-vendors.eeb6e5e7.css"
   },
   {
@@ -68,6 +68,10 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/fonts/materialdesignicons-webfont.7a44ea19.woff2"
   },
   {
+    "revision": "7ebcb8d857e5003a0e568927b2c91e0e",
+    "url": "/img/estribo-pattern-low.7ebcb8d8.jpg"
+  },
+  {
     "revision": "bf61930d5682ec06a440e72e18cb0eec",
     "url": "/img/estribo-pattern.bf61930d.jpg"
   },
@@ -88,24 +92,24 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/img/estribo-retangular.ca564140.png"
   },
   {
-    "revision": "2717956ba5953ae517aa43fead6780c1",
-    "url": "/img/parallax-logo-06-black.2717956b.svg"
+    "revision": "1c4ecad8cd2266fae4ba8bc7dc1bcd7f",
+    "url": "/img/parallax-logo-06-black.1c4ecad8.svg"
   },
   {
-    "revision": "2cb5956a53b158651f0d42b649d954f7",
-    "url": "/img/parallax-logo-06.2cb5956a.svg"
+    "revision": "12190c35437db902601fd100dd6fac18",
+    "url": "/img/parallax-logo-06.12190c35.svg"
   },
   {
-    "revision": "02677178ad097e9dbcec94d945687130",
+    "revision": "12691de1c0fddad70b38f72a12d47315",
     "url": "/index.html"
   },
   {
-    "revision": "8ac97ec73675b0f48e48",
-    "url": "/js/app.d80e8759.js"
+    "revision": "2bc7bfae165183b67883",
+    "url": "/js/app.332657e7.js"
   },
   {
-    "revision": "bb1ae883d2be5b40cdb6",
-    "url": "/js/chunk-vendors.b4b2da47.js"
+    "revision": "9b18f91083f3cb485a0e",
+    "url": "/js/chunk-vendors.6498624f.js"
   },
   {
     "revision": "7cfe264e7f1084d3fe8ef2cec97ff0c6",
@@ -120,7 +124,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/media/estribo-animation2.dde0db33.mp4"
   },
   {
-    "revision": "735ab4f94fbcd57074377afca324c813",
+    "revision": "b6216d61c03e6ce0c9aea6ca7808f7ca",
     "url": "/robots.txt"
   }
 ]);

@@ -771,7 +771,7 @@ def descarte(valor="Errado", Deposito={"Errado":{"X":230, "Y":0}}):
     Fast.sendGCODE(arduino, f"G0 E0 f{eMaxFed}")
     Fast.M400(arduino)
 #    Fast.sendGCODE(arduino, f"G28 Y")
-    cicleSeconds = timeit.default_timer()-Total0
+    cicleSeconds = round(timeit.default_timer()-Total0,1)
     asyncio.run(updateProduction(cicleSeconds, valor))
     print("updateProducion - Finish")
     if valor == "Errado" and not intencionalStop:
