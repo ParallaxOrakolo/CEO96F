@@ -68,7 +68,7 @@ def findContoursPlus(image, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_SIMPLE, 
                     lesst3A = False
                 outPut_A.append(
                     {"class": 'A', "boundRect": [(xA, yA), (wA, hA)], "dimension": [alturaA, larguraA], "contour": boxA,
-                     'hierarchy': [lesst3A, currentHierarchy], "centers": [centro_momentsA, centro_boxA]})
+                     'hierarchy': [lesst3A, currentHierarchy], "centers": [centro_momentsA, centro_boxA], "area":area})
             elif AreaMin_B < area < AreaMax_B:
                 xB, yB, wB, hB = cv2.boundingRect(currentContour)
                 boxB = np.int0(cv2.boxPoints(cv2.minAreaRect(currentContour)))
@@ -90,7 +90,7 @@ def findContoursPlus(image, mode=cv2.RETR_TREE, method=cv2.CHAIN_APPROX_SIMPLE, 
                     lesst3B = False
                 outPut_B.append(
                     {"class": 'B', "boundRect": [xB, yB, wB, hB], "dimension": [alturaB, larguraB], "contour": boxB,
-                     'hierarchy': [lesst3B, currentHierarchy], "centers": [centro_momentsB, centro_boxB]})
+                     'hierarchy': [lesst3B, currentHierarchy], "centers": [centro_momentsB, centro_boxB], "area":area})
         return outPut_A, outPut_B
     except TypeError:
         return [], []
