@@ -1,11 +1,18 @@
 <template>
   <v-app>
+<<<<<<< Updated upstream
     <div class="mx-auto"><Snack-bar v-if="!isConnected"></Snack-bar></div>
+=======
+    <div class="mx-auto">
+      <snack-bar v-if="!isConnected"></snack-bar>
+    </div>
+>>>>>>> Stashed changes
     <DialogAlert />
-    <NavBar />
-    <v-main >
-      <router-view />
-      <!-- <Home/> -->
+    <NavBar v-if="$route.name != 'intro'" />
+    <v-main>
+      <transition>
+        <router-view></router-view>
+      </transition>
     </v-main>
   </v-app>
 </template>
@@ -27,7 +34,6 @@ export default {
     SnackBar,
   },
 
-
   created() {
     if (this.$workbox) {
       this.$workbox.addEventListener("waiting", () => {
@@ -39,7 +45,6 @@ export default {
   computed: {
     ...mapState(["isConnected"]),
   },
-
 };
 </script>
 
@@ -56,5 +61,4 @@ body {
   margin: 0;
   padding: 0;
 }
-
 </style>
