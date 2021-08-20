@@ -5,7 +5,7 @@
     class="alert"
     colored-border
     type="error"
-    elevation="12"
+    elevation="10"
     prominent
     
   >
@@ -53,7 +53,7 @@ export default {
 
 <style scoped lang="scss">
 .alert {
-  margin: 80px;
+  margin-top: 80px;
 
   .v-alert__icon.v-icon {
     /* margin: 0 auto; */

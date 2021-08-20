@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <snack-bar v-if="!isConnected"></snack-bar>
+    <div class="mx-auto"><Snack-bar v-if="!isConnected"></Snack-bar></div>
     <DialogAlert />
     <NavBar />
     <v-main >
@@ -44,6 +44,7 @@ export default {
 </script>
 
 <style lang="scss">
+
 ::-webkit-scrollbar {
   display: none;
 }
