@@ -8,7 +8,7 @@
     <JsonEditor
       :options="{
         confirmText: 'salvar',
-        cancelText: 'cancelarfgfd',
+        cancelText: 'cancelar',
       }"
       :objData="jsonData"
       v-model="jsonData"
@@ -19,28 +19,39 @@
       <v-dialog v-model="dialog" persistent max-width="400">
         <template v-slot:activator="{ on, attrs }">
           <v-spacer></v-spacer>
-          <v-btn
-            dark
-            v-bind="attrs"
-            v-on="on"
-            color="warning"
-            class="ma-2 white--text"
-            @click="selected = 'save'"
-          >
-            Salvar
-            <v-icon right dark> mdi-content-save </v-icon></v-btn
-          >
-          <v-btn
-            dark
-            v-bind="attrs"
-            v-on="on"
-            color="warning"
-            class="ma-2 white--text"
-            @click="selected = 'restore'"
-          >
-            restaurar
-            <v-icon right dark> mdi-backup-restore </v-icon></v-btn
-          >
+          <transition name="fade">
+            <div class="actionButtons " v-show="!hidden">
+             
+              <v-btn
+                dark
+                v-bind="attrs"
+                v-on="on"
+                color="warning"
+                class="ma-2 white--text"
+                @click="selected = 'restore'"
+                large
+                rounded
+                elevation="15"
+              >
+                restaurar
+                <v-icon right dark> mdi-backup-restore </v-icon></v-btn
+              >
+               <v-btn
+                dark
+                v-bind="attrs"
+                v-on="on"
+                color="warning"
+                class="ma-2 white--text"
+                @click="selected = 'save'"
+                large
+                rounded
+                elevation="15"
+              >
+                Salvar
+                <v-icon right dark> mdi-content-save </v-icon></v-btn
+              >
+            </div>
+          </transition>
         </template>
         <v-card>
           <v-toolbar color="error" class="text-h5" dark>Cuidado</v-toolbar>
@@ -103,29 +114,42 @@ export default {
     dialog: false,
     selected: "",
     jsonData: {},
+    scTimer: 0,
+    scY: 0,
+    hidden: false,
   }),
+
+  mounted() {
+    this.$nextTick(function () {
+      this.jsonData = this.allJsons;
+    });
+
+    window.addEventListener("scroll", this.handleScroll);
+  },
 
   methods: {
     ...mapMutations(["SEND_MESSAGE"]),
+
+    handleScroll: function () {
+      if (this.scTimer) return;
+      this.scTimer = setTimeout(() => {
+        this.scY = window.scrollY;
+        clearTimeout(this.scTimer);
+        this.scTimer = 0;
+      }, 100);
+    },
   },
 
-  mounted() {
-  this.$nextTick(function () {
-    this.jsonData = this.allJsons
-  })
-},
-
- watch: {
+  watch: {
     allJsons: function () {
-    this.jsonData = this.allJsons
-    console.log(this.allJsons);
+      this.jsonData = this.allJsons;
+      console.log(this.allJsons);
     },
- },
+  },
 
   computed: {
-     ...mapState(["allJsons"]),
+    ...mapState(["allJsons"]),
   },
-
 
   //   mounted: function () {
   //       console.log(this.configuration.json);
@@ -133,5 +157,10 @@ export default {
 };
 </script>
 
-<style>
+<style scoped lang="scss">
+.actionButtons {
+  position: fixed;
+  bottom: 1em;
+  right: 1em;
+}
 </style>

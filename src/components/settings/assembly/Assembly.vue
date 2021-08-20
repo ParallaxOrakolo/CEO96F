@@ -1,6 +1,8 @@
 <template>
   <v-expansion-panel>
-    <v-expansion-panel-header>Definições de montagem</v-expansion-panel-header>
+    <v-expansion-panel-header><div>
+        <v-icon class="mr-2">mdi-screwdriver</v-icon>Definições de montagem
+      </div></v-expansion-panel-header>
     <v-expansion-panel-content>
       <v-divider></v-divider>
       <div class="mt-3 d-flex align-center justify-center">
@@ -16,19 +18,19 @@
         >
       </div>
 
-      <div class="d-flex justify-space-around">
-        <div class="d-flex align-start flex-column justify-center">
+      <div class="d-flex justify-space-around wrap">
+        <div class="d-flex align-start flex-column justify-center title">
           <div class="text-h5">Escolha quais parafusos serão montados</div>
         </div>
-        <transition name="fade">
+        <div class="img">
+<transition name="fade">
           <v-img
             :src="
               require(`@/assets/img/${configuration.assembly.listOfParts[selectedPart].frontImg}`)
             "
-            class="img"
-            :key="
-              configuration.assembly.listOfParts[selectedPart].frontImg
-            "
+            max-width="350"
+            contain
+            :key="configuration.assembly.listOfParts[selectedPart].frontImg"
           >
             <div
               v-for="item in configuration.assembly.listOfParts[selectedPart]
@@ -48,13 +50,13 @@
                       command: actions.UPDATE_ASSEMBLY,
                       parameter: configuration.assembly,
                     });
-                    selectedPart = item.index;
-                  }
+                    selectedPart = item.index;                  }
                 "
               ></v-checkbox>
-            </div>
+            </div> 
           </v-img>
         </transition>
+        </div>
       </div>
     </v-expansion-panel-content>
   </v-expansion-panel>
@@ -62,7 +64,7 @@
 
 <script>
 import { mapState, mapMutations } from "vuex";
-import { actions } from "../../store/index";
+import { actions } from "@/store/index";
 
 // import EditableInfo from "./EditableInfo";
 
@@ -70,22 +72,13 @@ export default {
   components: {},
   name: "Assembly",
   data: () => ({
-    actions,
+          actions,
     imgUrlSelected: "",
     selectedPart: 0,
   }),
 
   methods: {
     ...mapMutations(["SEND_MESSAGE"]),
-    updateImgUrl() {
-      this.imgUrlSelected =
-        "@/assets/img/" +
-        this.configuration.assembly.listOfParts[this.selectedPart].frontImg;
-      console.log(this.imgUrlSelected);
-      return require(`@/assets/img/${
-        this.configuration.assembly.listOfParts[this.selectedPart].frontImg
-      }`);
-    },
   },
 
   computed: {
@@ -110,6 +103,23 @@ export default {
   transform: translateX(10px);
   opacity: 1;
 }
+// .v-img{
+//   width: 50px;
+// }
+
+.img{
+  height: 100%;
+}
+
+.img2{
+height: 150px;
+}
+.title{
+  min-width: 120px;
+}
+.wrap{
+  min-height: 300px;}
+
 
 .checkbox {
   position: absolute;

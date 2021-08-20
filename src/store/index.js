@@ -46,8 +46,9 @@ const store = new Vuex.Store({
       type: "",
       panel: "",
       timeSeconds: 0,
-      total: 10,
-      placed: 5,
+      total: 1,
+      placed: 0,
+      finished: true
     },
 
     localTimer: {
@@ -218,6 +219,18 @@ const store = new Vuex.Store({
           filter: "screw",
         },
       ],
+
+      health:{
+
+        listOfSystem:[
+          {
+            hardware:"CPL",
+            status:"Online ",
+            conected: true
+          }
+
+        ]
+      },
 
       assembly: {
         listOfParts: [

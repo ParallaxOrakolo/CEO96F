@@ -54,6 +54,7 @@
       <v-icon dark>mdi-restart</v-icon>
     </v-btn>
 
+  
     <v-icon dark color="light-green lighten-1" v-show="isConnected"
       >mdi-lan-check</v-icon
     >
