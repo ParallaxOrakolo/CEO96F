@@ -1,12 +1,15 @@
 <template>
   <v-expansion-panel>
-    <v-expansion-panel-header>Informações</v-expansion-panel-header>
+    <v-expansion-panel-header>
+      <div><v-icon class="mr-2">mdi-information-outline</v-icon>
+      Informações</div>
+      </v-expansion-panel-header
+    >
     <v-expansion-panel-content>
       <v-divider></v-divider>
-
       <router-link to="/dashboard">
         <v-btn
-        class="ma-3"
+          class="ma-3"
           outlined
           rounded
           color="warning"

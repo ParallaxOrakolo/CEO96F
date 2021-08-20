@@ -1,6 +1,8 @@
 <template>
   <v-expansion-panel>
-    <v-expansion-panel-header>Definições de montagem</v-expansion-panel-header>
+    <v-expansion-panel-header><div>
+        <v-icon class="mr-2">mdi-screwdriver</v-icon>Definições de montagem
+      </div></v-expansion-panel-header>
     <v-expansion-panel-content>
       <v-divider></v-divider>
       <div class="mt-3 d-flex align-center justify-center">

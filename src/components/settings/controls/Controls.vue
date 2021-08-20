@@ -1,18 +1,20 @@
 <template>
   <v-expansion-panel>
-    <v-expansion-panel-header>Controles </v-expansion-panel-header>
+    <v-expansion-panel-header>
+      <div><v-icon class="mr-2">mdi-camera-control</v-icon> Controles</div>
+    </v-expansion-panel-header>
     <v-expansion-panel-content>
       <!-- <v-divider></v-divider>
 <SerialMonitor></SerialMonitor> -->
-<v-row no-gutters>
-      <Camera></Camera>
-      <ColorPikerHSV v-show="configuration.logged" />
+      <v-row no-gutters>
+        <Camera></Camera>
+        <ColorPikerHSV v-show="configuration.logged" />
       </v-row>
       <ButtonsControls></ButtonsControls>
-      
+
       <v-divider></v-divider>
       <SerialMonitor></SerialMonitor>
-       
+
       <!-- 
     <v-btn v-haptic elevation="2" fab dark x-large color="blue">
       <v-icon dark> mdi-arrow-up-bold </v-icon>
