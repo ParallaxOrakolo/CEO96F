@@ -2777,6 +2777,18 @@
             "description": "Sem comunicação com o CLP",
             "type": "error",
             "date": 1629489275
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1629490104
+        },
+        {
+            "code": 4,
+            "description": "Sem comunicação com o CLP",
+            "type": "error",
+            "date": 1629490904
         }
     ]
 }

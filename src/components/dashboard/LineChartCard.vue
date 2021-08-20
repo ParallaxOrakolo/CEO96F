@@ -229,9 +229,9 @@ export default {
         this.series[1].data = this.state.production.dailyAvarege.week_rigth;
         this.series[2].data = this.state.production.dailyAvarege.week_wrong;
 
-        for (var i = 0; i < 5; i++) {
+        for (var i = 0; i < 7; i++) {
           var result = new Date();
-          result.setDate(result.getDate() + i);
+          result.setDate(result.getDate() - i);
           result = result.getTime();
           this.chartOptions.xaxis.categories.push(result);
           // console.log(this.chartOptions.xaxis.categories);

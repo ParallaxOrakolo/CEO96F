@@ -104,80 +104,48 @@ const store = new Vuex.Store({
 
     production: {
       total: {
-        total: 110,
-        rigth: 19,
-        wrong: 91,
-        timePerCicleMax: 121.08227848299975,
-        timePerCicleMin: 107.77431201700028
+        total: 0,
+        rigth: 0,
+        wrong: 0,
+        timePerCicleMax: 0,
+        timePerCicleMin: 0
       },
       yesterday: {
-        day: 9,
-        total: 40,
-        rigth: 2,
-        wrong: 38,
-        timePerCicle: 115.87580769000033,
+        day: 0,
+        total: 0,
+        rigth: 0,
+        wrong: 0,
+        timePerCicle: 0,
         timesPerCicles: [
-          115.87580769000033
+          
         ]
       },
       dailyAvarege: {
-        total: 8.2,
-        rigth: 0.4,
-        wrong: 7.8,
-        times: 23.468601902621607,
+        total: 0,
+        rigth: 0,
+        wrong: 0,
+        times: 0,
         week_total: [
-          4,
-          6,
-          8,
-          1,
-          40
+          0
         ],
         week_rigth: [
           0,
-          0,
-          0,
-          0,
-          2
         ],
         week_wrong: [
           0,
-          0,
-          0,
-          1,
-          38
         ],
         week_times: [
-          0.23941563086011008,
-          0.4792402725995938,
-          0.7485459196480114,
-          0,
-          115.87580769000033
+          0
         ],
       },
       today: {
-        day: 10,
-        total: 69,
-        rigth: 17,
-        wrong: 52,
-        timePerCicle: 115.05078025635297,
+        day: 0,
+        total: 0,
+        rigth: 0,
+        wrong: 0,
+        timePerCicle: 0,
         timesPerCicles: [
-          118.12990739199995,
-          119.48827228000027,
-          116.50036507899995,
-          116.01943437499995,
-          113.99097282000002,
-          116.44449680099979,
-          119.39597131800019,
-          116.664611745,
-          116.2564741719998,
-          116.93511491200024,
-          121.08227848299975,
-          109.29979428600018,
-          113.99284800600002,
-          112.28731608199999,
-          113.10247471100001,
-          108.49861987899999,
-          107.77431201700028
+            0
         ]
       },
     },
