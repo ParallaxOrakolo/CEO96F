@@ -141,7 +141,7 @@ class CamThread(threading.Thread):
         while rval and not self.stopped():                                   # Verifica e camera ta 'ok'
 
             rval, frame = cam.read()                  # Atualiza
-#            frame = cv2.blur(frame, (3,3))
+            frame = cv2.blur(frame, (3,3))
             globals()[f'frame{previewName}'] = frame
             if cv2.waitKey(1) == 27:
                 break
@@ -345,13 +345,21 @@ class Process(threading.Thread):
                     #montar=sum(montar)
                     print("Montagem finalizada.")
                     print("Iniciando processo de validação.")
-                    Fast.sendGCODE(arduino, "M42 P34 S0")
-                    Fast.sendGCODE(arduino, "M42 P33 S255")
                     Fast.sendGCODE(arduino, "G90")
-                    Fast.sendGCODE(arduino, "G28 Y")
                     ValidaPos = machineParamters['configuration']['informations']['machine']['defaultPosition']['validaParafuso']
+
                     Fast.sendGCODE(arduino, f"G0 Y{ValidaPos['Y']} f{yMaxFed}")
                     Fast.sendGCODE(arduino, f"G0 X{ValidaPos['X']}, f{xMaxFed}")
+
+                    Fast.M400(arduino)
+
+                    Fast.sendGCODE(arduino, "M42 P34 S0")
+                    Fast.sendGCODE(arduino, "M42 P33 S255")
+                    
+                    Fast.sendGCODE(arduino, "G28 Y")
+                    
+                    
+
                     #Fast.sendGCODE(arduino, f"G0 E{ValidaPos['E']}, f{eMaxFed}")
                     Fast.M400(arduino)
                     
@@ -459,7 +467,7 @@ def findHole(imgAnalyse, minArea, maxArea, c_perimeter, HSValues, fixed_Point, e
         for info_edge in edge:
             try:
                 if 20 <= int(info_edge['dimension'][0]/2):
-
+                    cv2.putText(chr_k, str(info_edge["area"]), (0,60), cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 255, 255), 5)
                     cv2.drawMarker(chr_k,(info_edge['centers'][0]), (0,255,0), thickness=3)
                     cv2.circle(chr_k, (info_edge['centers'][0]), int(info_edge['dimension'][0]/2),
                     (36, 255, 12), 2)
@@ -540,6 +548,7 @@ def findHole(imgAnalyse, minArea, maxArea, c_perimeter, HSValues, fixed_Point, e
 
 
 def setCameraFilter():
+    global mainParamters, camera, machineParamters
     print("Usando valores definidos no arquivo para setar o payload inicial da camera.")
     for process in mainParamters["Filtros"]["HSV"]:
         process = mainParamters["Filtros"]["HSV"][process]
@@ -564,6 +573,7 @@ def setCameraFilter():
 
 def setCameraHsv(jsonPayload):
     print("Alterando Payload da camera usando a  configuração do Front.")
+    global camera
     newColors = []
     for filters in jsonPayload["filters"]:
         colorGroup= []
@@ -577,34 +587,30 @@ def setCameraHsv(jsonPayload):
             jsonPayload["filters"][filterName]["hsv"]["hue"][index] = colorGroup[index][0]
             jsonPayload["filters"][filterName]["hsv"]["sat"][index] = colorGroup[index][1]
             jsonPayload["filters"][filterName]["hsv"]["val"][index] = colorGroup[index][2]
-    return jsonPayload
+    camera = jsonPayload
 
-
-def setFilterWithCamera(jsonOrigin, jsonPayload, restore=False):
+def setFilterWithCamera():
+    global mainParamters, camera
     print("Alterando valores da arquivo de configuração com base no payload da Camera")
-    for _ in jsonPayload["filters"]:
+    for _ in camera["filters"]:
         print("~"*20)
-        #print(jsonOrigin["Filtros"]["HSV"][_]["Valores"])
+        #print(mainP["Filtros"]["HSV"][_]["Valores"])
         lower = {}
         upper = {}
-        for __ in jsonPayload["filters"][_]["hsv"]:
-            lower[f"{__[0:1]}_min"] = jsonPayload["filters"][_]["hsv"][__][0]
-            upper[f"{__[0:1]}_max"] = jsonPayload["filters"][_]["hsv"][__][1]
+        for __ in camera["filters"][_]["hsv"]:
+            lower[f"{__[0:1]}_min"] = camera["filters"][_]["hsv"][__][0]
+            upper[f"{__[0:1]}_max"] = camera["filters"][_]["hsv"][__][1]
         Valoroes = {"lower":lower, "upper":upper}
         for k, v  in Valoroes.items():
             for k1, v1  in v.items():
-                if not restore:
-                    jsonOrigin["Filtros"]["HSV"][_]["Valores"][k][k1] = v1
-                else:
-                    jsonOrigin["Filtros"]["HSV"][_]["Valores"][k][k1] = globals()["tempFileFilter"][_]["Valores"][k][k1]
-                    jsonOrigin["Mask_Parameters"][_]["areaMin"] = jsonPayload["filters"][_]["area"][0]
-                    jsonOrigin["Mask_Parameters"][_]["areaMax"] = jsonPayload["filters"][_]["area"][1]
-        print(_, ":", jsonOrigin["Filtros"]["HSV"][_]["Valores"])
+                mainParamters["Filtros"]["HSV"][_]["Valores"][k][k1] = v1
+        print(_, ":", mainParamters["Filtros"]["HSV"][_]["Valores"])
 
 
 async def updateCamera(payload):
-    camera = setCameraHsv(payload)
-    setFilterWithCamera(mainParamters, camera)
+    setCameraHsv(payload)
+    setFilterWithCamera()
+
 
 
 def findCircle(circle_Mask, areaMinC, areaMaxC, perimeter_size, blur_Size=3):
@@ -765,7 +771,7 @@ def descarte(valor="Errado", Deposito={"Errado":{"X":230, "Y":0}}):
     Fast.sendGCODE(arduino, f"G0 E0 f{eMaxFed}")
     Fast.M400(arduino)
 #    Fast.sendGCODE(arduino, f"G28 Y")
-    cicleSeconds = timeit.default_timer()-Total0
+    cicleSeconds = round(timeit.default_timer()-Total0,1)
     asyncio.run(updateProduction(cicleSeconds, valor))
     print("updateProducion - Finish")
     if valor == "Errado" and not intencionalStop:
@@ -890,7 +896,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
     changePos = False
     possivelErro = 0
     parafusadas = 0
-    precicao = 0.2
+    precicao = 0.42
     Reverse = False
     vazio = False
     angle = 0
@@ -973,8 +979,8 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
 #                        break
 
                 tt = timeit.default_timer()
-                while timeit.default_timer()-tt <= 1.2:
-                    pass
+                while timeit.default_timer()-tt <= 0.3:
+                    continue
                 frame = globals()['frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])]
                 Resultados, R, per, img_draw = Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues)
                 
@@ -1013,19 +1019,19 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                         print("Falha de identificação, corrija o filtro..")
                         break
 
-                    if abs(MX) > precicao:
-                        Fast.sendGCODE(arduino, f"G0 X{MX} F{xMaxFed}", echo=True)
-                        
-                    elif abs(MY) > precicao:
+                    #if abs(MX) > precicao:
+                    #    Fast.sendGCODE(arduino, f"G0 X{MX} F{xMaxFed}", echo=True)
+                    #    
+                    if abs(MY) > precicao or abs(MX) > precicao :
                         yImaginario = NLinearRegression(abs(yReal))
                         defaultCoordY = yImaginario
                         atualCoordY = yReal
-
+                        pp = Fast.M114(arduino)
                         if DebugPrint:
                             print(f"Devera ir para coordenada {yImaginario}; {atualCoordY}mm em relação ao 0")
 
                         Fast.sendGCODE(arduino, f"G90")
-                        Fast.sendGCODE(arduino, f"G0 Y{yImaginario} F{int(yMaxFed/2)}", echo=True)
+                        Fast.sendGCODE(arduino, f"G0 Y{yImaginario} X{MX+pp['X']} F{int(yMaxFed/2)}", echo=True)
                         Fast.sendGCODE(arduino, f"G91")
 
                     Fast.M400(arduino)
@@ -1048,12 +1054,9 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                             # Faz os valores ficarem acima do permiido pra evita que entre no loop novamente.
                             MY, MX, tentativas = 99, 99, 50
                             posicao = Fast.M114(arduino)
-                            print("angle:", angle, type(angle), str(angle))
-                            print("model:", model, type(model))
-                            print("changePos:", changePos, type(changePos),str(int(changePos)))
-                            print(Analise[model][str(angle)][str(int(changePos))])
                             print('\n')
-#                            print(f"model:{model}, angle:{angle}, index:{str(int(changePos))}",posicao['X'], posicao['Y'], "vs", Analise[model][str(angle)][str(int(changePos))]['X'], Analise[model][str(angle)][str(int(changePos))]['Y'])
+                            print(f"model:{model}, angle:{angle}, index:{str(int(changePos))}",posicao['X'], posicao['Y'], "vs", Analise[model][str(angle)][str(int(changePos))]['X'], Analise[model][str(angle)][str(int(changePos))]['Y'])
+                            print('\n')
 
 #                            Analise[model][str(angle)][str(int(changePos))]['X'] = posicao['X']
 #                            Analise[model][str(angle)][str(int(changePos))]['Y'] = posicao['Y']
