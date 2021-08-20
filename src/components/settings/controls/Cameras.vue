@@ -8,22 +8,32 @@
           selectedCamera = item.cameraId;
           selectedFilter = item.filter;
           makeUrl(item.filter, item.cameraId);
-          updateURL()
+          updateURL();
         "
         >{{ item.name }}</v-tab
       >
     </v-tabs>
+    
     <div class="d-flex align-end mb-6">
       <div class="v-switch">
         <v-switch
-          dark
           v-model="filter"
           inset
-          :label="`Filtro: ${filter.toString()}`"
+          :label="`Filtro`"
           @click="updateURL()"
         ></v-switch>
       </div>
+      <!-- <v-img
+        lazy-src="https://picsum.photos/id/11/100/60"
+        class="cameraImg"
+        alt="camera"
+        :src="`http://${configuration.informations.ip}:${
+          configuration.informations.portStream
+        }/${stringUrl}?${Math.floor(Math.random() * (1000 - 1 + 1)) + 1}`"
+      >
+      </v-img> -->
       <v-img
+        :lazy-src="require(`@/assets/img/estribo-pattern-low.jpg`)"
         class="cameraImg"
         alt="camera"
         :src="`http://${configuration.informations.ip}:${
@@ -44,7 +54,7 @@ export default {
   data() {
     return {
       selectedCamera: "0",
-      // selectedFilter: "Hole",
+      selectedFilter: "hole",
       filter: false,
       stringUrl: "normal/0",
       cameraList: [
@@ -66,25 +76,25 @@ export default {
     ...mapMutations(["SEND_MESSAGE"]),
 
     makeUrl(filter, cameraId) {
-     this.stringUrl = ""
+      this.stringUrl = "";
 
       if (filter) {
         this.stringUrl = filter + "/" + cameraId;
       } else {
         this.stringUrl = this.Normal + "/" + cameraId;
       }
-      // console.log(this.stringUrl);
+      console.log(this.stringUrl);
     },
 
     updateURL() {
-        this.stringUrl = " "
-        console.log(this.stringUrl);
+      this.stringUrl = " ";
+      console.log(this.stringUrl);
       if (this.filter) {
         this.stringUrl = this.selectedFilter + "/" + this.selectedCamera;
       } else {
         this.stringUrl = "normal" + "/" + this.selectedCamera;
       }
-      // console.log(this.stringUrl);
+      console.log(this.stringUrl);
     },
   },
 
@@ -96,15 +106,17 @@ export default {
 
 <style scoped lang="scss">
 .content {
-  //   max-width: 600px;
   border-radius: 0.8em;
   display: block;
   width: 100%;
+
   .v-switch {
-    margin-top: -20px;
-    margin-left: 1.5em;
+    margin-bottom: 0;
     position: absolute;
     z-index: 999;
+    padding: 0 1em;
+    border-top-right-radius: 1em;
+    background-color: #ffffffe1;
   }
 
   .cameraImg {
@@ -112,11 +124,7 @@ export default {
     max-width: 720px;
     display: block;
     border-radius: 0px 10px 10px 10px;
-
   }
 
-  .v-input--selection-controls {
-    margin-top: -10px;
-  }
 }
 </style>
