@@ -47,6 +47,8 @@ const store = new Vuex.Store({
       panel: "",
       timeSeconds: 0,
       total: 1,
+      right: 10,
+      wrong:5,
       placed: 0,
       finished: true
     },

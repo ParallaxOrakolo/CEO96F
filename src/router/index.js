@@ -1,10 +1,10 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-
 import Home from '@/views/Home'
 import Settings from '@/views/Settings'
 import IntroLogo from '@/views/IntroLogo'
+import Success from '@/views/Success'
 import Scan from '@/views/Scan'
 import Progress from '@/views/Progress'
 import Dashboard from '@/views/Dashboard'
@@ -36,6 +36,11 @@ const routes = [
         name: 'progress',
         path:'/progress',
         component: Progress,
+    },
+    {
+        name: 'success',
+        path:'/success',
+        component: Success,
     },
     {
         name: 'dashboard',

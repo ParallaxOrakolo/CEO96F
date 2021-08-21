@@ -5,6 +5,7 @@
       class="video"
       id="video"
       preload="auto"
+      muted="muted"
       @canplay="getElement"
     >
       <source src="../assets/img/logo-red-white.mp4" type="video/mp4" />
@@ -40,7 +41,7 @@ export default {
         this.duration = event.target.duration;
         this.nextPage(event.target.duration);
         event.target.currentTime = 0;
-        event.target.load();
+       event.target.play();
         this.loaded = true;
       }
     },

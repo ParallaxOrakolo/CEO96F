@@ -1,13 +1,7 @@
 <template>
   <v-app>
-<<<<<<< Updated upstream
     <div class="mx-auto"><Snack-bar v-if="!isConnected"></Snack-bar></div>
-=======
-    <div class="mx-auto">
-      <snack-bar v-if="!isConnected"></snack-bar>
-    </div>
->>>>>>> Stashed changes
-    <DialogAlert />
+    <!-- <DialogAlert /> -->
     <NavBar v-if="$route.name != 'intro'" />
     <v-main>
       <transition>
