@@ -270,7 +270,6 @@ class Process(threading.Thread):
     def preMount(self):
 
         print(f"{self.cor} ID:{self.id}--> pre Mount Start{Fast.ColorPrint.ENDC}")
-
         print(f"Foi requisitado a montagem de {self.qtd} peças certas.")
 
         
@@ -1441,6 +1440,9 @@ async def startProcess(parm):
     t0 = timeit.default_timer()
     NewMont = Process(qtd, Fast.randomString(tamanho=5 ,pattern=""), model=modelo_atual)
     NewMont.start()
+    operation["operation"]["placed"] = 0
+    operation["operation"]["total"] = qtd if qtd < 999 else 0
+    await sendWsMessage("update", operation)
     await sendWsMessage("startProcess_success")
     print(f"Pedido de montagem finalizado em {int(timeit.default_timer()-t0)}s")
 
@@ -1483,13 +1485,13 @@ async def updateProduction(cicleSeconds, valor):
             for k, v in appends.items():
                 while len(v) > 7:
                     v.pop(0)
-                media =  sum(v) /len(v)
+                media =  round(sum(v) /len(v),1)
                 print(k, v, media)
                 production["production"]["dailyAvarege"][k] = media
 
     valores = production["production"]["today"]["timesPerCicles"]
     if valores:
-        media =  sum(valores) /len(valores)
+        media =  round(sum(valores) /len(valores),1)
         production["production"]["today"]["timePerCicle"] = media
     print("Escrevendo")
     Fast.writeJson('Json/production.json', production)

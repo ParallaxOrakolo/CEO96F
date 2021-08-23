@@ -1,70 +1,60 @@
 {
     "production": {
         "total": {
-            "total": 978,
-            "rigth": 162,
-            "wrong": 740,
+            "total": 982,
+            "rigth": 163,
+            "wrong": 742,
             "timePerCicleMax": 133,
             "timePerCicleMin": 100
         },
         "dailyAvarege": {
-            "total": 104,
-            "rigth": 15,
-            "wrong": 83,
-            "times": 100,
+            "total": 117.8,
+            "rigth": 22.1,
+            "wrong": 88.2,
+            "times": 115.3,
             "week_total": [
-                1,
                 40,
                 115,
                 121,
                 194,
                 109,
-                149
+                149,
+                97
             ],
             "week_rigth": [
-                0,
                 2,
                 39,
                 29,
                 24,
                 12,
-                1
+                1,
+                48
             ],
             "week_wrong": [
-                1,
                 38,
                 76,
                 92,
                 170,
                 86,
-                119
+                119,
+                37
             ],
             "week_times": [
-                0,
                 116,
                 113,
                 113,
                 116,
                 124,
-                119
+                119,
+                106.5
             ]
         },
         "yesterday": {
-            "day": 19,
-            "total": 149,
-            "rigth": 1,
-            "wrong": 119,
-            "timePerCicle": 119,
-            "timesPerCicles": [
-                119
-            ]
-        },
-        "today": {
             "day": 20,
-            "total": 96,
-            "rigth": 47,
+            "total": 97,
+            "rigth": 48,
             "wrong": 37,
-            "timePerCicle": 106.58085106382977,
+            "timePerCicle": 106.5,
             "timesPerCicles": [
                 100,
                 106,
@@ -112,8 +102,17 @@
                 110,
                 106.4,
                 103.9,
-                109.0
+                109.0,
+                108.2
             ]
+        },
+        "today": {
+            "day": 23,
+            "total": 3,
+            "rigth": 0,
+            "wrong": 2,
+            "timePerCicle": 0,
+            "timesPerCicles": []
         }
     }
 }
