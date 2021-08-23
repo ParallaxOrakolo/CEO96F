@@ -1,16 +1,12 @@
 <template>
-  <section class="content d-flex align-center flex-column">
-    <div class="align-self-center d-flex align-center flex-column">
-      <!-- <img class="logo" src="../assets/img/parallax-logo-06.svg" alt /> -->
-      <!-- <br /> -->
-      <!-- <v-btn x-large v-on:click="sendInfo('helo')" class="align-self-center" color="warning">iniciar</v-btn> -->
-    </div>
-    <div id="app">
-      <v-expansion-panels multiple>
+  <section class="content">
+    <div id="app" class="">
+      <v-expansion-panels multiple >
+        <Assembly />
         <Infos />
         <Controls />
-        <Advanced-settings />
         <Statistics />
+        <Advanced-settings />
       </v-expansion-panels>
     </div>
   </section>
@@ -22,9 +18,10 @@ import Infos from "../components/settings/Infos";
 import AdvancedSettings from "../components/settings/AdvancedSettings";
 import Statistics from "../components/settings/Statistics.vue";
 import Controls from "../components/settings/controls/Controls.vue";
+import Assembly from "../components/settings/assembly/Assembly.vue";
 
 export default {
-  components: { AdvancedSettings, Infos, Statistics, Controls },
+  components: { AdvancedSettings, Infos, Statistics, Controls, Assembly },
   name: "settings",
   methods: {
     sendMessage: function (message) {
@@ -48,19 +45,26 @@ export default {
 </script>
 
 <style>
-#app {
+#app{
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* text-align: center; */
   color: #2c3e50;
   width: 100vw;
+  height: 100%;
   /* padding: 1em 1em; */
 }
 
+.content{
+  width: 100%;
+  height: 100vh;
+  }
+  
 .v-expansion-panels {
   padding: 1em;
-  
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 v-card {

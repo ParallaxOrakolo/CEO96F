@@ -1,11 +1,12 @@
 <template>
   <v-app>
-    <snack-bar v-if="!isConnected"></snack-bar>
-    <DialogAlert />
-    <NavBar />
-    <v-main >
-      <router-view />
-      <!-- <Home/> -->
+    <div class="mx-auto"><Snack-bar v-if="!isConnected"></Snack-bar></div>
+    <!-- <DialogAlert /> -->
+    <NavBar v-if="$route.name != 'intro'" />
+    <v-main>
+      <transition>
+        <router-view></router-view>
+      </transition>
     </v-main>
   </v-app>
 </template>
@@ -27,7 +28,6 @@ export default {
     SnackBar,
   },
 
-
   created() {
     if (this.$workbox) {
       this.$workbox.addEventListener("waiting", () => {
@@ -39,11 +39,11 @@ export default {
   computed: {
     ...mapState(["isConnected"]),
   },
-
 };
 </script>
 
 <style lang="scss">
+
 ::-webkit-scrollbar {
   display: none;
 }
@@ -55,5 +55,4 @@ body {
   margin: 0;
   padding: 0;
 }
-
 </style>

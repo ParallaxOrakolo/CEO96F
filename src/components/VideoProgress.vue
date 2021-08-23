@@ -1,7 +1,7 @@
 <template>
   <div class="video" justify="center">
     <v-icon class="videoIcon" x-large v-show="!state.playing && state.started">mdi-pause</v-icon>
-    <video loop @canplay="getElement">
+    <video loop @canplay="getElement" muted="muted">
       <source src="../assets/img/estribo-animation.mp4" type="video/mp4" />
     </video>
   </div>

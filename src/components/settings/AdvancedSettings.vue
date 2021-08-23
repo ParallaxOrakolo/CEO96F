@@ -1,8 +1,9 @@
 <template>
   <v-expansion-panel>
-    <v-expansion-panel-header
-      >Configurações avançadas
-
+    <v-expansion-panel-header>
+      <div>
+        <v-icon class="mr-2">mdi-shield-outline</v-icon> Configurações avançadas
+      </div>
       <template v-slot:actions>
         <span v-if="configuration.logged == true"
           >Olá, <b>{{ userLogged }}!</b>
@@ -34,7 +35,7 @@
           required
         >
         </v-text-field>
-        
+
         <!-- <v-btn
           color="primary"
           text
@@ -45,19 +46,19 @@
       </v-card-text>
 
       <v-card-text v-show="configuration.logged">
-        
-      <User-table v-if="configuration.logged"/>
+        <User-table v-if="configuration.logged" />
       </v-card-text>
 
-      <JsonEditor2 v-if="configuration.logged"/>
+      <JsonEditor2 v-if="configuration.logged" />
+      <!-- <JsonEditor2 /> -->
     </v-expansion-panel-content>
   </v-expansion-panel>
 </template>
 
 <script>
 import { mapState } from "vuex";
-import UserTable from './UserTable.vue';
-import JsonEditor2 from './JsonEditor2.vue'
+import UserTable from "./UserTable.vue";
+import JsonEditor2 from "./JsonEditor2.vue";
 
 export default {
   components: { UserTable, JsonEditor2 },
@@ -106,9 +107,7 @@ export default {
     },
   },
 
-  created: function () {
-    
-  }
+  created: function () {},
 };
 </script>
 

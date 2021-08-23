@@ -1,0 +1,54 @@
+{
+    "CLP":{
+        "pin":36,
+        "state_on": 255,
+        "state_off": 0,
+        "class":"digital",
+        "command":"M42 P_pin_ S_state_",
+        "desciption":"quando ativado, comunica o clp que o processo deve iniciar."
+    },
+    "Lâmpada_0":{
+        "pin":33,
+        "state_on": 255,
+        "state_off": 0,
+        "class":"digital",
+        "command":"M42 P_pin_ S_state_",
+        "desciption":"Liga a luz de para o processo de identificação"
+    },
+    "Lâmpada_1":{
+        "pin":34,
+        "state_on": 255,
+        "state_off": 0,
+        "class":"digital",
+        "command":"M42 P_pin_ S_state_",
+        "desciption":"Liga a luz de para o processo de validação"
+    },
+
+    "Solenoide_Fuso":{
+        "pin":32,
+        "state_on": 255,
+        "state_off": 0,
+        "class":"digital",
+        "command":"M42 P_pin_ S_state_",
+        "desciption":"Quando acionado, liga/rotaciona o eixo da parafusadeira."
+    },
+
+    "Solenoide Garra":{
+        "pin":31,
+        "state_on": 255,
+        "state_off": 0,
+        "class":"digital",
+        "command":"M42 P_pin_ S_state_",
+        "desciption":"Quando acionado, abre a garra pneumática."
+    },
+    
+    "Name":{
+        "pin":0,
+        "state_on": 0,
+        "state_off": 0,
+        "class":"digital",
+        "command":"G_code_ P_pin_ S_state_ P_parm_",
+        "desciption":"Bloco padrão para adição de novos pinos."
+    }
+    
+}

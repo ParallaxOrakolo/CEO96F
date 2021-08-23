@@ -18,6 +18,7 @@ export const actions = {
   PAUSE_PROCESS: "pauseProcess",
   PARAFUSA: "sendParafusa",
   UPDATE_SLIDER: "updateSlider",
+  UPDATE_ASSEMBLY: "updateAssembly",
   STOP_PROCESS: "stopProcess",
   LOG_REQUEST: "logRequest",
   STOP_REASONS_LIST_REQUEST: "stopReasonsListRequest",
@@ -45,8 +46,11 @@ const store = new Vuex.Store({
       type: "",
       panel: "",
       timeSeconds: 0,
-      total: 10,
-      placed: 5,
+      total: 1,
+      right: 10,
+      wrong:5,
+      placed: 0,
+      finished: true
     },
 
     localTimer: {
@@ -102,23 +106,52 @@ const store = new Vuex.Store({
 
     production: {
       total: {
-        total: 110,
-        rigth: 19,
-        wrong: 91,
-        timePerCicleMax: 121.08227848299975,
-        timePerCicleMin: 107.77431201700028
+        total: 0,
+        rigth: 0,
+        wrong: 0,
+        timePerCicleMax: 0,
+        timePerCicleMin: 0
       },
       yesterday: {
-        day: 9,
-        total: 40,
-        rigth: 2,
-        wrong: 38,
-        timePerCicle: 115.87580769000033,
+        day: 0,
+        total: 0,
+        rigth: 0,
+        wrong: 0,
+        timePerCicle: 0,
         timesPerCicles: [
-            115.87580769000033
+          
         ]
-      }
+      },
+      dailyAvarege: {
+        total: 0,
+        rigth: 0,
+        wrong: 0,
+        times: 0,
+        week_total: [
+          0
+        ],
+        week_rigth: [
+          0,
+        ],
+        week_wrong: [
+          0,
+        ],
+        week_times: [
+          0
+        ],
+      },
+      today: {
+        day: 0,
+        total: 0,
+        rigth: 0,
+        wrong: 0,
+        timePerCicle: 0,
+        timesPerCicles: [
+            0
+        ]
+      },
     },
+
 
     log: [
       {
@@ -156,6 +189,137 @@ const store = new Vuex.Store({
           filter: "screw",
         },
       ],
+
+      health:{
+
+        listOfSystem:[
+          {
+            hardware:"CPL",
+            status:"Online ",
+            conected: true
+          }
+
+        ]
+      },
+
+      assembly: {
+        listOfParts: [
+          {
+            index: 0,
+            partName: "Peça Menor",
+            frontImg: "estribo-quadrado-front.png",
+            perspectiveImg: "estribo-quadrado.png",
+            listed: true,
+            listOfHoles: [
+              {
+                index: 1,
+                checkboxPosition: {
+                  top: "8.3%",
+                  left: "50%",
+                },
+                mount: true,
+              },
+              {
+                index: 2,
+                checkboxPosition: {
+                  top: "25%",
+                  left: "83%",
+                },
+                mount: true,
+              },
+              {
+                index: 3,
+                checkboxPosition: {
+                  top: "57%",
+                  left: "83%",
+                },
+                mount: true,
+              },
+              {
+                index: 4,
+                checkboxPosition: {
+                  top: "72%",
+                  left: "50%",
+                },
+                mount: true,
+              },
+              {
+                index: 5,
+                checkboxPosition: {
+                  top: "25%",
+                  left: "11%",
+                },
+                mount: true,
+              },
+              {
+                index: 6,
+                checkboxPosition: {
+                  top: "57%",
+                  left: "11%",
+                },
+                mount: true,
+              },
+            ],
+          },
+          {
+            index: 1,
+            partName: "Peça Maior",
+            frontImg: "estribo-retangular-front.png",
+            perspectiveImg: "estribo-retangular.png",
+            listed: true,
+            listOfHoles: [
+              {
+                index: 1,
+                checkboxPosition: {
+                  top: "0",
+                  left: "50%",
+                },
+                mount: true,
+              },
+              {
+                index: 2,
+                checkboxPosition: {
+                  top: "18%",
+                  left: "83%",
+                },
+                mount: true,
+              },
+              {
+                index: 3,
+                checkboxPosition: {
+                  top: "55%",
+                  left: "83%",
+                },
+                mount: true,
+              },
+              {
+                index: 4,
+                checkboxPosition: {
+                  top: "72%",
+                  left: "50%",
+                },
+                mount: true,
+              },
+              {
+                index: 5,
+                checkboxPosition: {
+                  top: "18%",
+                  left: "11%",
+                },
+                mount: true,
+              },
+              {
+                index: 6,
+                checkboxPosition: {
+                  top: "55%",
+                  left: "11%",
+                },
+                mount: true,
+              },
+            ],
+          },
+        ],
+      },
 
       informations: {
         ip: machineJson.configuration.informations.ip,

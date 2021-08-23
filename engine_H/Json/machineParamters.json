@@ -13,6 +13,124 @@
                 "filter": "screw"
             }
         ],
+        "assembly": {
+            "listOfParts": [
+                {
+                    "index": 0,
+                    "partName": "Peça Menor",
+                    "frontImg": "estribo-quadrado-front.png",
+                    "perspectiveImg": "estribo-quadrado.png",
+                    "listed": true,
+                    "listOfHoles": [
+                        {
+                            "index": 1,
+                            "checkboxPosition": {
+                                "top": "8.3%",
+                                "left": "50%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 2,
+                            "checkboxPosition": {
+                                "top": "25%",
+                                "left": "83%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 3,
+                            "checkboxPosition": {
+                                "top": "57%",
+                                "left": "83%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 4,
+                            "checkboxPosition": {
+                                "top": "72%",
+                                "left": "50%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 5,
+                            "checkboxPosition": {
+                                "top": "25%",
+                                "left": "11%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 6,
+                            "checkboxPosition": {
+                                "top": "57%",
+                                "left": "11%"
+                            },
+                            "mount": true
+                        }
+                    ]
+                },
+                {
+                    "index": 1,
+                    "partName": "Peça Maior",
+                    "frontImg": "estribo-retangular-front.png",
+                    "perspectiveImg": "estribo-retangular.png",
+                    "listed": true,
+                    "listOfHoles": [
+                        {
+                            "index": 1,
+                            "checkboxPosition": {
+                                "top": "0",
+                                "left": "50%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 2,
+                            "checkboxPosition": {
+                                "top": "18%",
+                                "left": "83%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 3,
+                            "checkboxPosition": {
+                                "top": "55%",
+                                "left": "83%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 4,
+                            "checkboxPosition": {
+                                "top": "72%",
+                                "left": "50%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 5,
+                            "checkboxPosition": {
+                                "top": "18%",
+                                "left": "11%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 6,
+                            "checkboxPosition": {
+                                "top": "55%",
+                                "left": "11%"
+                            },
+                            "mount": true
+                        }
+                    ]
+                }
+            ]
+        },
         "informations": {
             "ip": "192.168.4.1",
             "connectionId": 123456,
@@ -59,7 +177,7 @@
                     "bMax": 50000
                 },
                 "maxFeedratePercent": {
-                    "X": 70,
+                    "X": 50,
                     "Y": 70,
                     "ZD": 50,
                     "ZU": 80,
@@ -117,9 +235,9 @@
                         "E": null
                     },
                     "parafusadeiraCentro": {
-                        "X": 250,
-                        "Y": 10.5,
-                        "Z": 130,
+                        "X": 254,
+                        "Y": 11,
+                        "Z": 132,
                         "E": null
                     },
                     "parafusar": {
@@ -144,20 +262,20 @@
                     ],
                     "gradient": {
                         "color": "#000000",
-                        "color2": "#8d770a"
+                        "color2": "#9f0010"
                     },
                     "hsv": {
                         "hue": [
                             0,
-                            49.924
+                            353.962
                         ],
                         "sat": [
                             0,
-                            236.895
+                            255
                         ],
                         "val": [
                             0,
-                            141.015
+                            159.12
                         ]
                     }
                 },
@@ -257,7 +375,7 @@
                 },
                 {
                     "code": 6,
-                    "description": "Camera _id_ não pode ser iniciada.",
+                    "description": "Camera 0 não pode ser iniciada.",
                     "listed": false,
                     "type": "error",
                     "button_text": "Reiniciar",
@@ -284,6 +402,14 @@
                     "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
                     "listed": false,
                     "type": "warning",
+                    "button_text": "Entendi",
+                    "button_action": "None"
+                },
+                {
+                    "code": 998,
+                    "description": "Parada para ajuste técnico",
+                    "listed": true,
+                    "type": "info",
                     "button_text": "Entendi",
                     "button_action": "None"
                 },

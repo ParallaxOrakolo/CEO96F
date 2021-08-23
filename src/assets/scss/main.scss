@@ -1,3 +1,14 @@
+@import url(lato.scss); 
+
+#app{
+    font-family: 'Lato', sans-serif !important;
+}
+
+body
+{
+  overscroll-behavior-y: contain;
+}
+
 .v-application a {
     text-decoration: none;
 }

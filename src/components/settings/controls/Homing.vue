@@ -43,7 +43,8 @@
 </template>
 
 <script>
-import { mapState, mapMutations } from "vuex";
+//import { mapState, mapMutations } from "vuex"; mapState sem uso.
+import { mapMutations } from "vuex";
 import { actions } from "../../../store/index";
 
 export default {

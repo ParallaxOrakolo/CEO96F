@@ -10,6 +10,24 @@ import string
 from random import choice
 from colorutils import Color
 
+def removeEmptyFolders(path, removeRoot=True):
+  if not os.path.isdir(path):
+    return
+
+  # remove empty subfolders
+  files = os.listdir(path)
+  if len(files):
+    for f in files:
+      fullpath = os.path.join(path, f)
+      if os.path.isdir(fullpath):
+        removeEmptyFolders(fullpath)
+
+  # if folder empty, delete it
+  files = os.listdir(path)
+  if len(files) == 0 and removeRoot:
+    print ("Removing empty folder:", path)
+    os.rmdir(path)
+
 def randomString(tamanho=20, pattern=''):
     valores = string.ascii_letters + string.digits
     word = ''
@@ -106,6 +124,9 @@ def writeJson(json_local_save, json_data):
 def sendGCODE(serial, command, **kargs):
     # Verifica se é possivel enviar dados através da conexão informada.
     if serial and type(serial) not in [tuple, str, int, bool]:
+        
+        # Garante que os motores estarão travados
+#        serial.write(str("M17 X Y Z E" + '{0}'.format('\n')).encode('ascii'))
 
         # Limpa o buffer.
         serial.flush()
