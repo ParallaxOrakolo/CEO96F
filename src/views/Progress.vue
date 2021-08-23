@@ -83,6 +83,7 @@
                   parameter: stopReasonsMessage(reason.code),
                 });
                 overlay = false;
+                state.operation.finished = true
               }
             "
           >
@@ -134,9 +135,16 @@ export default {
 
   computed: {
     ...mapGetters(["state"]),
+
     numberParts() {
+      console.log("next page");
+      if (this.state.operation.finished)
+        this.$router.push({ path: "/success" }).catch(() => {});
+
       if (this.state.operation.total) {
-        return this.state.operation.placed + " de " + this.state.operation.total;
+        return (
+          this.state.operation.placed + " de " + this.state.operation.total
+        );
       } else {
         return this.state.operation.placed + " de infinitas";
       }
