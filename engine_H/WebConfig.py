@@ -42,6 +42,8 @@ operation = {
         "timeSeconds": 0,
         "total": 0,
         "placed": 0,
+        "right": 0,
+        "wrong": 0,
 	"finished":False
     },
 }
@@ -349,7 +351,7 @@ class Process(threading.Thread):
                     ValidaPos = machineParamters['configuration']['informations']['machine']['defaultPosition']['validaParafuso']
 
                     Fast.sendGCODE(arduino, f"G0 Y{ValidaPos['Y']} f{yMaxFed}")
-                    Fast.sendGCODE(arduino, f"G0 X{ValidaPos['X']}, f{xMaxFed}")
+                    Fast.sendGCODE(arduino, f"G0 X{ValidaPos['X']} E360 f{xMaxFed}")
 
                     Fast.M400(arduino)
 
@@ -433,6 +435,8 @@ class Process(threading.Thread):
     def posMount(self):
         print(f"{self.cor} ID:{self.id}--> POS Mount Start{Fast.ColorPrint.ENDC}")
         operation["operation"]["finished"] = True
+        operation["operation"]["right"] = self.corretas
+        operation["operation"]["wrong"] = self.erradas
         asyncio.run(sendWsMessage("update", operation))
         if intencionalStop:
             self.infoCode = 7
@@ -717,11 +721,12 @@ def HomingAll():
 
 
 def verificaCLP(serial):
-    global wrongSequence
+    global wrongSequence, limitWrongSequence
     if wrongSequence >= limitWrongSequence:
         wrongSequence = 0
         Fast.sendGCODE(arduino, "M42 P36 S0")
         return 9
+    print("Sequêcina de peças erradas:", wrongSequence)
     echo = Fast.sendGCODE(serial, 'F', echo=True)
     echo = str(echo[len(echo)-1])
     if echo == "Comando não enviado, falha na conexão com a serial.":
@@ -773,7 +778,7 @@ def descarte(valor="Errado", Deposito={"Errado":{"X":230, "Y":0}}):
     Fast.sendGCODE(arduino, "M42 P31 S0")
     Fast.sendGCODE(arduino, "M42 P33 S0")
     Fast.sendGCODE(arduino, f"G0 E0 f{eMaxFed}")
-    Fast.M400(arduino)
+#    Fast.M400(arduino)
 #    Fast.sendGCODE(arduino, f"G28 Y")
     cicleSeconds = round(timeit.default_timer()-Total0,1)
     asyncio.run(updateProduction(cicleSeconds, valor))
@@ -1088,6 +1093,14 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                                 else:
                                     Fast.sendGCODE(arduino, f"G0 X{Analise[model][str(angle+90)][indexPos]['X']} F{xMaxFed}")
                                 Fast.sendGCODE(arduino, f"G0 Y{Analise[model][str(angle+90)][indexPos]['Y']} F{yMaxFed}")
+                            else:
+
+                                if lados not in repetidos:
+                                    Fast.sendGCODE(arduino, f"G0 X{Analise[model][str(angle)][indexPos]['X']} E{angle} F{xMaxFed}")
+                                else:
+                                    Fast.sendGCODE(arduino, f"G0 X{Analise[model][str(angle)][indexPos]['X']} F{xMaxFed}")
+                                Fast.sendGCODE(arduino, f"G0 Y{Analise[model][str(angle)][indexPos]['Y']} F{yMaxFed}")
+
                             Fast.M400(arduino)
 #                            Fast.sendGCODE(arduino, f"g0 Y{1} F{yMaxFed}")
                             if globals()["pecaReset"] >= 3:
@@ -1243,9 +1256,9 @@ async def funcs():
 
 async def stopProcess():
     global intencionalStop
-    Fast.sendGCODE(arduino, "M42 P36 S0")
     intencionalStop = True
     await sendWsMessage("stopProcess_success")
+    Fast.sendGCODE(arduino, "M42 P36 S0")
 
 
 async def generateError():

@@ -1,11 +1,11 @@
 {
     "production": {
         "total": {
-            "total": 1008,
-            "rigth": 167,
-            "wrong": 762,
+            "total": 1083,
+            "rigth": 185,
+            "wrong": 816,
             "timePerCicleMax": 133,
-            "timePerCicleMin": 100
+            "timePerCicleMin": 99.5
         },
         "dailyAvarege": {
             "total": 117.8,
@@ -108,15 +108,33 @@
         },
         "today": {
             "day": 23,
-            "total": 29,
-            "rigth": 4,
-            "wrong": 22,
-            "timePerCicle": 109.0,
+            "total": 104,
+            "rigth": 22,
+            "wrong": 76,
+            "timePerCicle": 105.9,
             "timesPerCicles": [
                 109.0,
                 109.6,
                 107.2,
-                110.3
+                110.3,
+                105.3,
+                107.6,
+                99.5,
+                101.6,
+                102.9,
+                101.1,
+                101.2,
+                109.7,
+                106.7,
+                103.7,
+                102.7,
+                108.2,
+                103.9,
+                105.1,
+                103.5,
+                109.8,
+                110.0,
+                110.7
             ]
         }
     }

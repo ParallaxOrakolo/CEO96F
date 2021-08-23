@@ -38,7 +38,7 @@
         </div>
       </div>
 
-      <StartButton text="Reiniciar Processo" icon="mdi-restart" v-if="!state.playing" @click="state.operation.finished = false"/>
+      <StartButton text="Reiniciar Processo" icon="mdi-restart" @click="state.operation.finished = false"/>
     </div>
   </section>
 </template>

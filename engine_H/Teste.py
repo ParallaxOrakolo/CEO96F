@@ -9,7 +9,12 @@ c = -10
 Fast.sendGCODE(arduino, "G28 X")
 Fast.sendGCODE(arduino, "G28 Y")
 Fast.sendGCODE(arduino, "G90")
-Fast.sendGCODE(arduino, "G0 X 10 Y 10 F1000")
+Fast.G28(arduino, offset=-28)
+#Fast.sendGCODE(arduino, "G0 X 10 Y 10 F1000")
+Fast.sendGCODE(arduino, "G91")
+while True:
+    Fast.sendGCODE(arduino, "G0 E90 F10000")
+    sleep(1.6)
 exit()
 Teste =  "C"
 speed = 10000

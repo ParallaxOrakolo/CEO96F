@@ -1073,6 +1073,60 @@
             "description": "Parada para ajuste técnico",
             "type": "info",
             "date": 1629724191
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1629724818
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1629727367
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1629729733
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1629737501
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1629738605
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1629739739
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1629743185
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1629745732
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1629746126
         }
     ]
 }

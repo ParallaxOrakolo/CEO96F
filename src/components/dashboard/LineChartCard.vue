@@ -231,7 +231,7 @@ export default {
 
         for (var i = 0; i < 7; i++) {
           var result = new Date();
-          result.setDate(result.getDate() - i);
+          result.setDate(result.getDate() - i -1);
           result = result.getTime();
           this.chartOptions.xaxis.categories.push(result);
           // console.log(this.chartOptions.xaxis.categories);
