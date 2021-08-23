@@ -188,7 +188,7 @@
                 "defaultPosition": {
                     "pegaTombador": {
                         "X": 12,
-                        "Y": 28,
+                        "Y": 30,
                         "Z": null,
                         "E": 0
                     },
@@ -236,7 +236,7 @@
                     },
                     "parafusadeiraCentro": {
                         "X": 254,
-                        "Y": 11,
+                        "Y": 11.3,
                         "Z": 132,
                         "E": null
                     },
@@ -262,12 +262,12 @@
                     ],
                     "gradient": {
                         "color": "#000000",
-                        "color2": "#9f0010"
+                        "color2": "#9f000f"
                     },
                     "hsv": {
                         "hue": [
                             0,
-                            353.962
+                            354
                         ],
                         "sat": [
                             0,

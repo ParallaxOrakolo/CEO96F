@@ -42,6 +42,7 @@ operation = {
         "timeSeconds": 0,
         "total": 0,
         "placed": 0,
+	"finished":False
     },
 }
 
@@ -284,7 +285,7 @@ class Process(threading.Thread):
         print(f"{self.cor} ID:{self.id}--> pre Mount Finish{Fast.ColorPrint.ENDC}")
 
     def Mount(self):
-
+        Fast.sendGCODE(arduino, "M42 P36 S255")
         self.infoCode = verificaCLP(nano)
         while self.qtd != self.corretas and not intencionalStop:
             self.rodada += 1
@@ -431,7 +432,8 @@ class Process(threading.Thread):
 
     def posMount(self):
         print(f"{self.cor} ID:{self.id}--> POS Mount Start{Fast.ColorPrint.ENDC}")
-
+        operation["operation"]["finished"] = True
+        asyncio.run(sendWsMessage("update", operation))
         if intencionalStop:
             self.infoCode = 7
         for item in stopReasons:
@@ -718,12 +720,15 @@ def verificaCLP(serial):
     global wrongSequence
     if wrongSequence >= limitWrongSequence:
         wrongSequence = 0
+        Fast.sendGCODE(arduino, "M42 P36 S0")
         return 9
     echo = Fast.sendGCODE(serial, 'F', echo=True)
     echo = str(echo[len(echo)-1])
     if echo == "Comando não enviado, falha na conexão com a serial.":
         #return 4
         return "ok"
+    else:
+        Fast.sendGCODE(arduino, "M42 P36 S0")
     #return echo
     return "ok"
 
@@ -933,7 +938,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             
             indexPos = str(int(changePos))
 
-            Fast.sendGCODE(arduino, f"G0 X{Analise[model][str(angle)][indexPos]['X']} F{xMaxFed}")
+            Fast.sendGCODE(arduino, f"G0 X{Analise[model][str(angle)][indexPos]['X']} E{str(angle)} F{xMaxFed}")
             Fast.sendGCODE(arduino, f"G0 Y{Analise[model][str(angle)][indexPos]['Y']} F{yMaxFed}")
             Fast.M400(arduino)
             defaultCoordY = Analise[model][str(angle)][str(int(changePos))]['Y']
@@ -1056,7 +1061,6 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                             print('\n')
                             print(f"model:{model}, angle:{angle}, index:{str(int(changePos))}",posicao['X'], posicao['Y'], "vs", Analise[model][str(angle)][str(int(changePos))]['X'], Analise[model][str(angle)][str(int(changePos))]['Y'])
                             print('\n')
-
 #                            Analise[model][str(angle)][str(int(changePos))]['X'] = posicao['X']
 #                            Analise[model][str(angle)][str(int(changePos))]['Y'] = posicao['Y']
     
@@ -1078,8 +1082,14 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                             # Parafusa
                             
                             Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'],  parafusaCommand['mm'], zFRPD2, zFRPU2)
-
-                            Fast.sendGCODE(arduino, f"g0 Y{1} F{yMaxFed}")
+                            if angle+90 < 360:
+                                if lados not in repetidos:
+                                    Fast.sendGCODE(arduino, f"G0 X{Analise[model][str(angle+90)][indexPos]['X']} E{str(angle+90)} F{xMaxFed}")
+                                else:
+                                    Fast.sendGCODE(arduino, f"G0 X{Analise[model][str(angle+90)][indexPos]['X']} F{xMaxFed}")
+                                Fast.sendGCODE(arduino, f"G0 Y{Analise[model][str(angle+90)][indexPos]['Y']} F{yMaxFed}")
+                            Fast.M400(arduino)
+#                            Fast.sendGCODE(arduino, f"g0 Y{1} F{yMaxFed}")
                             if globals()["pecaReset"] >= 3:
                                 Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, reset=True)
                                 globals()["pecaReset"] = 0
@@ -1094,19 +1104,20 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
 #                        cv2.imwrite(f"{path}/identificar/Errado_R{rodada}_L{lados}_T{tentativas}_draw.jpg", img_draw)
 #                        cv2.imwrite(f"{path}/identificar/Errado_R{rodada}_L{lados}_T{tentativas}_normal.jpg", frame)
                 else:
-                    d = datetime.now()
-                    cv2.imwrite(f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_T{tentativas}_NE.jpg", frame)
-                    cv2.imwrite(f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_T{tentativas}_FE.jpg", img_draw)
+                    if DebugPictures:
+                        d = datetime.now()
+                        cv2.imwrite(f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_T{tentativas}_NE.jpg", frame)
+                        cv2.imwrite(f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_T{tentativas}_FE.jpg", img_draw)
                     vazio = True
                     tentativas+=1
                     possivelErro += 1
             #identificar.append(timeit.default_timer()-tI0)G0 G91
             #print("Passando pro lado:", lados+1)
             if lados not in repetidos:
-                Fast.sendGCODE(arduino, f"G91")
-                Fast.sendGCODE(arduino, f"G0 E90 F{eMaxFed}")
+#                Fast.sendGCODE(arduino, f"G91")
+#                Fast.sendGCODE(arduino, f"G0 E90 F{eMaxFed}")
                 angle += 90
-                Fast.M400(arduino)
+#                Fast.M400(arduino)
 
     #identificar = sum(identificar)
     #print("Busca finalizada")
@@ -1232,6 +1243,7 @@ async def funcs():
 
 async def stopProcess():
     global intencionalStop
+    Fast.sendGCODE(arduino, "M42 P36 S0")
     intencionalStop = True
     await sendWsMessage("stopProcess_success")
 
@@ -1440,6 +1452,7 @@ async def startProcess(parm):
     t0 = timeit.default_timer()
     NewMont = Process(qtd, Fast.randomString(tamanho=5 ,pattern=""), model=modelo_atual)
     NewMont.start()
+    operation["operation"]["finished"] = False
     operation["operation"]["placed"] = 0
     operation["operation"]["total"] = qtd if qtd < 999 else 0
     await sendWsMessage("update", operation)

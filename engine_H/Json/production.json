@@ -1,9 +1,9 @@
 {
     "production": {
         "total": {
-            "total": 982,
-            "rigth": 163,
-            "wrong": 742,
+            "total": 1008,
+            "rigth": 167,
+            "wrong": 762,
             "timePerCicleMax": 133,
             "timePerCicleMin": 100
         },
@@ -108,11 +108,16 @@
         },
         "today": {
             "day": 23,
-            "total": 3,
-            "rigth": 0,
-            "wrong": 2,
-            "timePerCicle": 0,
-            "timesPerCicles": []
+            "total": 29,
+            "rigth": 4,
+            "wrong": 22,
+            "timePerCicle": 109.0,
+            "timesPerCicles": [
+                109.0,
+                109.6,
+                107.2,
+                110.3
+            ]
         }
     }
 }
