@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "2bc7bfae165183b67883",
-    "url": "/css/app.982d6a3e.css"
+    "revision": "29423d48ad3c4fcf1240",
+    "url": "/css/app.be203080.css"
   },
   {
-    "revision": "9b18f91083f3cb485a0e",
+    "revision": "e4d9dc57f2e2d9c24c1d",
     "url": "/css/chunk-vendors.eeb6e5e7.css"
   },
   {
@@ -80,6 +80,14 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/img/estribo-quadrado-front.2044f750.png"
   },
   {
+    "revision": "79593c32e3749e3606f361f65fec39e4",
+    "url": "/img/estribo-quadrado-mirror-perspective.79593c32.jpg"
+  },
+  {
+    "revision": "c25b7da09027661db1ccae62cf042d23",
+    "url": "/img/estribo-quadrado-perspective.c25b7da0.jpg"
+  },
+  {
     "revision": "6b571e2e39071dfe0d3bcc4e4a982b86",
     "url": "/img/estribo-quadrado.6b571e2e.png"
   },
@@ -88,28 +96,32 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/img/estribo-retangular-front.4d209b41.png"
   },
   {
+    "revision": "a90a00a3edbb519714a538d911c1a2e7",
+    "url": "/img/estribo-retangular-perspective.a90a00a3.jpg"
+  },
+  {
     "revision": "ca5641406eb7637834109b31be6221e4",
     "url": "/img/estribo-retangular.ca564140.png"
   },
   {
-    "revision": "1c4ecad8cd2266fae4ba8bc7dc1bcd7f",
-    "url": "/img/parallax-logo-06-black.1c4ecad8.svg"
+    "revision": "2717956ba5953ae517aa43fead6780c1",
+    "url": "/img/parallax-logo-06-black.2717956b.svg"
   },
   {
-    "revision": "12190c35437db902601fd100dd6fac18",
-    "url": "/img/parallax-logo-06.12190c35.svg"
+    "revision": "2cb5956a53b158651f0d42b649d954f7",
+    "url": "/img/parallax-logo-06.2cb5956a.svg"
   },
   {
-    "revision": "12691de1c0fddad70b38f72a12d47315",
+    "revision": "db954f96349854433e52ca2130b4d788",
     "url": "/index.html"
   },
   {
-    "revision": "2bc7bfae165183b67883",
-    "url": "/js/app.332657e7.js"
+    "revision": "29423d48ad3c4fcf1240",
+    "url": "/js/app.ef8b75f1.js"
   },
   {
-    "revision": "9b18f91083f3cb485a0e",
-    "url": "/js/chunk-vendors.6498624f.js"
+    "revision": "e4d9dc57f2e2d9c24c1d",
+    "url": "/js/chunk-vendors.620d1225.js"
   },
   {
     "revision": "7cfe264e7f1084d3fe8ef2cec97ff0c6",
@@ -124,7 +136,19 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/media/estribo-animation2.dde0db33.mp4"
   },
   {
-    "revision": "b6216d61c03e6ce0c9aea6ca7808f7ca",
+    "revision": "7e032207ee891edbc7b432eada621e0f",
+    "url": "/media/logo-black.7e032207.mp4"
+  },
+  {
+    "revision": "0c5f1ddda731f05fe62413287561a647",
+    "url": "/media/logo-red-black.0c5f1ddd.mp4"
+  },
+  {
+    "revision": "ca3ad29df3815129e1685f8ebda46d43",
+    "url": "/media/logo-red-white.ca3ad29d.mp4"
+  },
+  {
+    "revision": "735ab4f94fbcd57074377afca324c813",
     "url": "/robots.txt"
   }
 ]);
