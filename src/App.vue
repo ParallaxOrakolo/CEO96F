@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <div class="mx-auto"><Snack-bar v-if="!isConnected"></Snack-bar></div>
-    <!-- <DialogAlert /> -->
+    <DialogAlert />
     <NavBar v-if="$route.name != 'intro'" />
     <v-main>
       <transition>

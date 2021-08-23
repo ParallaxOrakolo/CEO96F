@@ -50,7 +50,7 @@ const store = new Vuex.Store({
       right: 10,
       wrong:5,
       placed: 0,
-      finished: true
+      finished: false
     },
 
     localTimer: {

@@ -1,8 +1,10 @@
 <template>
   <div>
     <v-btn rounded x-large @click="dialog = true" color="warning" dark>
-      <span><v-icon left>mdi-play</v-icon></span>
-      Iniciar
+      <span
+        ><v-icon left>{{ icon ? icon : "mdi-play" }}</v-icon></span
+      >
+      {{ text ? text : "iniciar" }}
     </v-btn>
 
     <v-row justify="center">
@@ -53,7 +55,6 @@
             class="flex-column d-flex justify-center mt-6"
             v-if="!step1"
           >
-          
             <v-btn-toggle
               v-model="selection"
               color="warning"
@@ -74,12 +75,14 @@
                     //startStatusChage
                     dialog = false;
                     state.operation.total = 0;
+                    state.operation.finished = false;
+                    toPage('progress');
                   }
                 "
               >
                 <span>ilimitadas</span>
               </v-btn>
-              <v-btn >
+              <v-btn>
                 <span>quantidade especifica</span>
               </v-btn>
             </v-btn-toggle>
@@ -139,6 +142,8 @@
                         });
                         //startStatusChage
                         dialog = false;
+                        state.operation.finished = false;
+                        toPage('progress');
                       }
                     "
                   >
@@ -182,6 +187,11 @@ export default {
   // mixins: [mixins],
   name: "StartButton",
 
+  props: {
+    text: String,
+    icon: String,
+  },
+
   data: () => ({
     selectedPart: 1,
     onlyCorrectParts: true,
@@ -216,6 +226,12 @@ export default {
 
   methods: {
     ...mapMutations(["SEND_MESSAGE"]),
+
+    toPage(page) {
+      if (this.$route.name != page) {
+        this.$router.push("/" + page);
+      }
+    },
 
     less() {
       if (this.state.operation.total >= 2) {
