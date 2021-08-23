@@ -1127,6 +1127,72 @@
             "description": "Parada para ajuste técnico",
             "type": "info",
             "date": 1629746126
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1629747234
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1629748050
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1629748448
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1629750108
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1629750925
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1629751274
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1629751415
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1629751447
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1629751755
+        },
+        {
+            "code": 1,
+            "description": "Garra não pegou",
+            "type": "error",
+            "date": 1629753094
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1629753592
         }
     ]
 }

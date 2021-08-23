@@ -900,6 +900,7 @@ def Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues):
 
 def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model="A", rodada=0):
     global Analise, modelo_atual
+    DebugDireto = True
     faltadeFuro = False
     repetidos = [1, 4]
     changePos = False
@@ -1027,32 +1028,32 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                     except IndexError:
                         print("Falha de identificação, corrija o filtro..")
                         break
-
                     #if abs(MX) > precicao:
                     #    Fast.sendGCODE(arduino, f"G0 X{MX} F{xMaxFed}", echo=True)
-                    #    
-                    if abs(MY) > precicao or abs(MX) > precicao :
-                        yImaginario = NLinearRegression(abs(yReal))
-                        defaultCoordY = yImaginario
-                        atualCoordY = yReal
-                        pp = Fast.M114(arduino)
-                        if DebugPrint:
-                            print(f"Devera ir para coordenada {yImaginario}; {atualCoordY}mm em relação ao 0")
+                    #
+                    if not DebugDireto:    
+                        if abs(MY) > precicao or abs(MX) > precicao :
+                            yImaginario = NLinearRegression(abs(yReal))
+                            defaultCoordY = yImaginario
+                            atualCoordY = yReal
+                            pp = Fast.M114(arduino)
+                            if DebugPrint:
+                                print(f"Devera ir para coordenada {yImaginario}; {atualCoordY}mm em relação ao 0")
 
-                        Fast.sendGCODE(arduino, f"G90")
-                        Fast.sendGCODE(arduino, f"G0 Y{yImaginario} X{MX+pp['X']} F{int(yMaxFed/2)}", echo=True)
-                        Fast.sendGCODE(arduino, f"G91")
+                            Fast.sendGCODE(arduino, f"G90")
+                            Fast.sendGCODE(arduino, f"G0 Y{yImaginario} X{MX+pp['X']} F{int(yMaxFed/2)}", echo=True)
+                            Fast.sendGCODE(arduino, f"G91")
 
-                    Fast.M400(arduino)
-                    time.sleep(0.5)
-                    tentativas+=1
-
+                        Fast.M400(arduino)
+                        time.sleep(0.5)
+                        tentativas+=1
+                    
                     if DebugPrint:
                         print("Tentativa:", tentativas)
 
                     # Caso a precisão em ambos os eixos esteja ok, ou tnha exedido o numero de tentativas.
-                    if abs(MY) <= precicao and abs(MX) <= precicao or tentativas >=9:
-                        if abs(MY) <= precicao and abs(MX) <= precicao:
+                    if abs(MY) <= precicao and abs(MX) <= precicao or tentativas >=9 or DebugDireto:
+                        if abs(MY) <= precicao and abs(MX) <= precicao or DebugDireto:
                             if DebugPictures:
                                 d = datetime.now()
                                 cv2.imwrite(f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_T{tentativas}_N.jpg", frame)
@@ -1061,7 +1062,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                                 #cv2.imwrite(f"{path}/identificar/{lados}_{tentativas}_normal.jpg", frame)
 
                             # Faz os valores ficarem acima do permiido pra evita que entre no loop novamente.
-                            MY, MX, tentativas = 99, 99, 50
+                            tentativas = 99
                             posicao = Fast.M114(arduino)
                             print('\n')
                             print(f"model:{model}, angle:{angle}, index:{str(int(changePos))}",posicao['X'], posicao['Y'], "vs", Analise[model][str(angle)][str(int(changePos))]['X'], Analise[model][str(angle)][str(int(changePos))]['Y'])
@@ -1072,12 +1073,19 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                             Pos.append(posicao)
 
                             # Ajusta define a coordenada do centro com base na distância da camera e da parafusadeira
-                            posicao = {
-                                'X':-round(cameCent['X']-posicao['X'], 2)+parafCent['X'],
-                                'Y':-round((cameCent['Y']-posicao['Y'])+forceThisY, 2)+parafCent['Y'],
-                                'E':posicao['E']
-                            } 
-                            
+                            if not DebugDireto:
+                                posicao = {
+                                    'X':-round(cameCent['X']-posicao['X'], 2)+parafCent['X'],
+                                    'Y':-round((cameCent['Y']-posicao['Y'])+forceThisY, 2)+parafCent['Y'],
+                                    'E':posicao['E']
+                                } 
+                            else:
+                                posicao = {
+                                    'X':-round(cameCent['X']-posicao['X']-MX, 2)+parafCent['X'],
+                                    'Y':-round(cameCent['Y']-posicao['Y']+NLinearRegression(MY)+forceThisY, 2)+parafCent['Y'],
+                                    'E':posicao['E']
+                                } 
+
                             # Vai até a coordenada
                             Fast.sendGCODE(arduino, 'g90')
                             Fast.sendGCODE(arduino, f"g0 X{posicao['X']} E{posicao['E']} F{xMaxFed}")
