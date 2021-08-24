@@ -1,9 +1,9 @@
 <template>
   <section class="mt-6 mb-6">
-    <div class="d-flex mb-6">
+    <div class="d-flex">
       <v-dialog v-model="dialog" width="600px"><gcode></gcode></v-dialog>
       <div class="mr-auto pa-2" outlined tile>
-        <h1 class="ml-auto">
+        <h1 class="ml-auto mb-2">
           Monitor Serial
           <v-btn text icon x-small @click="dialog = true">
             <v-icon>mdi-information</v-icon>
@@ -31,7 +31,18 @@
         </div>
       </div>
     </div>
-    <div class="textArea">
+    <div class="mb-4">
+      <v-chip
+        
+        class="mr-2 mb-2"
+        v-for="item in shortcutsList"
+        :key="item.text"
+        link
+        @click="sendChip(item.sendDirect, item.command)"
+        >{{ item.text }}{{ item.sendDirect ? " +" : "" }}</v-chip
+      >
+    </div>
+    <div class="textArea" ref="textArea">
       <div v-for="item in serialMonitor" :key="item.index">
         <v-row v-if="item.sent" class="item pl-2">
           <v-col class="col-2 d-flex justify-end">
@@ -70,14 +81,15 @@
         append-outer-icon="mdi-send"
         append-outer-color="orange"
         class="mt-6 pt-0"
+        ref="input"
         hide-details
         single-line
         type="text"
         v-on:keyup.enter="send()"
         @click:append-outer="send()"
       >
-      <!-- botão de upercase -->
-        <v-btn 
+        <!-- botão de upercase -->
+        <v-btn
           class="pb-2 mr-2"
           text
           icon
@@ -86,10 +98,10 @@
           slot="prepend"
           @click="upperCase = !upperCase"
         >
-          <v-icon v-if="upperCase" >mdi-format-letter-case-upper</v-icon>
-          <v-icon v-else color="grey" >mdi-format-letter-case</v-icon>
+          <v-icon v-if="upperCase">mdi-format-letter-case-upper</v-icon>
+          <v-icon v-else color="grey">mdi-format-letter-case</v-icon>
         </v-btn>
- <!-- fim botão de upercase -->
+        <!-- fim botão de upercase -->
 
         <v-btn
           class="pb-2 mr-2"
@@ -103,7 +115,15 @@
           <v-icon> mdi-arrow-left </v-icon>
         </v-btn>
 
-        <v-btn class="pb-2" text icon small  color="grey" slot="prepend" @click="rigthItem()">
+        <v-btn
+          class="pb-2"
+          text
+          icon
+          small
+          color="grey"
+          slot="prepend"
+          @click="rigthItem()"
+        >
           <v-icon> mdi-arrow-right </v-icon>
         </v-btn>
       </v-text-field>
@@ -128,6 +148,34 @@ export default {
       scrolled: false,
       sendCommandList: [],
       selectedItemCommandList: null,
+
+      shortcutsList: [
+        {
+          text: "G0",
+          command: "G0 X ",
+          sendDirect: false,
+        },
+        {
+          text: "G90 - Absoluto",
+          command: "G90 ",
+          sendDirect: true,
+        },
+        {
+          text: "G91 - Relativo",
+          command: "G91 ",
+          sendDirect: true,
+        },
+        {
+          text: "G28 E",
+          command: "G28 E",
+          sendDirect: true,
+        },
+        {
+          text: "M114 - Posição Atual",
+          command: "M114",
+          sendDirect: true,
+        },
+      ],
     };
   },
 
@@ -136,11 +184,10 @@ export default {
 
     send() {
       if (this.message != "") {
-
-        let msg
-        this.upperCase ? msg = this.message.toUpperCase() :msg = this.message
-      
-        
+        let msg;
+        this.upperCase
+          ? (msg = this.message.toUpperCase())
+          : (msg = this.message);
 
         this.SEND_MESSAGE({
           command: actions.SERIAL_MONITOR,
@@ -154,17 +201,29 @@ export default {
         });
 
         this.sendCommandList.push(this.message);
-        console.log(this.sendCommandList);
         this.selectedItemCommandList = this.sendCommandList.length;
-        console.log(this.sendCommandList[1]);
-
         this.clearMessage();
-        this.scrollToEnd();
+      }
+      setTimeout(()=> this.scrollToEnd(), 200);
+    },
+
+    setFocus() {
+      this.$refs.input.focus();
+    },
+
+    sendChip(sendDirect, command) {
+      this.message = command;
+
+      if (!sendDirect) {
+        this.send();
+      } else {
+        this.setFocus();
       }
     },
 
     scrollToEnd() {
-      var container = document.querySelector(".textArea");
+      // console.log("scroll");
+      var container = this.$refs.textArea;
       container.scrollTop = container.scrollHeight;
       container.scrollIntoView({ behavior: "smooth" });
     },
@@ -174,15 +233,18 @@ export default {
     },
 
     clearSerialMonitor() {
-      console.log(this.serialMonitor);
+      // console.log(this.serialMonitor);
       this.serialMonitor.length = 0;
     },
 
     leftItem() {
+        // console.log(this.sendCommandList.length)
       if (
         this.sendCommandList.length >= this.selectedItemCommandList &&
-        this.selectedItemCommandList > 1
+        this.selectedItemCommandList >= 1
       ) {
+                console.log(this.sendCommandList.length)
+
         //decrementa a lista
         this.selectedItemCommandList = this.selectedItemCommandList - 1;
         this.message = this.sendCommandList[this.selectedItemCommandList];
