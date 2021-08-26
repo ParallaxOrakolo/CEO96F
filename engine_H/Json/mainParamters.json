@@ -51,11 +51,13 @@
     "Debugs": {
         "all": false,
         "logs": true,
-        "print": true,
-        "pictures": false,
+        "print": false,
+        "pictures": true,
         "markings": false,
         "realTime": false,
-        "testControls": false
+        "testControls": false,
+        "direto": true,
+        "preciso": false
     },
     "Mask_Parameters": {
         "hole": {

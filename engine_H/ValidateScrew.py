@@ -158,8 +158,8 @@ quant = 3
 #img = cv2.imread(f"../engine_H/Images/Process/{quem[id]}/validar/{quant}_normal.jpg")
 # img = cv2.imread('c:/Users/55419/Trabalho/Parallax/GitRepos/CEO96F/engine_H/Images/Errado_1_1_normal.jpg')
 # img = cv2.imread('c:/Users/55419/Trabalho/Parallax/GitRepos/CEO96F/engine_H/Images/0_3_normal.jpg')
-img = cv2.imread(f"../engine_H/Images/Teste.jpg")
-# imgs = Op.Rois(img, 6, 0.25)
+img = cv2.imread(f"../engine_H/Images/Process/m5GeS_258/validar/12/normal/4.jpg")
+imgs = Op.Rois(img, 6, 0.25)
 while cv2.waitKey(1) != 27:
     #_, img = cap.read()
     

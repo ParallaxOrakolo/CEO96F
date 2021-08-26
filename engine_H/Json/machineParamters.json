@@ -187,8 +187,8 @@
                 },
                 "defaultPosition": {
                     "pegaTombador": {
-                        "X": 12,
-                        "Y": 30,
+                        "X": 13.6,
+                        "Y": 43,
                         "Z": null,
                         "E": 0
                     },
@@ -235,8 +235,8 @@
                         "E": null
                     },
                     "parafusadeiraCentro": {
-                        "X": 251,
-                        "Y": 11.5,
+                        "X": 247,
+                        "Y": 18,
                         "Z": 132,
                         "E": null
                     },
