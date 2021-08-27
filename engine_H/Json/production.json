@@ -173,24 +173,21 @@
             ]
         }
     },
-    "mistakes":[
+    "mistakes": [
         {
-            "month":[
-
-            ],
-
-            "today":{
-                "day":0,
-                "data":[
-                  {
-                    "id":"xxxx",
-                    "fail":[
-                             {
-                                "round":2,
-                                "failIndex":[]
+            "month": [],
+            "today": {
+                "day": 0,
+                "data": [
+                    {
+                        "id": "xxxx",
+                        "fail": [
+                            {
+                                "round": 2,
+                                "failIndex": []
                             }
-                    ]
-                }
+                        ]
+                    }
                 ]
             }
         }
