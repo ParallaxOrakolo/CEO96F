@@ -165,7 +165,7 @@ class CamThread(threading.Thread):
         while not self.stopped():
             if self.Procs['screw']:
                 
-                frame, _, _ = Process_Imagew_Scew(
+                frame, _, _ = Process_Image_Screw(
                                     globals()['frame'+self.previewName],
                                     Op.extractHSValue(mainParamters['Filtros']['HSV']['screw']["Valores"], 'lower' ),
                                     Op.extractHSValue(mainParamters['Filtros']['HSV']['screw']["Valores"], 'upper' ),
@@ -374,7 +374,7 @@ class Process(threading.Thread):
                         frame = globals()['frame'+str(mainParamters["Cameras"]["screw"]["Settings"]["id"])]
                         time.sleep(0.1)
                     print("Antes")
-                    _, encontrados, failIndex = Process_Imagew_Scew(frame,
+                    _, encontrados, failIndex = Process_Image_Screw(frame,
                                         Op.extractHSValue(mainParamters['Filtros']['HSV']['screw']["Valores"], 'lower' ),
                                         Op.extractHSValue(mainParamters['Filtros']['HSV']['screw']["Valores"], 'upper' ),
                                         mainParamters['Mask_Parameters']['screw']['areaMin'],
@@ -387,7 +387,7 @@ class Process(threading.Thread):
                         cv2.imwrite(f"Images/Process/{self.id}_{str(d.day)+str(d.month)}/validar/{self.rodada}/normal/{encontrados}.jpg", frame)
                         cv2.imwrite(f"Images/Process/{self.id}_{str(d.day)+str(d.month)}/validar/{self.rodada}/filtro/{encontrados}.jpg", _)
                     if encontrados == 0:
-                        _, encontrados, failIndex = Process_Imagew_Scew(frame,
+                        _, encontrados, failIndex = Process_Image_Screw(frame,
                                             Op.extractHSValue({'lower': {'h_min': 7, 's_min': 85, 'v_min': 92}}, 'lower' ),
                                             Op.extractHSValue({'upper': {'h_max': 57, 's_max': 230, 'v_max': 242}}, 'upper' ),
                                             mainParamters['Mask_Parameters']['screw']['areaMin'],
@@ -400,7 +400,7 @@ class Process(threading.Thread):
                             cv2.imwrite(f"Images/Process/{self.id}_{str(d.day)+str(d.month)}/validar/{self.rodada}/falha/{encontrados}_F.jpg", _)
                             
                     print("Depois")
-
+                    await updateMistakes({"round":self.rodada, "failIndex":failIndex}, self.id)
                     validar = timeit.default_timer()-validar
                     if encontrados == 6:
                         self.status_estribo = "Certo"
@@ -753,13 +753,23 @@ def Parafusa(pos, voltas=2, mm=0, ZFD=100, ZFU=100, dowLess=False, reset=False):
         
         Fast.sendGCODE(arduino, f'g38.3 z-{pos} F{int(zMaxFedDown*(ZFD/100))}')
         Fast.sendGCODE(arduino, f'g0 z{mm} F{zMaxFedUp}')
-        #Fast.sendGCODE(arduino, f'm280 p{servo} s{angulo}')
-        #Fast.sendGCODE(arduino, f'm43 t s10 l10 w{voltas*50}')
-        #Fast.sendGCODE(arduino, f"M43 t s32 l32 w{voltas*50}")
+
         if not DebugPreciso:
             Fast.sendGCODE(arduino, f"M42 p32 s255")
-        time.sleep(int((voltas*40/1000)))
-        Fast.sendGCODE(arduino, f"M42 p32 s0")
+            t0 = timeit.default_timer()
+
+            while timeit.default_timer() - t0 < int((voltas*40/1000)):
+                try:
+                    if Fast.M119(arduino)["z_probe"] != "TRIGGERED":
+                        Fast.sendGCODE(arduino, f"M42 p32 s0")
+                    break
+                except KeyError:
+                    pass
+            else:
+                Fast.sendGCODE(arduino, f"M42 p32 s0")
+        
+        
+        
 
         if reset:
             Fast.sendGCODE(arduino, "G28 Z")
@@ -820,7 +830,7 @@ def alinhar():
     Fast.sendGCODE(arduino, f"G0 Y{alin['Y']} f{yMaxFed}")
 
 
-def Process_Imagew_Scew(frames, lower, upper, AreaMin, AreaMax, name="ScrewCuts", model="1"):
+def Process_Image_Screw(frames, lower, upper, AreaMin, AreaMax, name="ScrewCuts", model="1"):
 
     img_draw = frames.copy()
     finds = 0
@@ -854,7 +864,9 @@ def Process_Imagew_Scew(frames, lower, upper, AreaMin, AreaMax, name="ScrewCuts"
                                  lineType=cv2.LINE_AA)
         else:
             Status.append(False)
-        # cv2.imshow(f"Img_{Pontos}", show)
+
+        cv2.putText(show, len(Status), pa, cv2.FONT_HERSHEY_DUPLEX, 5, (255, 255, 255), 10)
+        
         img_draw[Pontos["P0"][1]:Pontos["P0"][1] + show.shape[0],
                 Pontos["P0"][0]:Pontos["P0"][0] + show.shape[1]] = show
     cv2.putText(img_draw, str(finds), (200, 100), cv2.FONT_HERSHEY_DUPLEX, 5, (0, 0, 0), 10)
@@ -1523,6 +1535,22 @@ async def updateProduction(cicleSeconds, valor):
     print("Escrevendo")
     Fast.writeJson('Json/production.json', production)
     await sendWsMessage("update", production)
+
+async def updateMistakes(payload, id):
+    today = production["mistakes"]["today"]
+    month = production["mistakes"]["month"]
+    if len(payload["failIndex"]) > 0:
+        if today["day"] != int(datetime.now().day()):
+            month.append(today)
+            while len(month) > 30:
+                month.pop(0)
+        elif today["data"][len(today["data"])]["id"] == id:
+            today["data"][len(today["data"])]["fail"].append(payload)
+        else:
+            today["data"].append({"id":id, "fail":[payload]})
+
+        
+
 
 async def saveCamera(none):
     Fast.writeJson('Json/mainParamters.json', mainParamters)
