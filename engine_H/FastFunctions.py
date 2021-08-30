@@ -200,7 +200,7 @@ def M119(serial, cut=": "):
     key=[]
     for _ in range(2):
         Echo = (sendGCODE(serial, "M119", echo=True))[1:-1]
-        print(Echo)
+        #print(Echo)
     for info in Echo:
         try:
             pos.append(info[info.index(cut)+len(cut):len(info)])
@@ -298,6 +298,26 @@ def SerialConnect(SerialPath='../Json/serial.json', name='arduino'):
         sleep(1.2)
 
         return True, 200, communication
+
+
+def validadeUSBSerial(SerialPath):
+    serialPack = readJson(SerialPath)
+    changes = [{"id":"none", "porta":"None"}]
+    for k, v in serialPack.items():
+        try:
+            _,_, serial = SerialConnect(SerialPath=SerialPath, name=k)
+            message = serial.readline().decode().rstrip()
+            if str(message) != v["expectedMessage"] and message != "" and message is not None:
+                print("Erro", k, message)
+                for k2, v2 in serialPack.items():
+                    if v2["expectedMessage"] == message:
+                        v["porta"], v2["porta"] = v2["porta"], v["porta"]
+                        #v["expectedMessage"], v2["expectedMessage"] = v2["expectedMessage"], v["expectedMessage"]
+            serial.close()
+            writeJson(SerialPath, serialPack)
+        except Exception as err:
+            print(err)
+            pass
 
 def EditJson(org, org_path, chg, chg_path='["configuration"]["informations"]["ip"]'):
 

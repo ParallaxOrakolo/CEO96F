@@ -235,8 +235,8 @@
                         "E": null
                     },
                     "parafusadeiraCentro": {
-                        "X": 247,
-                        "Y": 18,
+                        "X": 251,
+                        "Y": 18.3,
                         "Z": 132,
                         "E": null
                     },
@@ -334,32 +334,32 @@
         "statistics": {
             "stopReasons": [
                 {
-                    "code": 1,
-                    "description": "Garra não pegou",
-                    "listed": true,
+                    "code": 69,
+                    "description": "Emergência Ativada",
+                    "listed": false,
                     "type": "error",
                     "button_text": "Entendi",
                     "button_action": "None"
                 },
                 {
                     "code": 2,
-                    "description": "Alimentador sem peça",
+                    "description": "Falta de Material - Arruela",
                     "listed": false,
-                    "type": "warning",
+                    "type": "error",
                     "button_text": "Entendi",
                     "button_action": "None"
                 },
                 {
                     "code": 3,
-                    "description": "Troca de turno",
-                    "listed": true,
-                    "type": "info",
+                    "description": "Falta de Material - Parafuso",
+                    "listed": false,
+                    "type": "error",
                     "button_text": "Entendi",
                     "button_action": "None"
                 },
                 {
                     "code": 4,
-                    "description": "Sem comunicação com o CLP",
+                    "description": "Pressostato - Pressão baixa no sitema",
                     "listed": false,
                     "type": "error",
                     "button_text": "Entendi",
@@ -367,7 +367,7 @@
                 },
                 {
                     "code": 5,
-                    "description": "Sem comunicação com a estação de montagem",
+                    "description": "Pistão Travado - Parafuso",
                     "listed": false,
                     "type": "error",
                     "button_text": "Entendi",
@@ -375,14 +375,78 @@
                 },
                 {
                     "code": 6,
-                    "description": "Camera 0 não pode ser iniciada.",
+                    "description": "Pistão travado - Conjunto",
+                    "listed": false,
+                    "type": "error",
+                    "button_text": "Entendi",
+                    "button_action": "None"
+                },
+                {
+                    "code": 7,
+                    "description": "Verificar alimentador de Aro",
+                    "listed": false,
+                    "type": "error",
+                    "button_text": "Entendi",
+                    "button_action": "None"
+                },
+                {
+                    "code": 8,
+                    "description": "Verificar calha de alimetanção do Aro",
+                    "listed": false,
+                    "type": "error",
+                    "button_text": "Entendi",
+                    "button_action": "None"
+                },
+                {
+                    "code": 11,
+                    "description": "Verficar se a parafuso travado",
+                    "listed": false,
+                    "type": "error",
+                    "button_text": "Entendi",
+                    "button_action": "None"
+                },
+                {
+                    "code": 12,
+                    "description": "Garra não pegou",
+                    "listed": true,
+                    "type": "error",
+                    "button_text": "Entendi",
+                    "button_action": "None"
+                },
+                {
+                    "code": 13,
+                    "description": "Troca de turno",
+                    "listed": true,
+                    "type": "info",
+                    "button_text": "Entendi",
+                    "button_action": "None"
+                },
+                {
+                    "code": 14,
+                    "description": "Sem comunicação com o CLP",
+                    "listed": false,
+                    "type": "error",
+                    "button_text": "Entendi",
+                    "button_action": "None"
+                },
+                {
+                    "code": 15,
+                    "description": "Sem comunicação com a estação de montagem",
+                    "listed": false,
+                    "type": "error",
+                    "button_text": "Entendi",
+                    "button_action": "None"
+                },
+                {
+                    "code": 16,
+                    "description": "Camera _id_ não pode ser iniciada.",
                     "listed": false,
                     "type": "error",
                     "button_text": "Reiniciar",
                     "button_action": "restart_raspberry"
                 },
                 {
-                    "code": 7,
+                    "code": 17,
                     "description": "Parada manual pelo operador",
                     "listed": false,
                     "type": "warning",
@@ -390,15 +454,7 @@
                     "button_action": "None"
                 },
                 {
-                    "code": 8,
-                    "description": "Falta de Pressão",
-                    "listed": false,
-                    "type": "warning",
-                    "button_text": "Entendi",
-                    "button_action": "None"
-                },
-                {
-                    "code": 9,
+                    "code": 18,
                     "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
                     "listed": false,
                     "type": "warning",
@@ -424,7 +480,8 @@
             ],
             "nonStopCode": [
                 0,
-                "000",
+                9,
+                10,
                 "ok"
             ],
             "functionsCode": {

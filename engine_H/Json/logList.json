@@ -3767,6 +3767,270 @@
             "description": "Sem comunicação com o CLP",
             "type": "error",
             "date": 1630003820
+        },
+        {
+            "code": 5,
+            "description": "Sem comunicação com a estação de montagem",
+            "type": "error",
+            "date": 1630074228
+        },
+        {
+            "code": 5,
+            "description": "Sem comunicação com a estação de montagem",
+            "type": "error",
+            "date": 1630074780
+        },
+        {
+            "code": 5,
+            "description": "Sem comunicação com a estação de montagem",
+            "type": "error",
+            "date": 1630074803
+        },
+        {
+            "code": 5,
+            "description": "Sem comunicação com a estação de montagem",
+            "type": "error",
+            "date": 1630075074
+        },
+        {
+            "code": 5,
+            "description": "Sem comunicação com a estação de montagem",
+            "type": "error",
+            "date": 1630075158
+        },
+        {
+            "code": 5,
+            "description": "Sem comunicação com a estação de montagem",
+            "type": "error",
+            "date": 1630075180
+        },
+        {
+            "code": 5,
+            "description": "Pistão Travado - Parafuso",
+            "type": "error",
+            "date": 1630082707
+        },
+        {
+            "code": 5,
+            "description": "Pistão Travado - Parafuso",
+            "type": "error",
+            "date": 1630082775
+        },
+        {
+            "code": 15,
+            "description": "Sem comunicação com a estação de montagem",
+            "type": "error",
+            "date": 1630082997
+        },
+        {
+            "code": 15,
+            "description": "Sem comunicação com a estação de montagem",
+            "type": "error",
+            "date": 1630083233
+        },
+        {
+            "code": 15,
+            "description": "Sem comunicação com a estação de montagem",
+            "type": "error",
+            "date": 1630088090
+        },
+        {
+            "code": 15,
+            "description": "Sem comunicação com a estação de montagem",
+            "type": "error",
+            "date": 1630088100
+        },
+        {
+            "code": 15,
+            "description": "Sem comunicação com a estação de montagem",
+            "type": "error",
+            "date": 1630088102
+        },
+        {
+            "code": 15,
+            "description": "Sem comunicação com a estação de montagem",
+            "type": "error",
+            "date": 1630088164
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1630088637
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1630089982
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1630090403
+        },
+        {
+            "code": 1,
+            "description": "Emergência Ativada",
+            "type": "error",
+            "date": 1630090580
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630090657
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1630090699
+        },
+        {
+            "code": 1,
+            "description": "Emergência Ativada",
+            "type": "error",
+            "date": 1630090928
+        },
+        {
+            "code": 1,
+            "description": "Emergência Ativada",
+            "type": "error",
+            "date": 1630091362
+        },
+        {
+            "code": 1,
+            "description": "Emergência Ativada",
+            "type": "error",
+            "date": 1630091415
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630091785
+        },
+        {
+            "code": 1,
+            "description": "Emergência Ativada",
+            "type": "error",
+            "date": 1630322076
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630324002
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630324838
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630327393
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630328627
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630328934
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630330881
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630334902
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630338197
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630339341
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630340109
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630341096
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630343988
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630344245
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630344740
+        },
+        {
+            "code": 15,
+            "description": "Sem comunicação com a estação de montagem",
+            "type": "error",
+            "date": 1630347104
+        },
+        {
+            "code": 15,
+            "description": "Sem comunicação com a estação de montagem",
+            "type": "error",
+            "date": 1630347311
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630348755
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630351171
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630352841
         }
     ]
 }
