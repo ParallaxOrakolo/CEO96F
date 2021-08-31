@@ -305,7 +305,7 @@ export default {
     },
 
     updateBack() {
-      this.SEND_MESSAGE({command: actions.UPDATE_USERS,});
+      this.SEND_MESSAGE({command: actions.UPDATE_USERS,  parameter: this.configuration.informations.users,});
     },
 
     editItem(item) {
