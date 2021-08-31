@@ -8,12 +8,16 @@
 <SerialMonitor></SerialMonitor> -->
       <v-row no-gutters>
         <Camera></Camera>
-        <ColorPikerHSV v-show="configuration.logged" />
+        <ColorPikerHSV
+          v-show="isUserAcessPermited('ColorPikerHSV')"
+        ></ColorPikerHSV>
       </v-row>
       <ButtonsControls></ButtonsControls>
 
       <v-divider></v-divider>
-      <SerialMonitor></SerialMonitor>
+      <SerialMonitor
+        v-show="isUserAcessPermited('SerialMonitor')"
+      ></SerialMonitor>
 
       <!-- 
     <v-btn v-haptic elevation="2" fab dark x-large color="blue">
@@ -34,9 +38,11 @@ import SerialMonitor from "../../SerialMonitor.vue";
 import Camera from "../controls/Cameras.vue";
 import ColorPikerHSV from "../controls/ColorPikerHSV.vue";
 import ButtonsControls from "../controls/ButtonsControls.vue";
+import Mixins from "@/mixins/mixins";
 
 export default {
   components: { SerialMonitor, Camera, ColorPikerHSV, ButtonsControls },
+  mixins: [Mixins],
   name: "Controls",
   data() {
     return {
@@ -52,7 +58,6 @@ export default {
       rotationZ: 0,
       distancesLabels: ["0.1", "1", "10", "100"],
       distanceList: [0.1, 1, 10, 100],
-
       lastBValue: 0,
       lastZAValue: 0,
     };
