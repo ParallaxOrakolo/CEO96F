@@ -1,12 +1,12 @@
 {
-  "Ramps 1.4": {
-    "porta": "/dev/ttyUSB0",
-    "velocidade": 115200
-  },
-
-  "Nano":{
-    "porta":"/dev//ttyUSB1",
-    "velocidade":9600
-  }
-  
+    "Ramps 1.4": {
+        "porta": "/dev/ttyUSB0",
+        "velocidade": 115200,
+        "expectedMessage": "echo:start"
+    },
+    "Nano": {
+        "porta": "/dev/ttyUSB1",
+        "velocidade": 115200,
+        "expectedMessage": "Interpretador Inciciado"
+    }
 }
