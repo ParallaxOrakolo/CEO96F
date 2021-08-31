@@ -245,7 +245,7 @@
                         "Y": null,
                         "Z": 139,
                         "E": null,
-                        "mm": 0,
+                        "mm": 3,
                         "voltas": 25
                     }
                 }
@@ -257,8 +257,8 @@
                 "hole": {
                     "name": "hole",
                     "area": [
-                        10,
-                        20
+                        16000,
+                        38000
                     ],
                     "gradient": {
                         "color": "#000000",
@@ -282,8 +282,8 @@
                 "screw": {
                     "name": "screw",
                     "area": [
-                        10,
-                        20
+                        7000,
+                        65000
                     ],
                     "gradient": {
                         "color": "#454140",
@@ -307,8 +307,8 @@
                 "normal": {
                     "name": "normal",
                     "area": [
-                        10,
-                        20
+                        2068,
+                        8662
                     ],
                     "gradient": {
                         "color": "#000000",

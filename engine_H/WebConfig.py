@@ -174,7 +174,8 @@ class CamThread(threading.Thread):
                     Op.extractHSValue(
                         mainParamters['Filtros']['HSV']['screw']["Valores"], 'upper'),
                     mainParamters['Mask_Parameters']['screw']['areaMin'],
-                    mainParamters['Mask_Parameters']['screw']['areaMax']
+                    mainParamters['Mask_Parameters']['screw']['areaMax'],
+                    model=modelo_atual
                 )
                 # _, frame = findScrew(globals()[
                 #                      'frame'+self.previewName], mainParamters['Filtros']['HSV'], mainParamters, self.Processos)
@@ -401,9 +402,9 @@ class Process(threading.Thread):
                     if DebugPictures:
                         d = datetime.now()
                         cv2.imwrite(
-                            f"Images/Process/{self.id}_{str(d.day)+str(d.month)}/validar/{self.rodada}/normal/{encontrados}.jpg", frame)
+                            f"Images/Process/{self.id}_{str(d.day)+str(d.month)}/validar/{self.rodada}/normal/{encontrados}.jpg", cv2.resize(frame, None, fx=0.3, fy=0.3))
                         cv2.imwrite(
-                            f"Images/Process/{self.id}_{str(d.day)+str(d.month)}/validar/{self.rodada}/filtro/{encontrados}.jpg", _)
+                            f"Images/Process/{self.id}_{str(d.day)+str(d.month)}/validar/{self.rodada}/filtro/{encontrados}.jpg", cv2.resize(_, None, fx=0.3, fy=0.3))
                     if encontrados == 0:
                         _, encontrados, failIndex = Process_Image_Screw(frame,
                                                                         Op.extractHSValue(
@@ -418,9 +419,9 @@ class Process(threading.Thread):
                         if DebugPictures:
                             d = datetime.now()
                             cv2.imwrite(
-                                f"Images/Process/{self.id}_{str(d.day)+str(d.month)}/validar/{self.rodada}/falha/{encontrados}_N.jpg", frame)
+                                f"Images/Process/{self.id}_{str(d.day)+str(d.month)}/validar/{self.rodada}/falha/{encontrados}_N.jpg", cv2.resize(frame, None, fx=0.3, fy=0.3))
                             cv2.imwrite(
-                                f"Images/Process/{self.id}_{str(d.day)+str(d.month)}/validar/{self.rodada}/falha/{encontrados}_F.jpg", _)
+                                f"Images/Process/{self.id}_{str(d.day)+str(d.month)}/validar/{self.rodada}/falha/{encontrados}_F.jpg", cv2.resize(_, None, fx=0.3, fy=0.3))
 
                     print("Depois")
                     await updateMistakes({"round": self.rodada, "failIndex": failIndex}, self.id)
@@ -441,6 +442,9 @@ class Process(threading.Thread):
                 break
 
             print("update Operation")
+            operation["operation"]["right"] = self.corretas
+            operation["operation"]["placed"] = self.rodada
+            operation["operation"]["wrong"] = self.erradas
             await sendWsMessage("update", operation)
             print("update Operation - Finish")
             await descarte(self.status_estribo)
@@ -453,9 +457,9 @@ class Process(threading.Thread):
         Fast.sendGCODE(arduino, "M42 P36 S0")
         print(f"{self.cor} ID:{self.id}--> POS Mount Start{Fast.ColorPrint.ENDC}")
         operation["operation"]["finished"] = True
-        operation["operation"]["placed"] = self.rodada
         operation["operation"]["right"] = self.corretas
         operation["operation"]["wrong"] = self.erradas
+        operation["operation"]["placed"] = self.rodada
         await sendWsMessage("update", operation)
         print("Info Code", self.infoCode)
         if intencionalStop:
@@ -1061,12 +1065,12 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                 if Resultados:
                     vazio = False
 
-                    if DebugPictures:
-                        d = datetime.now()
-                        cv2.imwrite(
-                            f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/normal/L{lados}_T{tentativas}.jpg", frame)
-                        cv2.imwrite(
-                            f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/filtro/L{lados}_T{tentativas}.jpg", img_draw)
+                    #if DebugPictures:
+                    #    d = datetime.now()
+                    #    cv2.imwrite(
+                    #        f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/normal/L{lados}_T{tentativas}.jpg", frame)
+                    #    cv2.imwrite(
+                    #        f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/filtro/L{lados}_T{tentativas}.jpg", img_draw)
 
                     try:
                         if DebugPrint:
@@ -1218,9 +1222,9 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                     if DebugPictures:
                         d = datetime.now()
                         cv2.imwrite(
-                            f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_T{tentativas}_NE.jpg", frame)
+                            f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_T{tentativas}_NE.jpg", cv2.resize(frame, None, fx=0.3, fy=0.3))
                         cv2.imwrite(
-                            f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_T{tentativas}_FE.jpg", img_draw)
+                            f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_T{tentativas}_FE.jpg", cv2.resize(img_draw, None, fx=0.3, fy=0.3))
                     vazio = True
                     tentativas += 1
                     possivelErro += 1
@@ -1454,7 +1458,7 @@ async def startAutoCheck(date=None):
     await sendWsMessage("update", connection)
     await asyncio.sleep(0.1)
 
-    if not conexaoStatusArdu and  not conexaoStatusNano:
+    if not conexaoStatusArdu or not conexaoStatusNano:
         Fast.validadeUSBSerial('Json/serial.json')
 
     if not conexaoStatusArdu:
@@ -1644,7 +1648,7 @@ async def updateMistakes(payload, id):
     month = production["mistakes"]["month"]
     if len(payload["failIndex"]) > 0:
         if today["day"] != int((datetime.now()).day):
-            
+            month.append(today)
             today = {
                 "day": int((datetime.now()).day),
                 "data": [
@@ -1660,7 +1664,7 @@ async def updateMistakes(payload, id):
                 ]
             }
             production["mistakes"]["today"] =  today
-            month.append(today)
+            #month.append(today)
             while len(month) > 30:
                 month.pop(0)
         elif today["data"][len(today["data"])-1]["id"] == id:

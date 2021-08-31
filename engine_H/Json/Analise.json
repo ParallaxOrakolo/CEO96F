@@ -6,7 +6,7 @@
                 "Y": 6,
                 "Z": null,
                 "E": null,
-                "offsetX": -0.74,
+                "offsetX": -0.69,
                 "offsetY": 0
             },
             "1": {
@@ -24,7 +24,7 @@
                 "Y": 7,
                 "Z": null,
                 "E": null,
-                "offsetX": -1.14,
+                "offsetX": -0.95,
                 "offsetY": 0
             },
             "1": {
@@ -32,7 +32,7 @@
                 "Y": 7,
                 "Z": null,
                 "E": null,
-                "offsetX": -1.14,
+                "offsetX": -1.2,
                 "offsetY": 0
             }
         },
@@ -60,7 +60,7 @@
                 "Y": 7,
                 "Z": null,
                 "E": null,
-                "offsetX": 0.96,
+                "offsetX": 0.86,
                 "offsetY": 0
             },
             "1": {
@@ -68,7 +68,7 @@
                 "Y": 7,
                 "Z": null,
                 "E": null,
-                "offsetX": 1.03,
+                "offsetX": 1.04,
                 "offsetY": 0
             }
         }
