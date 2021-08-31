@@ -5,51 +5,60 @@
         <v-icon class="mr-2">mdi-shield-outline</v-icon> Configurações avançadas
       </div>
       <template v-slot:actions>
-        <span v-if="configuration.logged == true"
-          >Olá, <b>{{ userLogged }}!</b>
+        <span v-if="configuration.informations.users.logged"
+          >Olá, <b>{{ configuration.informations.users.logged.name }}!</b>
           <v-btn x-small outlined color="warning" class="ma-2" @click="logout()"
             >Sair</v-btn
           ></span
         >
       </template>
+      
     </v-expansion-panel-header>
 
     <v-expansion-panel-content>
       <v-divider></v-divider>
+      
 
-      <v-card-subtitle v-if="!configuration.logged"
+      <v-card-subtitle class="mt-10" v-if="!configuration.informations.users.logged"
         >Essa area é de acesso restrito
       </v-card-subtitle>
-      <v-card-text v-show="!configuration.logged">
+
+      <v-card-text
+        v-if="!configuration.informations.users.logged"
+        class="d-flex justify-row"
+      >
         <v-text-field
           outlined
           v-model="idInput"
           :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
-          :type="show ? 'text' : 'password'"
+          :type="show ? 'number' : 'password'"
           name="input-10-2"
           inputmode="numeric"
-          label="ID de acesso"
-          placeholder="Digite seu ID"
+          label="CPF"
+          placeholder="Digite seu CPF (apenas números)"
           class="input-group--focused"
           @click:append="show = !show"
+          rounded
           required
+          @keyup.enter="checkPassword()"
         >
         </v-text-field>
 
-        <!-- <v-btn
+        <v-btn
+          v-if="idInput"
+          class="mt-1 ml-2"
           color="primary"
-          text
-          @click="checkPassword"
+          rounded
+          x-large
+          @click="checkPassword()"
         >
           Acessar
-        </v-btn> -->
+        </v-btn>
       </v-card-text>
-
-      <v-card-text v-show="configuration.logged">
-        <User-table v-if="configuration.logged" />
+      <v-card-text v-if="isUserAcessPermited(this.$options.name)">
+        <UserTable v-if="isUserAcessPermited('UserTable')" />
+        <JsonEditor2 v-if="isUserAcessPermited('JsonEditor2')" />
       </v-card-text>
-
-      <JsonEditor2 v-if="configuration.logged" />
       <!-- <JsonEditor2 /> -->
     </v-expansion-panel-content>
   </v-expansion-panel>
@@ -59,13 +68,13 @@
 import { mapState } from "vuex";
 import UserTable from "./UserTable.vue";
 import JsonEditor2 from "./JsonEditor2.vue";
+import Mixins from "@/mixins/mixins";
 
 export default {
   components: { UserTable, JsonEditor2 },
+  mixins: [Mixins],
   name: "AdvancedSettings",
   data: () => ({
-    userLogged: null,
-    // logged: false,
     show: false,
     idInput: null,
     id: 1234,
@@ -88,22 +97,39 @@ export default {
   },
 
   watch: {
-    idInput() {
-      this.configuration.informations.userList.forEach((user) => {
-        if (user.id == parseInt(this.idInput)) {
-          this.userLogged = user.name;
-          this.configuration.logged = true;
-          const currentDate = new Date();
-          user.lastAcess = currentDate.getTime();
-        }
-      });
-    },
+    // idInput() {
+    //   this.configuration.informations.userList.forEach((user) => {
+    //     if (user.id == parseInt(this.idInput)) {
+    //       this.userLogged = user.name;
+    //       this.configuration.logged = true;
+    //       const currentDate = new Date();
+    //       user.lastAcess = currentDate.getTime();
+    //     }
+    //   });
+    // },
   },
 
   methods: {
     logout() {
-      this.configuration.logged = !this.configuration.logged;
+      this.configuration.informations.users.logged = false;
       this.idInput = "";
+      console.log(this.configuration.informations.users.logged);
+    },
+    // logout() {
+    //   this.configuration.logged = !this.configuration.logged;
+    //   this.idInput = "";
+    // },
+
+    checkPassword() {
+      this.configuration.informations.users.userList.forEach((user) => {
+        if (user.id == parseInt(this.idInput)) {
+          this.configuration.informations.users.logged = user;
+          console.log(this.configuration.informations.users.logged);
+          const currentDate = new Date();
+          user.lastAcess = currentDate.getTime();
+          this.idInput = "";
+        }
+      });
     },
   },
 

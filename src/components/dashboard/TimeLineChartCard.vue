@@ -134,7 +134,7 @@ export default {
       let data = [
         {
           name: "Total",
-          data: this.state.production.today.timesPerCicles,
+          data: this.state.production.today.timesPerCicles.reverse(),
         },
       ];
 

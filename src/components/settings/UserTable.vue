@@ -1,7 +1,7 @@
 <template>
   <v-data-table
     :headers="headers"
-    :items="configuration.informations.userList"
+    :items="configuration.informations.users.userList"
     sort-by="lastAcess"
     class="elevation-1"
   >
@@ -9,7 +9,7 @@
       {{ item.name }}
       <v-chip
         v-if="
-          configuration.informations.userList.indexOf(item) ==
+          configuration.informations.users.userList.indexOf(item) ==
           editedItem.newUserIndex
         "
         class="ma-2"
@@ -25,6 +25,12 @@
 
     <template v-slot:item.lastAcess="{ item }">
       {{ timestampToData(item.lastAcess) }}
+    </template>
+
+    <template v-slot:item.level="{ item }">
+      <v-chip>
+        {{ item.level }}
+      </v-chip>
     </template>
 
     <template v-slot:top>
@@ -56,45 +62,53 @@
 
                 <v-card-text>
                   <v-container>
-                    <v-row>
-                      <v-col cols="12" sm="8" md="12">
-                        <!-- <v-text-field
+                    <!-- <v-text-field
                           v-model="editedItem.name"
                           label="Name"
                         ></v-text-field> -->
 
-                        <validation-provider
-                          v-slot="{ errors }"
-                          name="Name"
-                          rules="required|max:100"
-                        >
-                          <v-text-field
-                            v-model="editedItem.name"
-                            :error-messages="errors"
-                            label="Name"
-                          ></v-text-field>
-                        </validation-provider>
-                      </v-col>
-                      <v-col cols="12" sm="8" md="12">
+                    <validation-provider
+                      v-slot="{ errors }"
+                      name="Name"
+                      rules="required|max:100"
+                    >
+                      <v-text-field
+                        v-model="editedItem.name"
+                        :error-messages="errors"
+                        label="Name"
+                      ></v-text-field>
+                    </validation-provider>
 
-                        <!-- precisa incerir validação de numeric -->
-                        <validation-provider
-                          v-slot="{ errors }"
-                          name="ID"
-                          rules="required"
-                        >
-                          <v-text-field
-                            v-model.number="editedItem.id"
-                            :error-messages="errors"
-                            label="ID"
-                            inputmode="numeric"
-                            :type="show ? 'text' : 'password'"
-                            :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
-                            @click:append="show = !show"
-                          ></v-text-field>
-                        </validation-provider>
-                      </v-col>
-                    </v-row>
+                    <validation-provider
+                      v-slot="{ errors }"
+                      name="Nivel"
+                      rules="required"
+                    >
+                      <v-select
+                        v-model="editedItem.level"
+                        :items="getLevelList()"
+                        filled
+                        label="Nivel de acesso"
+                        :error-messages="errors"
+                      ></v-select>
+                    </validation-provider>
+
+                    <!-- precisa incerir validação de numeric -->
+                    <validation-provider
+                      v-slot="{ errors }"
+                      name="CPF"
+                      rules="required"
+                    >
+                      <v-text-field
+                        v-model.number="editedItem.id"
+                        :error-messages="errors"
+                        label="CPF"
+                        inputmode="numeric"
+                        :type="show ? 'text' : 'password'"
+                        :append-icon="show ? 'mdi-eye' : 'mdi-eye-off'"
+                        @click:append="show = !show"
+                      ></v-text-field>
+                    </validation-provider>
                   </v-container>
                 </v-card-text>
 
@@ -147,8 +161,8 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-
+import { mapState, mapMutations } from "vuex";
+import { actions } from "../../store/index";
 import { required, digits, max, regex } from "vee-validate/dist/rules";
 import {
   extend,
@@ -192,6 +206,7 @@ export default {
   },
 
   data: () => ({
+    actions,
     show: false,
     rules: {
       required: (value) => !!value || "Required.",
@@ -205,8 +220,19 @@ export default {
         text: "Nome",
         value: "name",
       },
-      { text: "Ultimo acesso", value: "lastAcess" },
-      { text: "Actions", value: "actions", sortable: false },
+      {
+        text: "Level",
+        value: "level",
+      },
+      {
+        text: "Último acesso",
+        value: "lastAcess",
+      },
+      {
+        text: "Ações",
+        value: "actions",
+        sortable: false,
+      },
     ],
     editedIndex: -1,
     editedItem: {
@@ -220,6 +246,7 @@ export default {
       lastAcess: null,
       id: Number,
     },
+    levelsList: [],
   }),
 
   computed: {
@@ -246,6 +273,22 @@ export default {
   },
 
   methods: {
+    ...mapMutations(["SEND_MESSAGE"]),
+
+    getLevelList() {
+      var levelsList = [];
+
+      function appendToLevelsList(item) {
+        console.log(item.name);
+        levelsList.push(item.name);
+      }
+
+      this.configuration.informations.users.levelList.forEach(
+        appendToLevelsList
+      );
+      return levelsList;
+    },
+
     timestampToData(timestamp) {
       var d = new Date(timestamp);
       var options = {
@@ -261,21 +304,28 @@ export default {
       return new Intl.DateTimeFormat("pt-BR", options).format(d);
     },
 
+    updateBack() {
+      this.SEND_MESSAGE({command: actions.UPDATE_USERS,});
+    },
+
     editItem(item) {
-      this.editedIndex = this.configuration.informations.userList.indexOf(item);
+      this.editedIndex =
+        this.configuration.informations.users.userList.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialog = true;
     },
 
     deleteItem(item) {
-      this.editedIndex = this.configuration.informations.userList.indexOf(item);
+      this.editedIndex =
+        this.configuration.informations.users.userList.indexOf(item);
       this.editedItem = Object.assign({}, item);
       this.dialogDelete = true;
     },
 
     deleteItemConfirm() {
-      this.informations.userList.splice(this.editedIndex, 1);
+      this.informations.users.userList.splice(this.editedIndex, 1);
       this.closeDelete();
+      this.updateBack()
     },
 
     close() {
@@ -301,28 +351,28 @@ export default {
       if (this.editedIndex > -1) {
         console.log("entrei");
         Object.assign(
-          this.configuration.informations.userList[this.editedIndex],
+          this.configuration.informations.users.userList[this.editedIndex],
           this.editedItem
         );
         console.log("sai");
       } else {
-        this.configuration.informations.userList.push(this.editedItem);
+        this.configuration.informations.users.userList.push(this.editedItem);
       }
       //save timestamp
       const currentDate = new Date();
       this.editedItem.lastAcess = currentDate.getTime();
 
       this.$refs.observer.reset();
-
+      this.updateBack()
       this.close();
     },
+
   },
 };
 </script>
 
 <style scoped lang="scss">
-
-.name{
+.name {
   text-transform: capitalize;
 }
 </style>

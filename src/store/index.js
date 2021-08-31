@@ -8,33 +8,33 @@ var wsConnection = constants;
 
 //lista de coisas q eu posso pedir pro back
 export const actions = {
-  STOP_REASON_RESPONSE: "stopReasonsResponse",
-  START_CAMERA_STREAM: "startCameraStream",
-  START_AUTOCHECK: "startAutoCheck",
-  RESTART_PROCESS: "restartProcess",
-  SERIAL_MONITOR: "serialMonitor",
-  UPDATE_FILTER: "updateFilter",
-  START_PROCESS: "startProcess",
-  PAUSE_PROCESS: "pauseProcess",
-  PARAFUSA: "sendParafusa",
-  UPDATE_SLIDER: "updateSlider",
-  UPDATE_ASSEMBLY: "updateAssembly",
-  STOP_PROCESS: "stopProcess",
-  LOG_REQUEST: "logRequest",
-  STOP_REASONS_LIST_REQUEST: "stopReasonsListRequest",
-  UPDATE_USER: "updateUser",
-  UPDATE_CAMERA: "updateCamera",
-  SEND_GCODE: "sendGcode",
-  START_SCAN: "startScan",
-  SAVE_CAMERA: "saveCamera",
-  SHOW_POPUP: "showPopup",
   GENERATE_ERROR: "generateError",
-  SHUTDOWN_RASPBERRY: "shutdown_raspberry",
-  RESTORE_JSON: "restoreJson",
-  RESTORE_CAMERA: "restoreCamera",
+  LOG_REQUEST: "logRequest",
   MODIFY_JSON: "modifyJson",
+  PARAFUSA: "sendParafusa",
+  PAUSE_PROCESS: "pauseProcess",
+  POPUP_TRIGGER: "popupTigger",
   REQUEST_JSON: "requestJson",
-  POPUP_TRIGGER: "popupTigger"
+  RESTART_PROCESS: "restartProcess",
+  RESTORE_CAMERA: "restoreCamera",
+  RESTORE_JSON: "restoreJson",
+  SAVE_CAMERA: "saveCamera",
+  SEND_GCODE: "sendGcode",
+  SERIAL_MONITOR: "serialMonitor",
+  SHOW_POPUP: "showPopup",
+  SHUTDOWN_RASPBERRY: "shutdown_raspberry",
+  START_AUTOCHECK: "startAutoCheck",
+  START_CAMERA_STREAM: "startCameraStream",
+  START_PROCESS: "startProcess",
+  START_SCAN: "startScan",
+  STOP_PROCESS: "stopProcess",
+  STOP_REASON_RESPONSE: "stopReasonsResponse",
+  STOP_REASONS_LIST_REQUEST: "stopReasonsListRequest",
+  UPDATE_ASSEMBLY: "updateAssembly",
+  UPDATE_CAMERA: "updateCamera",
+  UPDATE_USERS: "updateUsers",
+  UPDATE_FILTER: "updateFilter",
+  UPDATE_SLIDER: "updateSlider",
 };
 
 const store = new Vuex.Store({
@@ -48,7 +48,7 @@ const store = new Vuex.Store({
       timeSeconds: 0,
       total: 1,
       right: 10,
-      wrong:5,
+      wrong: 5,
       placed: 0,
       finished: false
     },
@@ -119,7 +119,7 @@ const store = new Vuex.Store({
         wrong: 0,
         timePerCicle: 0,
         timesPerCicles: [
-          
+
         ]
       },
       dailyAvarege: {
@@ -147,7 +147,7 @@ const store = new Vuex.Store({
         wrong: 0,
         timePerCicle: 0,
         timesPerCicles: [
-            0
+          0
         ]
       },
     },
@@ -190,12 +190,12 @@ const store = new Vuex.Store({
         },
       ],
 
-      health:{
+      health: {
 
-        listOfSystem:[
+        listOfSystem: [
           {
-            hardware:"CPL",
-            status:"Online ",
+            hardware: "CPL",
+            status: "Online ",
             conected: true
           }
 
@@ -326,7 +326,57 @@ const store = new Vuex.Store({
         connectionId: 123456,
         port: machineJson.configuration.informations.port,
         portStream: machineJson.configuration.informations.portStream,
-        userList: [null],
+        users: {
+          logged: false,
+          levelList: [
+            {
+              name: String,
+              level: Number,
+              componentsProhibitedAccess: Array
+            },
+            {
+              name: "Parallax",
+              level: 1,
+              componentsProhibitedAccess: []
+            },
+            {
+              name: "Manutenção",
+              level: 2,
+              componentsProhibitedAccess: ["JsonEditor2", "SerialMonitor"]
+            },
+            {
+              name: "Operador",
+              level: 3,
+              componentsProhibitedAccess: ["AdvancedSettings", "SerialMonitor", "UserTable"]
+            },
+          ],
+          userList: [
+            {
+              name: String,
+              id: String,
+              lastAcess: Number,
+              level: String
+            },
+            {
+              name: "Rodrigo Gomes",
+              id: "123",
+              lastAcess: 0,
+              level: "Parallax"
+            },
+            {
+              name: "Arthur",
+              id: "321",
+              lastAcess: 0,
+              level: "Operador"
+            },
+            {
+              name: "Ronaldo",
+              id: "111",
+              lastAcess: 0,
+              level: "Manutenção"
+            },
+          ],
+        },
         version: {
           backend: "0",
           frontend: "0", //fazer sistema para pegar automaticamente

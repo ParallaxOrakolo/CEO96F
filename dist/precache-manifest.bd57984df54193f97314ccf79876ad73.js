@@ -1,10 +1,10 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "a8ee4600967c4667cd23",
-    "url": "/css/app.5c379968.css"
+    "revision": "8d1cc8b149ba2ec8bf7b",
+    "url": "/css/app.4fac13a7.css"
   },
   {
-    "revision": "7cd0a3023acb121168d1",
+    "revision": "8e6a6c44c51550178d42",
     "url": "/css/chunk-vendors.eeb6e5e7.css"
   },
   {
@@ -104,24 +104,24 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/img/estribo-retangular.ca564140.png"
   },
   {
-    "revision": "1c4ecad8cd2266fae4ba8bc7dc1bcd7f",
-    "url": "/img/parallax-logo-06-black.1c4ecad8.svg"
+    "revision": "2717956ba5953ae517aa43fead6780c1",
+    "url": "/img/parallax-logo-06-black.2717956b.svg"
   },
   {
-    "revision": "12190c35437db902601fd100dd6fac18",
-    "url": "/img/parallax-logo-06.12190c35.svg"
+    "revision": "2cb5956a53b158651f0d42b649d954f7",
+    "url": "/img/parallax-logo-06.2cb5956a.svg"
   },
   {
-    "revision": "3785bf48b5ba8f6afbcb718a37842d39",
+    "revision": "be28df189740c09b962ddbb9cac026f2",
     "url": "/index.html"
   },
   {
-    "revision": "a8ee4600967c4667cd23",
-    "url": "/js/app.9d2b023b.js"
+    "revision": "8d1cc8b149ba2ec8bf7b",
+    "url": "/js/app.d590bae7.js"
   },
   {
-    "revision": "7cd0a3023acb121168d1",
-    "url": "/js/chunk-vendors.2c60ea7c.js"
+    "revision": "8e6a6c44c51550178d42",
+    "url": "/js/chunk-vendors.76762f2b.js"
   },
   {
     "revision": "7cfe264e7f1084d3fe8ef2cec97ff0c6",
@@ -148,7 +148,7 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/media/logo-red-white.ca3ad29d.mp4"
   },
   {
-    "revision": "b6216d61c03e6ce0c9aea6ca7808f7ca",
+    "revision": "735ab4f94fbcd57074377afca324c813",
     "url": "/robots.txt"
   }
 ]);
