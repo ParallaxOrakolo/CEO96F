@@ -1693,7 +1693,11 @@ async def sendWsMessage(command, parameter=None):
     cover_msg = json.dumps(ws_message, indent=2, ensure_ascii=False)
     await ws_connection.send(cover_msg)
 
-
+async def updateUsers(parm):
+    print(parm)
+    machineParamters["configuration"]["informations"]["users"] = parm
+    Fast.writeJson('Json/machineParamters.json', machineParamters)
+    print(machineParamters["configuration"]["informations"]["users"])
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                       Exec                                                           #
 

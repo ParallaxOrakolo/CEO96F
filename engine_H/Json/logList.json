@@ -5,6 +5,24 @@
             "description": "Sem comunicação com o CLP",
             "type": "error",
             "date": 1627998062
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630421191
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630425825
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630427507
         }
     ]
 }

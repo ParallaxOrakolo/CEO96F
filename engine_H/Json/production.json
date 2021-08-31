@@ -1,9 +1,9 @@
 {
     "production": {
         "total": {
-            "total": 1918,
-            "rigth": 479,
-            "wrong": 1296,
+            "total": 1956,
+            "rigth": 490,
+            "wrong": 1320,
             "timePerCicleMax": 133,
             "timePerCicleMin": 82.5
         },
@@ -162,10 +162,10 @@
         },
         "today": {
             "day": 31,
-            "total": 60,
-            "rigth": 31,
-            "wrong": 25,
-            "timePerCicle": 84.6,
+            "total": 98,
+            "rigth": 42,
+            "wrong": 49,
+            "timePerCicle": 84.7,
             "timesPerCicles": [
                 83.7,
                 84.0,
@@ -197,7 +197,18 @@
                 82.9,
                 86.3,
                 83.6,
-                84.2
+                84.2,
+                84.4,
+                84.1,
+                84.2,
+                85.5,
+                85.4,
+                82.5,
+                86.0,
+                84.6,
+                85.0,
+                85.5,
+                87.2
             ]
         }
     },
@@ -426,6 +437,166 @@
                             "failIndex": [
                                 1,
                                 2
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "QHz0T",
+                    "fail": [
+                        {
+                            "round": 2,
+                            "failIndex": [
+                                1,
+                                2
+                            ]
+                        },
+                        {
+                            "round": 4,
+                            "failIndex": [
+                                0,
+                                1
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "hsVe7",
+                    "fail": [
+                        {
+                            "round": 1,
+                            "failIndex": [
+                                1
+                            ]
+                        },
+                        {
+                            "round": 2,
+                            "failIndex": [
+                                1
+                            ]
+                        },
+                        {
+                            "round": 4,
+                            "failIndex": [
+                                1,
+                                2,
+                                5
+                            ]
+                        },
+                        {
+                            "round": 5,
+                            "failIndex": [
+                                1,
+                                2,
+                                3,
+                                4
+                            ]
+                        },
+                        {
+                            "round": 6,
+                            "failIndex": [
+                                3,
+                                5
+                            ]
+                        },
+                        {
+                            "round": 7,
+                            "failIndex": [
+                                1,
+                                4
+                            ]
+                        },
+                        {
+                            "round": 8,
+                            "failIndex": [
+                                1,
+                                2
+                            ]
+                        },
+                        {
+                            "round": 9,
+                            "failIndex": [
+                                2
+                            ]
+                        },
+                        {
+                            "round": 10,
+                            "failIndex": [
+                                2
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "iHl7N",
+                    "fail": [
+                        {
+                            "round": 1,
+                            "failIndex": [
+                                0
+                            ]
+                        },
+                        {
+                            "round": 2,
+                            "failIndex": [
+                                0
+                            ]
+                        },
+                        {
+                            "round": 3,
+                            "failIndex": [
+                                0,
+                                1
+                            ]
+                        },
+                        {
+                            "round": 4,
+                            "failIndex": [
+                                0,
+                                2,
+                                3,
+                                5
+                            ]
+                        },
+                        {
+                            "round": 5,
+                            "failIndex": [
+                                1
+                            ]
+                        },
+                        {
+                            "round": 6,
+                            "failIndex": [
+                                2
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "id": "Gk5fU",
+                    "fail": [
+                        {
+                            "round": 1,
+                            "failIndex": [
+                                1
+                            ]
+                        },
+                        {
+                            "round": 5,
+                            "failIndex": [
+                                2
+                            ]
+                        },
+                        {
+                            "round": 7,
+                            "failIndex": [
+                                1
+                            ]
+                        },
+                        {
+                            "round": 11,
+                            "failIndex": [
+                                0
                             ]
                         }
                     ]

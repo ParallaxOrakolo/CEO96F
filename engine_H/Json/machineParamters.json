@@ -132,24 +132,69 @@
             ]
         },
         "informations": {
-            "ip": "192.168.1.36",
+            "ip": "192.168.4.1",
             "connectionId": 123456,
             "port": 5000,
             "portStream": 8080,
-            "userList": [
-                {
-                    "name": "Henrycke",
-                    "id": "12462584986",
-                    "lastAcess": 0,
-                    "level": 1
-                },
-                {
+            "users": {
+                "logged": {
                     "name": "Rodrigo Gomes",
                     "id": "123",
-                    "lastAcess": 0,
-                    "level": 1
-                }
-            ],
+                    "lastAcess": 1630420578915,
+                    "level": "Parallax"
+                },
+                "levelList": [
+                    {
+                        "name": "Parallax",
+                        "level": 1,
+                        "componentsProhibitedAccess": []
+                    },
+                    {
+                        "name": "Manutenção",
+                        "level": 2,
+                        "componentsProhibitedAccess": [
+                            "JsonEditor2",
+                            "SerialMonitor"
+                        ]
+                    },
+                    {
+                        "name": "Operador",
+                        "level": 3,
+                        "componentsProhibitedAccess": [
+                            "AdvancedSettings",
+                            "SerialMonitor",
+                            "UserTable"
+                        ]
+                    }
+                ],
+                "userList": [
+                    {
+                        "name": "Rodrigo Gomes",
+                        "id": "123",
+                        "lastAcess": 1630420578915,
+                        "level": "Parallax"
+                    },
+                    {
+                        "name": "Arthur",
+                        "id": "321",
+                        "lastAcess": 0,
+                        "level": "Operador"
+                    },
+                    {
+                        "name": "Ronaldo",
+                        "id": "111",
+                        "lastAcess": 0,
+                        "level": "Manutenção"
+                    },
+                    {
+                        "name": "Henrycke",
+                        "lastAcess": 1630420604227,
+                        "id": 12462584986,
+                        "newUserIndex": null,
+                        "level": "Parallax"
+                    }
+                ]
+            },
             "version": {
                 "backend": "0.1.0",
                 "frontend": "0.1.1",
@@ -236,7 +281,7 @@
                     },
                     "parafusadeiraCentro": {
                         "X": 251,
-                        "Y": 18.3,
+                        "Y": 17.9,
                         "Z": 132,
                         "E": null
                     },
