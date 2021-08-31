@@ -770,7 +770,7 @@ def verificaCLP(serial):
     print("Sequêcina de peças erradas:", wrongSequence)
     if wrongSequence >= limitWrongSequence:
         wrongSequence = 0
-        Fast.sendGCODE(arduino, "M42 P36 S0")
+        #Fast.sendGCODE(arduino, "M42 P36 S0")
         return 18
     return "ok"
     echo = Fast.sendGCODE(serial, 'F', echo=True)
@@ -1150,11 +1150,21 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                             
                             Pos.append(posicao)
                             
-                            for axis in ['X']:
+                            for axis in ['X', 'Y']:
+                                if axis ==  'Y':
+                                    CordenadaCC = analise['Y']
+                                    offMM = MY
+                                    CordenadaMM = mm2coordinate(CordenadaCC)
+                                    CordenadaMM += offMM
+                                    CordenadaMMcc = mm2coordinate(CordenadaMM, reverse=True)
+                                    offCC = CordenadaMMcc-CordenadaCC 
+                                    globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].recebido = offCC
+                                else:
+                                    globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].recebido = MX
                                 #print(f"medMov{model}_{axis}_{angle}_{indexPos} recebeu {posicao[axis]-analise[axis]}")
                                 #globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].recebido = posicao[axis]-analise[axis]
                                 #globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].recebido = atualCoordY+MY
-                                globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].recebido = MX
+                                #globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].recebido = MX
                                 globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].atualizaVetor()
 
 
@@ -1643,6 +1653,17 @@ async def updateProduction(cicleSeconds, valor):
 
 
 async def updateMistakes(payload, id):
+    global production
+    mistk = production["mistakes"]
+    for n in payload:
+        try:
+            if mistk[f"F{n}"]:
+                pass
+            mistk[f"F{n}"][f"{id}"] = False
+        except Exception as err:
+            pass
+        
+async def updateMistake(payload, id):
     global production
     today = production["mistakes"]["today"]
     month = production["mistakes"]["month"]

@@ -108,6 +108,8 @@ export default {
         // type: "datetime",
       },
       yaxis: {
+        min: () => { return Math.min.apply(null, this.state.production.today.timesPerCicles)-20},
+        max: () => { return Math.max.apply(null, this.state.production.today.timesPerCicles)+30},
         labels: {
           formatter: (value) => {
             return value.toFixed(1);
@@ -130,11 +132,13 @@ export default {
     // week_total: function () {
     //   this.series[0].data = this.state.production.dailyAvarege.week_total;
     // },
+    
+
     series: function () {
       let data = [
         {
           name: "Total",
-          data: this.state.production.today.timesPerCicles.reverse(),
+          data: this.state.production.today.timesPerCicles,
         },
       ];
 
@@ -176,7 +180,9 @@ export default {
     },
   },
 
-  methods: {},
+  methods: {
+
+  },
 
   mounted: {},
 };

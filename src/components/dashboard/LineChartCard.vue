@@ -34,7 +34,7 @@
           <div>
             <apexchart
               ref="sampleGender"
-              type="area"
+              type="line"
               height="350"
               :options="chartOptions"
               :series="series"
@@ -130,8 +130,15 @@ export default {
         },
       },
       chart: {
+        zoom: {
+          enabled: true,
+          type: 'x',  
+          autoScaleYaxis: false, 
+        },
         height: 400,
-        type: "area",
+        type: 'bar',
+        stacked: true,
+
         toolbar: {
           show: false,
         },
@@ -147,9 +154,9 @@ export default {
           borderWidth: 3,
         },
       },
-      stroke: {
-        curve: "smooth",
-      },
+      // stroke: {
+      //   curve: "smooth",
+      // },
       xaxis: {
         type: "datetime",
 
@@ -225,9 +232,9 @@ export default {
   methods: {
     updateChart() {
       setTimeout(() => {
-        this.series[0].data = this.state.production.dailyAvarege.week_total.reverse();
-        this.series[1].data = this.state.production.dailyAvarege.week_rigth.reverse();
-        this.series[2].data = this.state.production.dailyAvarege.week_wrong.reverse();
+        this.series[0].data = this.state.production.dailyAvarege.week_total.slice(0).reverse();
+        this.series[1].data = this.state.production.dailyAvarege.week_rigth.slice(0).reverse();
+        this.series[2].data = this.state.production.dailyAvarege.week_wrong.slice(0).reverse();
 
         for (var i = 0; i < 7; i++) {
           var result = new Date();
