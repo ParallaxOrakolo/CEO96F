@@ -225,9 +225,9 @@ export default {
   methods: {
     updateChart() {
       setTimeout(() => {
-        this.series[0].data = this.state.production.dailyAvarege.week_total;
-        this.series[1].data = this.state.production.dailyAvarege.week_rigth;
-        this.series[2].data = this.state.production.dailyAvarege.week_wrong;
+        this.series[0].data = this.state.production.dailyAvarege.week_total.reverse();
+        this.series[1].data = this.state.production.dailyAvarege.week_rigth.reverse();
+        this.series[2].data = this.state.production.dailyAvarege.week_wrong.reverse();
 
         for (var i = 0; i < 7; i++) {
           var result = new Date();
