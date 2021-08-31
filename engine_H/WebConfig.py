@@ -317,7 +317,7 @@ class Process(threading.Thread):
 
         # self.cameCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['camera0Centro']
         # self.parafCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusadeiraCentro']
-        # self.parafCent['Y'] = NLinearRegression(self.parafCent['Y'], reverse=True)
+        # self.parafCent['Y'] = mm2coordinate(self.parafCent['Y'], reverse=True)
         # self.intervalo = {
         #             'X':self.parafCent['X']-self.cameCent['X'],
         #             'Y':self.parafCent['Y']-self.cameCent['Y']
@@ -738,7 +738,7 @@ def findScrew(imgAnalyse, FiltrosHSV, MainJson, processos, bh=0.3, **kwargs):
     return offset_screw, chr_k
 
 
-def NLinearRegression(x, c=160, aMin=148.509, reverse=False):
+def mm2coordinate(x, c=160, aMin=148.509, reverse=False):
     if not reverse:
         return round(aMin-(c**2 - ((c**2-aMin**2)**0.5+x)**2)**0.5, 2)
     else:
@@ -987,7 +987,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
 
     cameCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['camera0Centro']
     parafCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusadeiraCentro'].copy()
-    parafCent['Y'] = NLinearRegression(parafCent['Y'], reverse=True)
+    parafCent['Y'] = mm2coordinate(parafCent['Y'], reverse=True)
     # Pega a coordenada de inicio e aplica na formula, pra saber a quantos "mm" do "0" a maquina está.
 
     if not os.path.exists(path):
@@ -1034,7 +1034,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             Fast.M400(arduino)
 
             defaultCoordY = analise['Y']
-            atualCoordY = NLinearRegression(defaultCoordY, reverse=True)
+            atualCoordY = mm2coordinate(defaultCoordY, reverse=True)
 
             Fast.sendGCODE(arduino, "M42 P34 S255")
             Fast.sendGCODE(arduino, "G91")
@@ -1084,7 +1084,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                         MX = Resultados[dsts][1]
 
                         
-                        #medMovY.recebido = NLinearRegression(MY)
+                        #medMovY.recebido = mm2coordinate(MY)
                         # medMovY.atualizaVetor()
 
                         #Problema.append({"nome": nome, "lado": lados, "XDst":MX, "YDst":MY })
@@ -1110,7 +1110,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
 
                     if not DebugDireto:
                         if abs(MY) > precicao or abs(MX) > precicao:
-                            yImaginario = NLinearRegression(abs(yReal))
+                            yImaginario = mm2coordinate(abs(yReal))
                             defaultCoordY = yImaginario
                             atualCoordY = yReal
                             pp = Fast.M114(arduino)
@@ -1168,7 +1168,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                             else:
                                 posicao = {
                                     'X': -round(cameCent['X']-posicao['X']-MX, 2)+parafCent['X'],
-                                    'Y': -round(cameCent['Y']-posicao['Y']+NLinearRegression(MY)+forceThisY, 2)+parafCent['Y'],
+                                    'Y': -round(cameCent['Y']-posicao['Y']+mm2coordinate(MY)+forceThisY, 2)+parafCent['Y'],
                                     'E': posicao['E']
                                 }
 
