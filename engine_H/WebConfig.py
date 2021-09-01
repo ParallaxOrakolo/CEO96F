@@ -333,7 +333,10 @@ class Process(threading.Thread):
             self.infoCode = verificaCLP(nano)
             print("Prblemão:", Problema)
             self.rodada += 1
+
             Fast.sendGCODE(arduino, "M42 P33 S0")
+            Fast.sendGCODE(arduino, "M42 P34 S255")
+
             self.status_estribo = "Errado"
             # ------------ Vai ate tombador e pega ------------ #
             try:
@@ -349,12 +352,15 @@ class Process(threading.Thread):
                 break
 
             # ------------ Acha as coordenadas parciais do furo ------------ #
+            
             parcialFuro, parafusados = Processo_Hole(None,
                                                      mainParamters['Mask_Parameters']['hole']['areaMin'],
                                                      mainParamters['Mask_Parameters']['hole']['areaMax'],
                                                      mainParamters['Mask_Parameters']['hole']['perimeter'],
                                                      mainParamters['Filtros']['HSV']['hole']['Valores'],
                                                      ids=self.id, model=self.model, rodada=self.rodada)
+            Fast.sendGCODE(arduino, "M42 P34 S0")
+            Fast.sendGCODE(arduino, "M42 P33 S255")
 
             globals()["pecaReset"] += 1
             #         # ------------ Verifica se a montagme está ok ------------ #
@@ -369,18 +375,18 @@ class Process(threading.Thread):
                         'machine']['defaultPosition']['validaParafuso']
 
                     Fast.sendGCODE(arduino, f"G0 Y{ValidaPos['Y']} f{yMaxFed}")
+                    Fast.M400(arduino)
                     Fast.sendGCODE(
                         arduino, f"G0 X{ValidaPos['X']} E360 f{xMaxFed}")
-
                     Fast.M400(arduino)
 
-                    Fast.sendGCODE(arduino, "M42 P34 S0")
-                    Fast.sendGCODE(arduino, "M42 P33 S255")
+                    # Fast.sendGCODE(arduino, "M42 P34 S0")      #aaaaaaaax
+                    # Fast.sendGCODE(arduino, "M42 P33 S255")    #aaaaaaaax
 
                     #Fast.sendGCODE(arduino, "G28 Y") #aqui
 
                     #Fast.sendGCODE(arduino, f"G0 E{ValidaPos['E']}, f{eMaxFed}")
-                    Fast.M400(arduino)
+                    #Fast.M400(arduino)
 
                     validar = timeit.default_timer()
                     for n in range(10):
@@ -835,7 +841,6 @@ async def descarte(valor="Errado", Deposito={"Errado": {"X": 230, "Y": 0}}):
         Fast.sendGCODE(arduino, f"G0 X{pos['X']} f{xMaxFed}")
         Fast.M400(arduino)
         Fast.sendGCODE(arduino, "M42 P31 S0")
-        Fast.sendGCODE(arduino, "M42 P33 S0")
         Fast.sendGCODE(arduino, f"G0 E0 f{eMaxFed}")
 #    Fast.M400(arduino)
 #    Fast.sendGCODE(arduino, f"G28 Y")
@@ -1037,7 +1042,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             defaultCoordY = analise['Y']
             atualCoordY = mm2coordinate(defaultCoordY, reverse=True)
 
-            Fast.sendGCODE(arduino, "M42 P34 S255")
+            #Fast.sendGCODE(arduino, "M42 P34 S255")
             Fast.sendGCODE(arduino, "G91")
             forceThisY = 0
 
@@ -1242,7 +1247,8 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
 
             if lados not in repetidos:
                 angle += 90
-
+    Fast.sendGCODE(arduino, f"g90")
+    Fast.sendGCODE(arduino, f"G0 E360 F{xMaxFed}")
     return Pos, parafusadas
 
 
