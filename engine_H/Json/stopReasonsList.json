@@ -1763,6 +1763,36 @@
             "description": "Parada para ajuste técnico",
             "type": "info",
             "date": 1630436550
+        },
+        {
+            "code": 13,
+            "description": "Troca de turno",
+            "type": "info",
+            "date": 1630496834
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1630500247
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1630501014
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1630501983
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1630502597
         }
     ]
 }

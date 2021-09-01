@@ -377,7 +377,7 @@ class Process(threading.Thread):
                     Fast.sendGCODE(arduino, "M42 P34 S0")
                     Fast.sendGCODE(arduino, "M42 P33 S255")
 
-                    Fast.sendGCODE(arduino, "G28 Y")
+                    #Fast.sendGCODE(arduino, "G28 Y") #aqui
 
                     #Fast.sendGCODE(arduino, f"G0 E{ValidaPos['E']}, f{eMaxFed}")
                     Fast.M400(arduino)
@@ -793,13 +793,14 @@ def verificaCLP(serial):
 
 
 def Parafusa(pos, voltas=2, mm=0, ZFD=100, ZFU=100, dowLess=False, reset=False, Pega=False):
-    Fast.M400(arduino)
+    #Fast.M400(arduino)     #aqui
     #print(pos, mm, voltas)
     Fast.sendGCODE(arduino, f'g91')
     if dowLess:
         Fast.sendGCODE(arduino, f"g38.3 Z-105 F{int(zMaxFedDown*(ZFD/100))}")
         ZFD = 50
-    Fast.M400(arduino)
+
+    #Fast.M400(arduino) #aqui
 
     Fast.sendGCODE(arduino, f'g38.3 z-{pos} F{int(zMaxFedDown*(ZFD/100))}')
     Fast.sendGCODE(arduino, f'g0 z{mm} F{zMaxFedUp}')
@@ -808,7 +809,7 @@ def Parafusa(pos, voltas=2, mm=0, ZFD=100, ZFU=100, dowLess=False, reset=False, 
         Fast.sendGCODE(arduino, f"M42 p32 s255")
         t0 = timeit.default_timer()
 
-        while timeit.default_timer() - t0 < (voltas*40/500 if not Pega else voltas*40/1500):
+        while timeit.default_timer() - t0 < (voltas*40/500 if not Pega else voltas*40/3000):
             try:
                 if Fast.M119(arduino)["z_probe"] == "open" and  not Pega:
                     Fast.sendGCODE(arduino, f"M42 p32 s0")

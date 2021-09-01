@@ -1,46 +1,28 @@
 {
     "log": [
         {
-            "code": 4,
-            "description": "Sem comunicação com o CLP",
-            "type": "error",
-            "date": 1627998062
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630496841
         },
         {
             "code": 17,
             "description": "Parada manual pelo operador",
             "type": "warning",
-            "date": 1630421191
+            "date": 1630501016
         },
         {
             "code": 17,
             "description": "Parada manual pelo operador",
             "type": "warning",
-            "date": 1630425825
+            "date": 1630501992
         },
         {
             "code": 17,
             "description": "Parada manual pelo operador",
             "type": "warning",
-            "date": 1630427507
-        },
-        {
-            "code": 17,
-            "description": "Parada manual pelo operador",
-            "type": "warning",
-            "date": 1630433196
-        },
-        {
-            "code": 17,
-            "description": "Parada manual pelo operador",
-            "type": "warning",
-            "date": 1630434545
-        },
-        {
-            "code": 17,
-            "description": "Parada manual pelo operador",
-            "type": "warning",
-            "date": 1630436556
+            "date": 1630502598
         }
     ]
 }

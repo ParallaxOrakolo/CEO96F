@@ -216,23 +216,23 @@
                 "maxFeedrate": {
                     "xMax": 20000,
                     "yMax": 8000,
-                    "zMaxD": 20000,
-                    "zMaxU": 6500,
+                    "zMaxD": 15000,
+                    "zMaxU": 12000,
                     "aMax": 50000,
                     "bMax": 50000
                 },
                 "maxFeedratePercent": {
                     "X": 50,
-                    "Y": 70,
-                    "ZD": 50,
-                    "ZU": 80,
-                    "ZD2": 25,
+                    "Y": 90,
+                    "ZD": 100,
+                    "ZU": 100,
+                    "ZD2": 50,
                     "ZU2": 100,
                     "E": 100
                 },
                 "defaultPosition": {
                     "pegaTombador": {
-                        "X": 13.6,
+                        "X": 15.6,
                         "Y": 43,
                         "Z": null,
                         "E": 0
@@ -290,7 +290,7 @@
                         "Y": null,
                         "Z": 139,
                         "E": null,
-                        "mm": 3,
+                        "mm": -1.5,
                         "voltas": 25
                     }
                 }
