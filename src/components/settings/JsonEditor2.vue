@@ -1,4 +1,4 @@
-<template>
+<template >
   <div>
     <v-divider></v-divider>
     <v-card-title> Editor de JSON </v-card-title>
@@ -6,6 +6,7 @@
     <v-card-subtitle>Configurações avançadas</v-card-subtitle>
 
     <JsonEditor
+      v-if="loading"
       :options="{
         confirmText: 'salvar',
         cancelText: 'cancelar',
@@ -117,6 +118,7 @@ export default {
     scTimer: 0,
     scY: 0,
     hidden: false,
+    loading: false
   }),
 
   mounted() {
@@ -125,6 +127,8 @@ export default {
     });
 
     window.addEventListener("scroll", this.handleScroll);
+    this.loading = true
+    this.$emit("update-loading") //loading event 
   },
 
   methods: {

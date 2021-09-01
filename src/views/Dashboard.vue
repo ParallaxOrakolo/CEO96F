@@ -26,7 +26,7 @@
         ></Total-card>
       </v-col>
     </v-row>
-    <v-row>  <v-col cols="card.flex"> <LineChartCard></LineChartCard> </v-col>  </v-row>
+    <v-row>  <v-col cols="card.flex"> <ProductionAverageChartCard></ProductionAverageChartCard> </v-col>  </v-row>
     <v-row>  <v-col cols="card.flex"> <TimeLineChartCard></TimeLineChartCard> </v-col>  </v-row>
   </v-container>
 </template>
@@ -36,7 +36,7 @@
 import { mapGetters, mapMutations } from "vuex";
 import { actions } from "../store/index";
 import TotalCard from "../components/dashboard/TotalCard.vue";
-import LineChartCard from "../components/dashboard/LineChartCard.vue";
+import ProductionAverageChartCard from "../components/dashboard/ProductionAverageChartCard.vue";
 import TimeLineChartCard from "../components/dashboard/TimeLineChartCard.vue";
 
 export default {
@@ -53,7 +53,7 @@ export default {
 
   components: {
     TotalCard,
-    LineChartCard,
+    ProductionAverageChartCard,
     TimeLineChartCard
   },
 
@@ -68,6 +68,4 @@ export default {
 </script>
 
 <style lang="scss" >
-section {
-}
 </style>

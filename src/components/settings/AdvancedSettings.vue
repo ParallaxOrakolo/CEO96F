@@ -4,6 +4,13 @@
       <div>
         <v-icon class="mr-2">mdi-shield-outline</v-icon> Configurações avançadas
       </div>
+      <v-progress-linear
+        :active="loading"
+        :indeterminate="loading"
+        absolute
+        bottom
+      ></v-progress-linear>
+
       <template v-slot:actions>
         <span v-if="configuration.informations.users.logged"
           >Olá, <b>{{ configuration.informations.users.logged.name }}!</b>
@@ -12,14 +19,14 @@
           ></span
         >
       </template>
-      
     </v-expansion-panel-header>
 
     <v-expansion-panel-content>
       <v-divider></v-divider>
-      
 
-      <v-card-subtitle class="mt-10" v-if="!configuration.informations.users.logged"
+      <v-card-subtitle
+        class="mt-10"
+        v-if="!configuration.informations.users.logged"
         >Essa area é de acesso restrito
       </v-card-subtitle>
 
@@ -57,7 +64,7 @@
       </v-card-text>
       <v-card-text v-if="isUserAcessPermited(this.$options.name)">
         <UserTable v-if="isUserAcessPermited('UserTable')" />
-        <JsonEditor2 v-if="isUserAcessPermited('JsonEditor2')" />
+        <JsonEditor2 @update-loading="loading=false" v-if="isUserAcessPermited('JsonEditor2')" />
       </v-card-text>
       <!-- <JsonEditor2 /> -->
     </v-expansion-panel-content>
@@ -84,6 +91,7 @@ export default {
     },
     errorMessages: "",
     formHasErrors: false,
+    loading: false,
   }),
 
   computed: {
@@ -110,6 +118,7 @@ export default {
   },
 
   methods: {
+    
     logout() {
       this.configuration.informations.users.logged = false;
       this.idInput = "";

@@ -1,14 +1,26 @@
 <template>
-  <section class="content">
-    <div id="app" class="">
+  <section class="content d-flex justify-start align-start
+">
       <v-expansion-panels multiple >
         <Assembly />
-        <Infos />
         <Controls />
         <Statistics />
         <Advanced-settings />
+        <Infos />
+        <router-link to="/dashboard">
+        <v-btn
+          class="ma-3 mt-10"
+          outlined
+          rounded
+          color="warning"
+          v-if="$route.name != 'dashboard'"
+        >
+          <v-icon class="ma-2" small dark>mdi-chart-line</v-icon>
+          Dashboard
+        </v-btn>
+      </router-link>
       </v-expansion-panels>
-    </div>
+       
   </section>
 </template>
 

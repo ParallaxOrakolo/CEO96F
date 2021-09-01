@@ -1,15 +1,15 @@
 <template>
   <div>
-    <v-card class="mx-auto" v-on="updateChart()" v-if="series[0].data">
+    <v-card class="mx-auto" v-if="series[0].data">
       <div class="pa-3">
         <v-row>
-          <div class="text--secondary ml-3">{{ title }}</div>
+          <div class="text--secondary ml-3 mb-4">{{ title }}</div>
         </v-row>
         <v-row>
-          <div class="pr-5 pl-3 d-flex  justify-space-around statistics">
+          <div class="pr-5 pl-3 d-flex justify-space-around statistics">
             <div
-              class="d-flex  justify-space-around
-"              v-for="item in infoList"
+              class="d-flex justify-space-around"
+              v-for="item in infoList"
               :key="item.text"
             >
               <div>
@@ -34,7 +34,7 @@
           <div>
             <apexchart
               ref="sampleGender"
-              type="line"
+              type="bar"
               height="350"
               :options="chartOptions"
               :series="series"
@@ -53,86 +53,38 @@ import { mapGetters } from "vuex";
 
 export default {
   // mixins: [mixins],
-  name: "LineChartCard",
-
+  name: "ProductionAverageChartCard",
   data: () => ({
-    // infoList: [
-    //   {
-    //     ref: "total",
-    //     text: "Total",
-    //     unit: "",
-    //     number: 2,
-    //     icon: "mdi-chart-timeline-variant",
-    //     color: "blue lighten-2",
-    //   },
-    //   {
-    //     ref: "right",
-    //     text: "Certas",
-    //     unit: "",
-    //     number: 20,
-    //     icon: "mdi-check",
-    //     color: "green lighten-2",
-    //   },
-    //   {
-    //     ref: "wrong",
-    //     text: "Erradas",
-    //     unit: "",
-    //     number: 20,
-    //     icon: "mdi-close",
-    //     color: "red lighten-2",
-    //   },
-    //   {
-    //     ref: "times",
-    //     text: "Tempo médio",
-    //     unit: "s",
-    //     number: 20,
-    //     icon: "mdi-timer-outline",
-    //     color: "blue lighten-2",
-    //   },
-    // ],
-
     icon: null,
     number: 6,
     title: "Média Total Produção Diaria",
     unit: "peças",
     sampleGender: 1,
     intervalDays: 7,
-    series: [
-      {
-        name: "Total",
-        data: [],
-      },
-      {
-        name: "Certas",
-        data: [],
-      },
-      {
-        name: "Erradas",
-        data: [],
-      },
-    ],
+    
 
     chartOptions: {
-      colors: ["#2E93fA", "#81C784", "#E57373"],
-      fill: {
-        type: "gradient",
-      },
-      markers: {
-        size: 6,
-        hover: {
-          size: 9,
-        },
-      },
+       colors: [ "#81C784", "#E57373"],
+      //  colors: ["#2E93fA", "#81C784", "#E57373"],
+      // fill: {
+      //   type: "gradient",
+      // },
+      // markers: {
+      //   size: 6,
+      //   hover: {
+      //     size: 9,
+      //   },
+      // },
       plotOptions: {
-          bar: {
-            horizontal: false,
-            borderRadius: 10
-          },
+        bar: {
+          horizontal: false,
+          borderRadius: 10,
+        },
       },
 
       chart: {
         height: 400,
-        type: 'bar',
+        type: "bar",
         stacked: true,
 
         toolbar: {
@@ -143,11 +95,11 @@ export default {
           enabled: false,
         },
       },
-      
-       fill: {
-          opacity: 1
-        },
-        
+
+      //  fill: {
+      //     opacity: 1
+      //   },
+
       dataLabels: {
         enabled: false,
         background: {
@@ -159,14 +111,12 @@ export default {
       // stroke: {
       //   curve: "smooth",
       // },
+
       xaxis: {
         type: "datetime",
-
-        // min: new Date().getTime(),
-        // max: new Date().setDate(new Date().getDate() + 4),
-
         categories: [],
       },
+
       tooltip: {
         x: {
           format: "dd/MM",
@@ -186,16 +136,45 @@ export default {
   //   icon: String,
   // },
 
-  components: {
-    //ProgressStatus,
-    //VideoProgress, // Remove VideoProgress -HB
-  },
+ 
 
   computed: {
     ...mapGetters(["state"]),
     // week_total: function () {
     //   this.series[0].data = this.state.production.dailyAvarege.week_total;
     // },
+
+    series: function() {
+      let list = [
+        {
+          name: "Certas",
+          data: [],
+        },
+        {
+          name: "Erradas",
+          data: [],
+        },
+      ]
+
+      list[0].data = this.state.production.dailyAvarege.week_rigth.slice(0).reverse()
+      list[1].data = this.state.production.dailyAvarege.week_wrong.slice(0).reverse()
+      // this.series[0].data = this.state.production.dailyAvarege.week_total.slice(0).reverse();
+      // this.series[1].data = this.state.production.dailyAvarege.week_rigth.slice(0).reverse();
+      // this.series[2].data = this.state.production.dailyAvarege.week_wrong.slice(0).reverse();
+
+      for (var i = 0; i < 7; i++) {
+        var result = new Date();
+        result.setDate(result.getDate() - i - 1);
+        result = result.getTime();
+        this.chartOptions.xaxis.categories.push(result);
+        // console.log(this.chartOptions.xaxis.categories);
+        // console.log(this.series[0].data);
+      }
+        
+
+    return list
+    },
+
     infoList: function () {
       let list = [
         {
@@ -234,31 +213,33 @@ export default {
   methods: {
     updateChart() {
       setTimeout(() => {
-        this.series[0].data = this.state.production.dailyAvarege.week_total.slice(0).reverse();
-        this.series[1].data = this.state.production.dailyAvarege.week_rigth.slice(0).reverse();
-        this.series[2].data = this.state.production.dailyAvarege.week_wrong.slice(0).reverse();
+        this.series[0].data = this.state.production.dailyAvarege.week_total;
+        this.series[1].data = this.state.production.dailyAvarege.week_rigth;
+        this.series[2].data = this.state.production.dailyAvarege.week_wrong;
+        // this.series[0].data = this.state.production.dailyAvarege.week_total.slice(0).reverse();
+        // this.series[1].data = this.state.production.dailyAvarege.week_rigth.slice(0).reverse();
+        // this.series[2].data = this.state.production.dailyAvarege.week_wrong.slice(0).reverse();
 
         for (var i = 0; i < 7; i++) {
           var result = new Date();
-          result.setDate(result.getDate() - i -1);
+          result.setDate(result.getDate() - i - 1);
           result = result.getTime();
           this.chartOptions.xaxis.categories.push(result);
           // console.log(this.chartOptions.xaxis.categories);
           // console.log(this.series[0].data);
         }
+
         this.$refs.sampleGender = i;
         window.dispatchEvent(new Event("resize"));
+        console.log(this.series);
       }, 1000);
     },
   },
-
-  mounted: {},
 };
 </script>
 
 <style lang="scss" scopped>
-
-.statistics{
- width: 100%; 
+.statistics {
+  width: 100%;
 }
 </style>
