@@ -29,7 +29,6 @@ export default {
 
   computed: mapState({
     connectionStatus: (state) => state.connectionStatus,
-    autoCheckComplete: (state) => state.autoCheckComplete,
   }),
 
   mounted() {},

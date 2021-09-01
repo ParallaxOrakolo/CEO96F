@@ -10,16 +10,18 @@
       >
         <v-icon>mdi-arrow-left</v-icon>
       </v-btn>
-      <!-- issso foi nojento -->
-      <v-btn
-        icon
-        class="hidden-xs-only"
-        v-on:click="$router.go(-1)"
-        alt
-        v-if="$route.name == 'dashboard'"
-      >
-        <v-icon>mdi-arrow-left</v-icon>
-      </v-btn>
+      <!-- isso foi nojento -->
+      <router-link to="/config">
+        <v-btn
+          icon
+          class="hidden-xs-only"
+          v-on:click="$router.go(-1)"
+          alt
+          v-if="$route.name == 'dashboard'"
+        >
+          <v-icon>mdi-arrow-left</v-icon>
+        </v-btn>
+      </router-link>
       <img
         class="logo"
         src="../assets/img/parallax-logo-06.svg"
@@ -40,7 +42,6 @@
     <!-- <SnackBar /> -->
     <v-btn
       icon
-
       v-if="$route.name == 'settings'"
       v-on:click="
         () => {
@@ -54,7 +55,6 @@
       <v-icon dark>mdi-restart</v-icon>
     </v-btn>
 
-  
     <v-icon dark color="light-green lighten-1" v-show="isConnected"
       >mdi-lan-check</v-icon
     >
@@ -76,7 +76,6 @@
 import { mapState, mapMutations } from "vuex";
 import { actions } from "../../src/store/index";
 
-
 export default {
   name: "NavBar",
   data: () => ({
@@ -84,7 +83,7 @@ export default {
     online: false,
     showOnlineMsg: false,
     alert: true,
-    url:"http://192.168.1.100:8080/exit",
+    url: "http://192.168.1.100:8080/exit",
   }),
 
   //checa se existe conexão tem a ver com o pwa
@@ -102,10 +101,14 @@ export default {
   },
   methods: {
     ...mapMutations(["SEND_MESSAGE"]),
-    request(){
-      fetch("http://"+this.configuration.informations.ip+":"+
-          this.configuration.informations.portStream+"/exit");
-      
+    request() {
+      fetch(
+        "http://" +
+          this.configuration.informations.ip +
+          ":" +
+          this.configuration.informations.portStream +
+          "/exit"
+      );
     },
     close() {
       const remote = require("electron").remote;

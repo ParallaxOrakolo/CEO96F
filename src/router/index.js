@@ -23,7 +23,7 @@ const routes = [
         component: Settings,
     },
     {
-        name: 'intro',
+        name: 'intro-logo',
         path:'/',
         component: IntroLogo,
     },
