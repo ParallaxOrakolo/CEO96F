@@ -876,7 +876,6 @@ def PegaObjeto():
     Fast.sendGCODE(arduino, "G28 Y")
 #    alinhar()
 
-
 def alinhar():
     alin = machineParamters['configuration']['informations']['machine']['defaultPosition']['alinhaPeca']
     Fast.sendGCODE(arduino, 'G90')
@@ -1602,44 +1601,44 @@ async def startProcess(parm):
 async def updateProduction(cicleSeconds, valor):
     global production
     print("updateProducion")
-    production["production"]["today"]["total"] += 1
-    production["production"]["total"]["total"] += 1
+    production[modelo_atual]["production"]["today"]["total"] += 1
+    production[modelo_atual]["production"]["total"]["total"] += 1
     if valor != "Errado":
         print("Valor Certo")
-        production["production"]["today"]["rigth"] += 1
-        production["production"]["total"]["rigth"] += 1
+        production[modelo_atual]["production"]["today"]["rigth"] += 1
+        production[modelo_atual]["production"]["total"]["rigth"] += 1
 
-        if cicleSeconds < production["production"]["total"]["timePerCicleMin"]:
-            production["production"]["total"]["timePerCicleMin"] = cicleSeconds
-        elif cicleSeconds > production["production"]["total"]["timePerCicleMax"]:
-            production["production"]["total"]["timePerCicleMax"] = cicleSeconds
+        if cicleSeconds < production[modelo_atual]["production"]["total"]["timePerCicleMin"]:
+            production[modelo_atual]["production"]["total"]["timePerCicleMin"] = cicleSeconds
+        elif cicleSeconds > production[modelo_atual]["production"]["total"]["timePerCicleMax"]:
+            production[modelo_atual]["production"]["total"]["timePerCicleMax"] = cicleSeconds
 
-        production["production"]["today"]["timesPerCicles"].append(
+        production[modelo_atual]["production"]["today"]["timesPerCicles"].append(
             cicleSeconds)
         print(">>> ", timer(cicleSeconds))
     elif not intencionalStop:
         print("Valor Errado")
-        production["production"]["today"]["wrong"] += 1
-        production["production"]["total"]["wrong"] += 1
+        production[modelo_atual]["production"]["today"]["wrong"] += 1
+        production[modelo_atual]["production"]["total"]["wrong"] += 1
     current_time = datetime.now()
-    print(f"{current_time} vs {int(production['production']['today']['day'])}")
-    if int(production["production"]["today"]["day"]) != int(current_time.day):
-        production["production"]["yesterday"] = production["production"]["today"]
+    print(f"{current_time} vs {int(production[modelo_atual]['production']['today']['day'])}")
+    if int(production[modelo_atual]["production"]["today"]["day"]) != int(current_time.day):
+        production[modelo_atual]["production"]["yesterday"] = production[modelo_atual]["production"]["today"]
         # Zera o dia de hoje
-        production["production"]["today"] = {"day": int(
+        production[modelo_atual]["production"]["today"] = {"day": int(
             current_time.day), "total": 0, "rigth": 0, "wrong": 0, "timePerCicle": 0, "timesPerCicles": []}
-        production["production"]["dailyAvarege"]["week_times"].append(
-            production["production"]["yesterday"]["timePerCicle"])
-        production["production"]["dailyAvarege"]["week_total"].append(
-            production["production"]["yesterday"]["total"])
-        production["production"]["dailyAvarege"]["week_rigth"].append(
-            production["production"]["yesterday"]["rigth"])
-        production["production"]["dailyAvarege"]["week_wrong"].append(
-            production["production"]["yesterday"]["wrong"])
-        week_time = production["production"]["dailyAvarege"]["week_times"]
-        week_total = production["production"]["dailyAvarege"]["week_total"]
-        week_rigth = production["production"]["dailyAvarege"]["week_rigth"]
-        week_wrong = production["production"]["dailyAvarege"]["week_wrong"]
+        production[modelo_atual]["production"]["dailyAvarege"]["week_times"].append(
+            production[modelo_atual]["production"]["yesterday"]["timePerCicle"])
+        production[modelo_atual]["production"]["dailyAvarege"]["week_total"].append(
+            production[modelo_atual]["production"]["yesterday"]["total"])
+        production[modelo_atual]["production"]["dailyAvarege"]["week_rigth"].append(
+            production[modelo_atual]["production"]["yesterday"]["rigth"])
+        production[modelo_atual]["production"]["dailyAvarege"]["week_wrong"].append(
+            production[modelo_atual]["production"]["yesterday"]["wrong"])
+        week_time = production[modelo_atual]["production"]["dailyAvarege"]["week_times"]
+        week_total = production[modelo_atual]["production"]["dailyAvarege"]["week_total"]
+        week_rigth = production[modelo_atual]["production"]["dailyAvarege"]["week_rigth"]
+        week_wrong = production[modelo_atual]["production"]["dailyAvarege"]["week_wrong"]
         appends = {"times": week_time, "total": week_total,
                    "rigth": week_rigth, "wrong": week_wrong}
         if week_time:
@@ -1648,12 +1647,12 @@ async def updateProduction(cicleSeconds, valor):
                     v.pop(0)
                 media = round(sum(v) / len(v), 1)
                 print(k, v, media)
-                production["production"]["dailyAvarege"][k] = media
+                production[modelo_atual]["production"]["dailyAvarege"][k] = media
 
-    valores = production["production"]["today"]["timesPerCicles"]
+    valores = production[modelo_atual]["production"]["today"]["timesPerCicles"]
     if valores:
         media = round(sum(valores) / len(valores), 1)
-        production["production"]["today"]["timePerCicle"] = media
+        production[modelo_atual]["production"]["today"]["timePerCicle"] = media
     print("Escrevendo")
     Fast.writeJson('Json/production.json', production)
     await sendWsMessage("update", production)
@@ -1661,7 +1660,7 @@ async def updateProduction(cicleSeconds, valor):
 
 async def updateMistakes(payload, id):
     global production
-    mistk = production["mistakes"]
+    mistk = production[modelo_atual]["mistakes"]
     for n in payload:
         try:
             if mistk[f"F{n}"]:
@@ -1672,8 +1671,8 @@ async def updateMistakes(payload, id):
         
 async def updateMistake(payload, id):
     global production
-    today = production["mistakes"]["today"]
-    month = production["mistakes"]["month"]
+    today = production[modelo_atual]["mistakes"]["today"]
+    month = production[modelo_atual]["mistakes"]["month"]
     if len(payload["failIndex"]) > 0:
         if today["day"] != int((datetime.now()).day):
             month.append(today)
@@ -1691,7 +1690,7 @@ async def updateMistake(payload, id):
                     }
                 ]
             }
-            production["mistakes"]["today"] =  today
+            production[modelo_atual]["mistakes"]["today"] =  today
             #month.append(today)
             while len(month) > 30:
                 month.pop(0)
