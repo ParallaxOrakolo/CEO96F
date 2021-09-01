@@ -116,12 +116,6 @@ export default {
       colors: ["#2E93fA", "#81C784", "#E57373"],
       fill: {
         type: "gradient",
-        // gradient: {
-        //   shadeIntensity: 1,
-        //   opacityFrom: 0.7,
-        //   opacityTo: 0.9,
-        //   stops: [0, 90, 100],
-        // },
       },
       markers: {
         size: 6,
@@ -129,12 +123,14 @@ export default {
           size: 9,
         },
       },
+      plotOptions: {
+          bar: {
+            horizontal: false,
+            borderRadius: 10
+          },
+      },
+
       chart: {
-        zoom: {
-          enabled: true,
-          type: 'x',  
-          autoScaleYaxis: false, 
-        },
         height: 400,
         type: 'bar',
         stacked: true,
@@ -142,10 +138,16 @@ export default {
         toolbar: {
           show: false,
         },
+
         zoom: {
           enabled: false,
         },
       },
+      
+       fill: {
+          opacity: 1
+        },
+        
       dataLabels: {
         enabled: false,
         background: {

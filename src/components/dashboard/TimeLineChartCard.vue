@@ -89,9 +89,18 @@ export default {
         toolbar: {
           show: false,
         },
-        zoom: {
-          enabled: false,
-        },
+        // zoom: {
+        //   enabled: true,
+        //   type: 'x',  
+        //   autoScaleYaxis: false,  
+        // },
+        selection: {
+            enabled: true,
+            xaxis: {
+              min: 0,
+              max: 10,
+            }
+          },
       },
       dataLabels: {
         enabled: false,
@@ -108,8 +117,8 @@ export default {
         // type: "datetime",
       },
       yaxis: {
-        min: () => { return Math.min.apply(null, this.state.production.today.timesPerCicles)-20},
-        max: () => { return Math.max.apply(null, this.state.production.today.timesPerCicles)+30},
+        min: 0,
+        max: 120,
         labels: {
           formatter: (value) => {
             return value.toFixed(1);
@@ -132,7 +141,6 @@ export default {
     // week_total: function () {
     //   this.series[0].data = this.state.production.dailyAvarege.week_total;
     // },
-    
 
     series: function () {
       let data = [
@@ -141,6 +149,11 @@ export default {
           data: this.state.production.today.timesPerCicles,
         },
       ];
+
+      this.chartOptions.yaxis.min =
+        Math.min(...this.state.production.today.timesPerCicles) - 20;
+      this.chartOptions.yaxis.max =
+        Math.max(...this.state.production.today.timesPerCicles) + 20;
 
       return data;
     },
@@ -180,9 +193,7 @@ export default {
     },
   },
 
-  methods: {
-
-  },
+  methods: {},
 
   mounted: {},
 };

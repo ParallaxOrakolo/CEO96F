@@ -17,15 +17,12 @@ export default {
             function Equal(item) {
                 if (item == componentName) {
                     isEqual = true
-                    console.log(item, " = ", componentName);
                 }
             }
 
             function findLevel(item) {
                 if (item.name == userLogged.level) {
                     selectedLevel = item
-                    console.log("o level selecionado é ", selectedLevel);
-
                 }
             }
 
@@ -39,9 +36,7 @@ export default {
                     isPermited = true
                 }
 
-                console.log(isPermited);
                 return isPermited
-
             }
         }
     }
