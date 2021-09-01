@@ -7,18 +7,7 @@
     >
     <v-expansion-panel-content>
       <v-divider></v-divider>
-      <router-link to="/dashboard">
-        <v-btn
-          class="ma-3"
-          outlined
-          rounded
-          color="warning"
-          v-if="$route.name != 'dashboard'"
-        >
-          <v-icon class="ma-2" small dark>mdi-chart-line</v-icon>
-          Dashboard
-        </v-btn>
-      </router-link>
+     
       <v-list three-line subheader>
         <v-list-item>
           <v-list-item-content>

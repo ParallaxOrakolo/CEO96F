@@ -3,7 +3,7 @@
     <v-card class="mx-auto" v-if="series[0].data">
       <div class="pa-3">
         <v-row>
-          <div class="text--secondary ml-3">{{ title }}</div>
+          <div class="text--secondary ml-3 mb-4">{{ title }}</div>
         </v-row>
         <v-row>
           <div class="pr-5 pl-3 d-flex justify-space-around statistics">
@@ -61,7 +61,7 @@ export default {
   data: () => ({
     icon: null,
     number: 6,
-    title: "Produção de hoje",
+    title: "Tempo produção de hoje por peça",
     unit: "peças",
     sampleGender: 1,
     intervalDays: 7,
@@ -77,13 +77,17 @@ export default {
         //   stops: [0, 90, 100],
         // },
       },
-      markers: {
-        size: 6,
-        hover: {
-          size: 9,
+      // markers: {
+      //   size: 6,
+      //   hover: {
+      //     size: 9,
+      //   },
+      // },
+       zoom: {
+          enabled: true,
         },
-      },
       chart: {
+       
         height: 400,
         type: "area",
         toolbar: {
@@ -91,16 +95,16 @@ export default {
         },
         // zoom: {
         //   enabled: true,
-        //   type: 'x',  
-        //   autoScaleYaxis: false,  
+        //   type: 'x',
+        //   autoScaleYaxis: false,
         // },
         selection: {
-            enabled: true,
-            xaxis: {
-              min: 0,
-              max: 10,
-            }
+          enabled: true,
+          xaxis: {
+            min: 0,
+            max: 10,
           },
+        },
       },
       dataLabels: {
         enabled: false,
@@ -114,6 +118,7 @@ export default {
         curve: "smooth",
       },
       xaxis: {
+        tickPlacement: "between",
         // type: "datetime",
       },
       yaxis: {
@@ -192,10 +197,6 @@ export default {
       return list;
     },
   },
-
-  methods: {},
-
-  mounted: {},
 };
 </script>
 
