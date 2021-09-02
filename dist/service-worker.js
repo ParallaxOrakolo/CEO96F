@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "/precache-manifest.9089da89e527d1965fe9200dd0b025bb.js"
+  "/precache-manifest.097ea0edb66de28a0aa14731a5c6fb0c.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "interfacePnp"});

@@ -521,8 +521,8 @@ def findHole(imgAnalyse, minArea, maxArea, c_perimeter, HSValues, fixed_Point, e
                     # (escala_real/(info_edge['dimension'][0]))
                     px2mm = 0.026975195072293106
                     px2mmEcho = px2mm
-                    distance_to_fix = (round(((info_edge['centers'][0][0] - fixed_Point[0])*px2mm), 2),
-                                       round(((info_edge['centers'][0][1] - fixed_Point[1])*px2mm), 2))
+                    distance_to_fix = (round(((info_edge['centers'][0][0] - fixed_Point[0])*px2mm), 4),
+                                       round(((info_edge['centers'][0][1] - fixed_Point[1])*px2mm), 4))
 
                     # cv2.putText(chr_k, str(distance_to_fix[1]), (int(Circle['center'][0]), int(Circle['center'][1] / 2)),
                     #             cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
@@ -736,7 +736,7 @@ def findScrew(imgAnalyse, FiltrosHSV, MainJson, processos, bh=0.3, **kwargs):
                     edge_analyze = imgAnalyse[point_a[1]: height, 0:width]
                     pass
                 if aba == processos[1] and not trav:
-                    offset_screw = round(info_edge['dimension'][0], 3)
+                    offset_screw = round(info_edge['dimension'][0], 4)
                     cv2.putText(chr_k, str(offset_screw), (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1,
                                 (255, 255, 255), thickness=3)
         else:
@@ -746,9 +746,9 @@ def findScrew(imgAnalyse, FiltrosHSV, MainJson, processos, bh=0.3, **kwargs):
 
 def mm2coordinate(x, c=160, aMin=148.509, reverse=False):
     if not reverse:
-        return round(aMin-(c**2 - ((c**2-aMin**2)**0.5+x)**2)**0.5, 2)
+        return round(aMin-(c**2 - ((c**2-aMin**2)**0.5+x)**2)**0.5, 4)
     else:
-        return round(((c**2 - (aMin-x)**2)**0.5)-(c**2 - aMin**2)**0.5, 2)
+        return round(((c**2 - (aMin-x)**2)**0.5)-(c**2 - aMin**2)**0.5, 4)
 
     # return round((0.0059*(x**2)) + (0.2741*x) + (0.6205), 2)       # Antiga
     # return round((0.0051*(x**2)) + (0.302*x) + (0.5339), 2)        # 19/07 - 2/2 0->30
@@ -1030,7 +1030,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                 if globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].atualizaMedia():
                     print(globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].valores)
                     print(globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].media)
-                    analise[f'offset{axis}'] = round(globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].media, 2)
+                    analise[f'offset{axis}'] = round(globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].media, 4)
 
             Fast.sendGCODE(
                 arduino, f"G0 X{analise['X']+analise['offsetX']} E{str(angle)} F{xMaxFed}")
@@ -1176,14 +1176,14 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                             # Ajusta define a coordenada do centro com base na distância da camera e da parafusadeira
                             if not DebugDireto:
                                 posicao = {
-                                    'X': -round(cameCent['X']-posicao['X'], 2)+parafCent['X'],
-                                    'Y': -round((cameCent['Y']-posicao['Y'])+forceThisY, 2)+parafCent['Y'],
+                                    'X': -round(cameCent['X']-posicao['X'], 4)+parafCent['X'],
+                                    'Y': -round((cameCent['Y']-posicao['Y'])+forceThisY, 4)+parafCent['Y'],
                                     'E': posicao['E']
                                 }
                             else:
                                 posicao = {
-                                    'X': -round(cameCent['X']-posicao['X']-MX, 2)+parafCent['X'],
-                                    'Y': -round(cameCent['Y']-posicao['Y']+mm2coordinate(MY)+forceThisY, 2)+parafCent['Y'],
+                                    'X': -round(cameCent['X']-posicao['X']-MX, 4)+parafCent['X'],
+                                    'Y': -round(cameCent['Y']-posicao['Y']+mm2coordinate(MY)+forceThisY, 4)+parafCent['Y'],
                                     'E': posicao['E']
                                 }
 
@@ -1601,44 +1601,44 @@ async def startProcess(parm):
 async def updateProduction(cicleSeconds, valor):
     global production
     print("updateProducion")
-    production[modelo_atual]["production"]["today"]["total"] += 1
-    production[modelo_atual]["production"]["total"]["total"] += 1
+    production["production"]["productionPartList"][int(modelo_atual)]["production"]["today"]["total"] += 1
+    production["production"]["productionPartList"][int(modelo_atual)]["production"]["total"]["total"] += 1
     if valor != "Errado":
         print("Valor Certo")
-        production[modelo_atual]["production"]["today"]["rigth"] += 1
-        production[modelo_atual]["production"]["total"]["rigth"] += 1
+        production["production"]["productionPartList"][int(modelo_atual)]["production"]["today"]["rigth"] += 1
+        production["production"]["productionPartList"][int(modelo_atual)]["production"]["total"]["rigth"] += 1
 
-        if cicleSeconds < production[modelo_atual]["production"]["total"]["timePerCicleMin"]:
-            production[modelo_atual]["production"]["total"]["timePerCicleMin"] = cicleSeconds
-        elif cicleSeconds > production[modelo_atual]["production"]["total"]["timePerCicleMax"]:
-            production[modelo_atual]["production"]["total"]["timePerCicleMax"] = cicleSeconds
+        if cicleSeconds < production["production"]["productionPartList"][int(modelo_atual)]["production"]["total"]["timePerCicleMin"]:
+            production["production"]["productionPartList"][int(modelo_atual)]["production"]["total"]["timePerCicleMin"] = cicleSeconds
+        elif cicleSeconds > production["production"]["productionPartList"][int(modelo_atual)]["production"]["total"]["timePerCicleMax"]:
+            production["production"]["productionPartList"][int(modelo_atual)]["production"]["total"]["timePerCicleMax"] = cicleSeconds
 
-        production[modelo_atual]["production"]["today"]["timesPerCicles"].append(
+        production["production"]["productionPartList"][int(modelo_atual)]["production"]["today"]["timesPerCicles"].append(
             cicleSeconds)
         print(">>> ", timer(cicleSeconds))
     elif not intencionalStop:
         print("Valor Errado")
-        production[modelo_atual]["production"]["today"]["wrong"] += 1
-        production[modelo_atual]["production"]["total"]["wrong"] += 1
+        production["production"]["productionPartList"][int(modelo_atual)]["production"]["today"]["wrong"] += 1
+        production["production"]["productionPartList"][int(modelo_atual)]["production"]["total"]["wrong"] += 1
     current_time = datetime.now()
-    print(f"{current_time} vs {int(production[modelo_atual]['production']['today']['day'])}")
-    if int(production[modelo_atual]["production"]["today"]["day"]) != int(current_time.day):
-        production[modelo_atual]["production"]["yesterday"] = production[modelo_atual]["production"]["today"]
+    print(f"{current_time} vs {int(production['production']['productionPartList'][int(modelo_atual)]['production']['today']['day'])}")
+    if int(production["production"]["productionPartList"][int(modelo_atual)]["production"]["today"]["day"]) != int(current_time.day):
+        production["production"]["productionPartList"][int(modelo_atual)]["production"]["yesterday"] = production["production"]["productionPartList"][int(modelo_atual)]["production"]["today"]
         # Zera o dia de hoje
-        production[modelo_atual]["production"]["today"] = {"day": int(
+        production["production"]["productionPartList"][int(modelo_atual)]["production"]["today"] = {"day": int(
             current_time.day), "total": 0, "rigth": 0, "wrong": 0, "timePerCicle": 0, "timesPerCicles": []}
-        production[modelo_atual]["production"]["dailyAvarege"]["week_times"].append(
-            production[modelo_atual]["production"]["yesterday"]["timePerCicle"])
-        production[modelo_atual]["production"]["dailyAvarege"]["week_total"].append(
-            production[modelo_atual]["production"]["yesterday"]["total"])
-        production[modelo_atual]["production"]["dailyAvarege"]["week_rigth"].append(
-            production[modelo_atual]["production"]["yesterday"]["rigth"])
-        production[modelo_atual]["production"]["dailyAvarege"]["week_wrong"].append(
-            production[modelo_atual]["production"]["yesterday"]["wrong"])
-        week_time = production[modelo_atual]["production"]["dailyAvarege"]["week_times"]
-        week_total = production[modelo_atual]["production"]["dailyAvarege"]["week_total"]
-        week_rigth = production[modelo_atual]["production"]["dailyAvarege"]["week_rigth"]
-        week_wrong = production[modelo_atual]["production"]["dailyAvarege"]["week_wrong"]
+        production["production"]["productionPartList"][int(modelo_atual)]["production"]["dailyAvarege"]["week_times"].append(
+            production["production"]["productionPartList"][int(modelo_atual)]["production"]["yesterday"]["timePerCicle"])
+        production["production"]["productionPartList"][int(modelo_atual)]["production"]["dailyAvarege"]["week_total"].append(
+            production["production"]["productionPartList"][int(modelo_atual)]["production"]["yesterday"]["total"])
+        production["production"]["productionPartList"][int(modelo_atual)]["production"]["dailyAvarege"]["week_rigth"].append(
+            production["production"]["productionPartList"][int(modelo_atual)]["production"]["yesterday"]["rigth"])
+        production["production"]["productionPartList"][int(modelo_atual)]["production"]["dailyAvarege"]["week_wrong"].append(
+            production["production"]["productionPartList"][int(modelo_atual)]["production"]["yesterday"]["wrong"])
+        week_time = production["production"]["productionPartList"][int(modelo_atual)]["production"]["dailyAvarege"]["week_times"]
+        week_total = production["production"]["productionPartList"][int(modelo_atual)]["production"]["dailyAvarege"]["week_total"]
+        week_rigth = production["production"]["productionPartList"][int(modelo_atual)]["production"]["dailyAvarege"]["week_rigth"]
+        week_wrong = production["production"]["productionPartList"][int(modelo_atual)]["production"]["dailyAvarege"]["week_wrong"]
         appends = {"times": week_time, "total": week_total,
                    "rigth": week_rigth, "wrong": week_wrong}
         if week_time:
@@ -1647,12 +1647,12 @@ async def updateProduction(cicleSeconds, valor):
                     v.pop(0)
                 media = round(sum(v) / len(v), 1)
                 print(k, v, media)
-                production[modelo_atual]["production"]["dailyAvarege"][k] = media
+                production["production"]["productionPartList"][int(modelo_atual)]["production"]["dailyAvarege"][k] = media
 
-    valores = production[modelo_atual]["production"]["today"]["timesPerCicles"]
+    valores = production["production"]["productionPartList"][int(modelo_atual)]["production"]["today"]["timesPerCicles"]
     if valores:
         media = round(sum(valores) / len(valores), 1)
-        production[modelo_atual]["production"]["today"]["timePerCicle"] = media
+        production["production"]["productionPartList"][int(modelo_atual)]["production"]["today"]["timePerCicle"] = media
     print("Escrevendo")
     Fast.writeJson('Json/production.json', production)
     await sendWsMessage("update", production)
@@ -1660,19 +1660,15 @@ async def updateProduction(cicleSeconds, valor):
 
 async def updateMistakes(payload, id):
     global production
-    mistk = production[modelo_atual]["mistakes"]
+    mistk = production["production"]["productionPartList"][int(modelo_atual)]["mistakes"]
     for n in payload:
-        try:
-            if mistk[f"F{n}"]:
-                pass
-            mistk[f"F{n}"][f"{id}"] = False
-        except Exception as err:
-            pass
+        mistk[f"F{n}"][f"{id}"] = False
+    Fast.writeJson('Json/production.json', production)
         
 async def updateMistake(payload, id):
     global production
-    today = production[modelo_atual]["mistakes"]["today"]
-    month = production[modelo_atual]["mistakes"]["month"]
+    today = production["production"]["productionPartList"][int(modelo_atual)]["mistakes"]["today"]
+    month = production["production"]["productionPartList"][int(modelo_atual)]["mistakes"]["month"]
     if len(payload["failIndex"]) > 0:
         if today["day"] != int((datetime.now()).day):
             month.append(today)
@@ -1690,7 +1686,7 @@ async def updateMistake(payload, id):
                     }
                 ]
             }
-            production[modelo_atual]["mistakes"]["today"] =  today
+            production["production"]["productionPartList"][int(modelo_atual)]["mistakes"]["today"] =  today
             #month.append(today)
             while len(month) > 30:
                 month.pop(0)

@@ -1,6 +1,6 @@
 {
     "production": {
-        "allParts":{
+        "allParts": {
             "production": {
                 "total": {
                     "total": 2294,
@@ -620,11 +620,11 @@
                 "partNumber": 1,
                 "production": {
                     "total": {
-                        "total": 0,
-                        "rigth": 0,
-                        "wrong": 0,
+                        "total": 55,
+                        "rigth": 26,
+                        "wrong": 29,
                         "timePerCicleMax": 92.3,
-                        "timePerCicleMin": 73.2
+                        "timePerCicleMin": 71.7
                     },
                     "dailyAvarege": {
                         "total": 0,
@@ -646,12 +646,37 @@
                     },
                     "today": {
                         "day": 2,
-                        "total": 0,
-                        "rigth": 0,
-                        "wrong": 0,
-                        "timePerCicle": 0,
+                        "total": 55,
+                        "rigth": 26,
+                        "wrong": 29,
+                        "timePerCicle": 73.4,
                         "timesPerCicles": [
-                            
+                            72.9,
+                            73.4,
+                            74.2,
+                            74.6,
+                            73.3,
+                            73.5,
+                            73.5,
+                            72.3,
+                            74.1,
+                            72.7,
+                            73.2,
+                            72.5,
+                            72.5,
+                            73.2,
+                            74.8,
+                            74.6,
+                            73.6,
+                            71.7,
+                            74.1,
+                            72.5,
+                            73.6,
+                            75.0,
+                            72.6,
+                            73.1,
+                            72.1,
+                            73.7
                         ]
                     }
                 },

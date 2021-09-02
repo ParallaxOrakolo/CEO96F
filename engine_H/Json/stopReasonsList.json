@@ -1901,6 +1901,30 @@
             "description": "Parada para ajuste técnico",
             "type": "info",
             "date": 1630526778
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1630582079
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1630582545
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1630582713
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1630586807
         }
     ]
 }
