@@ -104,54 +104,7 @@ const store = new Vuex.Store({
     autoCheckComplete: false,
     scanConnectorsComplete: false,
 
-    production: {
-      total: {
-        total: 0,
-        rigth: 0,
-        wrong: 0,
-        timePerCicleMax: 0,
-        timePerCicleMin: 0
-      },
-      yesterday: {
-        day: 0,
-        total: 0,
-        rigth: 0,
-        wrong: 0,
-        timePerCicle: 0,
-        timesPerCicles: [
-
-        ]
-      },
-      dailyAvarege: {
-        total: 0,
-        rigth: 0,
-        wrong: 0,
-        times: 0,
-        week_total: [
-          0
-        ],
-        week_rigth: [
-          0,
-        ],
-        week_wrong: [
-          0,
-        ],
-        week_times: [
-          0
-        ],
-      },
-      today: {
-        day: 0,
-        total: 0,
-        rigth: 0,
-        wrong: 0,
-        timePerCicle: 0,
-        timesPerCicles: [
-          0
-        ]
-      },
-    },
-
+    production: {},
 
     log: [
       {

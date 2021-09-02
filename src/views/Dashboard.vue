@@ -4,9 +4,9 @@
       <v-col cols="card.flex">
         <Total-card
           title="Peças produzidas"
-          :number="state.production.total.total"
-          :correct="state.production.total.rigth"
-          :wrong="state.production.total.wrong"
+          :number="allParts.total.total"
+          :correct="allParts.total.rigth"
+          :wrong="allParts.total.wrong"
           description="Desde o começo"
           icon="mdi-chart-timeline-variant"
           :iconTypeAlternative="true"
@@ -16,9 +16,9 @@
       <v-col cols="card.flex">
         <Total-card
           title="Tempo médio por peças"
-          :number="Number(state.production.yesterday.timePerCicle.toFixed(1))"
-          :correct="Number(state.production.total.timePerCicleMax.toFixed(1))"
-          :wrong="Number(state.production.total.timePerCicleMin.toFixed(1))"
+          :number="Number(allParts.yesterday.timePerCicle.toFixed(1))"
+          :correct="Number(allParts.total.timePerCicleMax.toFixed(1))"
+          :wrong="Number(allParts.total.timePerCicleMin.toFixed(1))"
           description="Ultimo dia util"
           icon="mdi-timer-outline"
           unit="s"
@@ -59,6 +59,8 @@ export default {
 
   computed: {
     ...mapGetters(["state"]),
+
+    allParts:()=> this.state.production.allParts.production
   },
 
   methods: {

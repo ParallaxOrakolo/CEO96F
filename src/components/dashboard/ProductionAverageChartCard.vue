@@ -156,20 +156,22 @@ export default {
         },
       ]
 
-      list[0].data = this.state.production.dailyAvarege.week_rigth.slice(0).reverse()
-      list[1].data = this.state.production.dailyAvarege.week_wrong.slice(0).reverse()
-      // this.series[0].data = this.state.production.dailyAvarege.week_total.slice(0).reverse();
-      // this.series[1].data = this.state.production.dailyAvarege.week_rigth.slice(0).reverse();
-      // this.series[2].data = this.state.production.dailyAvarege.week_wrong.slice(0).reverse();
+      console.log(this.state)
 
-      for (var i = 0; i < 7; i++) {
-        var result = new Date();
-        result.setDate(result.getDate() - i - 1);
-        result = result.getTime();
-        this.chartOptions.xaxis.categories.push(result);
-        // console.log(this.chartOptions.xaxis.categories);
-        // console.log(this.series[0].data);
-      }
+      // list[0].data = this.state.production.dailyAvarege.week_rigth.slice(0).reverse()
+      // list[1].data = this.state.production.dailyAvarege.week_wrong.slice(0).reverse()
+      // // this.series[0].data = this.state.production.dailyAvarege.week_total.slice(0).reverse();
+      // // this.series[1].data = this.state.production.dailyAvarege.week_rigth.slice(0).reverse();
+      // // this.series[2].data = this.state.production.dailyAvarege.week_wrong.slice(0).reverse();
+
+      // for (var i = 0; i < 7; i++) {
+      //   var result = new Date();
+      //   result.setDate(result.getDate() - i - 1);
+      //   result = result.getTime();
+      //   this.chartOptions.xaxis.categories.push(result);
+      //   // console.log(this.chartOptions.xaxis.categories);
+      //   // console.log(this.series[0].data);
+      // }
         
 
     return list
