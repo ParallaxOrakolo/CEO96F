@@ -72,7 +72,7 @@ export default {
         {
           text: "Total de peças",
           unit: "",
-          number: this.state.operation.total,
+          number: this.state.operation.right + this.state.operation.wrong,
           icon: "mdi-chart-timeline-variant",
           color: "blue lighten-2",
         },

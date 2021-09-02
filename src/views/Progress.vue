@@ -83,7 +83,7 @@
                   parameter: stopReasonsMessage(reason.code),
                 });
                 overlay = false;
-                state.operation.finished = true
+                state.operation.finished = true;
               }
             "
           >
@@ -137,7 +137,6 @@ export default {
     ...mapGetters(["state"]),
 
     numberParts() {
-      console.log("next page");
       if (this.state.operation.finished)
         this.$router.push({ path: "/success" }).catch(() => {});
 
@@ -146,7 +145,11 @@ export default {
           this.state.operation.placed + " de " + this.state.operation.total
         );
       } else {
-        return this.state.operation.placed + " de infinitas";
+        if (this.state.operation.onlyCorrectParts) {
+          return this.state.operation.placed + " de infinitas";
+        } else {
+          (this.state.operation.right + this.state.operation.wrong) + " de infinitas";
+        }
       }
     },
   },

@@ -47,7 +47,10 @@ export default {
 
     nextPage(timeout) {
       setTimeout(
-        () => this.$router.push({ path: "/progress" }).catch(() => {}),
+        () => {
+          if(this.$route.name == 'intro-logo')
+          this.$router.push({ path: "/progress" }).catch(() => {})
+        },
         timeout*1000+500
       );
     },

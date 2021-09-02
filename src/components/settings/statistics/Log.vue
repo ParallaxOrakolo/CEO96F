@@ -31,7 +31,7 @@ export default {
     ...mapMutations(["SEND_MESSAGE"]),
     timestampToData(timestamp) {
       var d = new Date(timestamp * 1000);
-      console.log(d);
+      // console.log(d);
       var options = {
         year: "numeric",
         month: "numeric",
