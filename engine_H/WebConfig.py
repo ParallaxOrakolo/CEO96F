@@ -149,8 +149,8 @@ class CamThread(threading.Thread):
             rval, frame = cam.read()                  # Atualiza
             frame = cv2.blur(frame, (3, 3))
             globals()[f'frame{previewName}'] = frame
-            if cv2.waitKey(1) == 27:
-                break
+            #if cv2.waitKey(1) == 27:
+            #    break
         try:
             cv2.destroyWindow(previewName)
         except cv2.error:
@@ -301,7 +301,10 @@ class Process(threading.Thread):
             while not self.terminou:
                 continue
             else:
-                time.sleep(0.2)
+                tt = timeit.default_timer()
+                while timeit.default_timer() - tt <= 0.2:
+                    continue
+                #tempo modificado time.sleep(0.2)
             asyncio.run(self.posMount())
         except Fast.MyException as my:
             for item in stopReasons:
@@ -342,7 +345,8 @@ class Process(threading.Thread):
             try:
                 if pega:
                     while verificaCLP(nano) == 10:
-                        time.sleep(0.5)
+                        continue
+                        #time.sleep(0.5)
                     PegaObjeto()
                 if DebugPreciso:
                     pega = False
@@ -370,14 +374,11 @@ class Process(threading.Thread):
                     # montar=sum(montar)
                     print("Montagem finalizada.")
                     print("Iniciando processo de validação.")
-                    Fast.sendGCODE(arduino, "G90")
                     ValidaPos = machineParamters['configuration']['informations'][
                         'machine']['defaultPosition']['validaParafuso']
 
-                    Fast.sendGCODE(arduino, f"G0 Y{ValidaPos['Y']} f{yMaxFed}")
-                    Fast.M400(arduino)
-                    Fast.sendGCODE(
-                        arduino, f"G0 X{ValidaPos['X']} E360 f{xMaxFed}")
+                    Fast.sendGCODE(arduino, "G90")
+                    Fast.sendGCODE(arduino, f"G0 X{ValidaPos['X']} Y{ValidaPos['Y']}  E360 f{xMaxFed}")
                     Fast.M400(arduino)
 
                     # Fast.sendGCODE(arduino, "M42 P34 S0")      #aaaaaaaax
@@ -389,10 +390,15 @@ class Process(threading.Thread):
                     #Fast.M400(arduino)
 
                     validar = timeit.default_timer()
-                    for n in range(10):
+                    tt = timeit.default_timer()
+                    while timeit.default_timer() - tt <= 1.5:
                         frame = globals()[
                             'frame'+str(mainParamters["Cameras"]["screw"]["Settings"]["id"])]
-                        time.sleep(0.1)
+                    #tempo modificado
+                    # for n in range(10):
+                        # frame = globals()[
+                            # 'frame'+str(mainParamters["Cameras"]["screw"]["Settings"]["id"])]
+                        # time.sleep(0.1)
                     print("Antes")
                     _, encontrados, failIndex = Process_Image_Screw(frame,
                                                                     Op.extractHSValue(
@@ -430,7 +436,8 @@ class Process(threading.Thread):
                                 f"Images/Process/{self.id}_{str(d.day)+str(d.month)}/validar/{self.rodada}/falha/{encontrados}_F.jpg", cv2.resize(_, None, fx=0.3, fy=0.3))
 
                     print("Depois")
-                    await updateMistakes({"round": self.rodada, "failIndex": failIndex}, self.id)
+                    #await updateMistakes({"round": self.rodada, "failIndex": failIndex}, self.id)
+                    await updateMistakes(failIndex, self.rodada)
                     validar = timeit.default_timer()-validar
                     if encontrados == 6:
                         self.status_estribo = "Certo"
@@ -1025,19 +1032,18 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
 
             indexPos = str(int(changePos))
             analise = Analise[model][str(angle)][indexPos]
-            for axis in ['X', 'Y']:
-                print(f"medMov{model}_{axis}_{angle}_{indexPos}>>")
-                if globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].atualizaMedia():
-                    print(globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].valores)
-                    print(globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].media)
-                    analise[f'offset{axis}'] = round(globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].media, 4)
 
-            Fast.sendGCODE(
-                arduino, f"G0 X{analise['X']+analise['offsetX']} E{str(angle)} F{xMaxFed}")
-            Fast.sendGCODE(
-                arduino, f"G0 Y{analise['Y']+analise['offsetY']} F{yMaxFed}")
-            Fast.M400(arduino)
+            # Não é aqui
+            if lados == 0:
+                Fast.sendGCODE(
+                    arduino, f"G0 Y{analise['Y']+analise['offsetY']} F{yMaxFed}")
+                #Fast.sendGCODE(arduino, f"^ O PROBLEMA TA ALI 1")
 
+                Fast.sendGCODE(
+                    arduino, f"G0 X{analise['X']+analise['offsetX']} E{str(angle)} F{xMaxFed}")
+
+                Fast.M400(arduino)
+            #precisionTest(0)
             defaultCoordY = analise['Y']
             atualCoordY = mm2coordinate(defaultCoordY, reverse=True)
 
@@ -1045,10 +1051,8 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             Fast.sendGCODE(arduino, "G91")
             forceThisY = 0
 
-            if lados in repetidos:
-                changePos = not changePos
-            else:
-                changePos = False
+            
+                          
 
             while tentativas <= 10 and not intencionalStop:
                 if possivelErro >= 3 and vazio:
@@ -1056,10 +1060,12 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                     break
 
                 tt = timeit.default_timer()
-                while timeit.default_timer()-tt <= 0.3:
-                    continue
-                frame = globals()[
+                while timeit.default_timer()-tt <= 1:
+                    frame = globals()[
                     'frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])]
+                    continue
+                # frame = globals()[
+                #     'frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])]
                 #px2mmEcho = None
                 Resultados, R, per, img_draw = Process_Image_Hole(
                     frame, areaMin, areaMax, perimeter, HSValues)
@@ -1112,32 +1118,38 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                     except IndexError:
                         print("Falha de identificação, corrija o filtro..")
                         break
+                    
+                    # if not DebugDireto:
+                    #     if abs(MY) > precicao or abs(MX) > precicao:
+                    #         yImaginario = mm2coordinate(abs(yReal))
+                    #         defaultCoordY = yImaginario
+                    #         atualCoordY = yReal
+                    #         pp = Fast.M114(arduino)
+                    #         if DebugPrint:
+                    #             print(
+                    #                 f"Devera ir para coordenada {yImaginario}; {atualCoordY}mm em relação ao 0")
 
-                    if not DebugDireto:
-                        if abs(MY) > precicao or abs(MX) > precicao:
-                            yImaginario = mm2coordinate(abs(yReal))
-                            defaultCoordY = yImaginario
-                            atualCoordY = yReal
-                            pp = Fast.M114(arduino)
-                            if DebugPrint:
-                                print(
-                                    f"Devera ir para coordenada {yImaginario}; {atualCoordY}mm em relação ao 0")
+                    #         Fast.sendGCODE(arduino, f"G90")
+                    #         Fast.sendGCODE(
+                    #             arduino, f"G0 Y{yImaginario} X{MX+pp['X']} F{int(yMaxFed/2)}", echo=True)
+                    #         Fast.sendGCODE(arduino, f"G91")
 
-                            Fast.sendGCODE(arduino, f"G90")
-                            Fast.sendGCODE(
-                                arduino, f"G0 Y{yImaginario} X{MX+pp['X']} F{int(yMaxFed/2)}", echo=True)
-                            Fast.sendGCODE(arduino, f"G91")
-
-                        Fast.M400(arduino)
-                        time.sleep(0.5)
-                        tentativas += 1
-
+                    #     Fast.M400(arduino)
+                    #     tt = timeit.default_timer()
+                    #     while timeit.default_timer() - tt <= 0.5:
+                    #         frame = globals()['frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])]
+                    #         continue
+                    #     #tempo modificado time.sleep(0.5)
+                    #     tentativas += 1
+                        
                     if DebugPrint:
                         print("Tentativa:", tentativas)
 
                     # Caso a precisão em ambos os eixos esteja ok, ou tnha exedido o numero de tentativas.
-                    if abs(MY) <= precicao and abs(MX) <= precicao or tentativas >= 9 or DebugDireto:
-                        if abs(MY) <= precicao and abs(MX) <= precicao or DebugDireto:
+                    #abs(MY) <= precicao and abs(MX) <= precicao or 
+                    if tentativas >= 9 or DebugDireto:
+                        #abs(MY) <= precicao and abs(MX) <= precicao or
+                        if  DebugDireto:
 #                            if DebugPictures:
 #                                d = datetime.now()
 #                                cv2.imwrite(
@@ -1145,14 +1157,9 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
 #                                cv2.imwrite(
 #                                    f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_T{tentativas}_F.jpg", img_draw)
 
-                            # Faz os valores ficarem acima do permiido pra evita que entre no loop novamente.
+                            # Faz os valores ficarem acima do permiido pra evita que entre no loop novamente.z
                             tentativas = 99
                             posicao = Fast.M114(arduino)
-                            print('\n')
-                            print(f"model:{model}, angle:{angle}, index:{indexPos}",
-                                  posicao['X'], posicao['Y'], "vs", analise['X'], analise['Y'])
-                            print('\n')
-                            
                             Pos.append(posicao)
                             
                             for axis in ['X', 'Y']:
@@ -1166,12 +1173,14 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                                     globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].recebido = offCC
                                 else:
                                     globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].recebido = MX
-                                #print(f"medMov{model}_{axis}_{angle}_{indexPos} recebeu {posicao[axis]-analise[axis]}")
-                                #globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].recebido = posicao[axis]-analise[axis]
-                                #globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].recebido = atualCoordY+MY
-                                #globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].recebido = MX
                                 globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].atualizaVetor()
 
+                            for axis in ['X', 'Y']:
+                                print(f"medMov{model}_{axis}_{angle}_{indexPos}>>")
+                                if globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].atualizaMedia():
+                                    print(globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].valores)
+                                    print(globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].media)
+                                    analise[f'offset{axis}'] = round(globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].media, 4)
 
                             # Ajusta define a coordenada do centro com base na distância da camera e da parafusadeira
                             if not DebugDireto:
@@ -1199,24 +1208,43 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
 
                             Parafusa(
                                 parafusaCommand['Z'], parafusaCommand['voltas'],  parafusaCommand['mm'], zFRPD2, zFRPU2)
-                            if angle+90 < 360:
-                                if lados not in repetidos:
-                                    Fast.sendGCODE(
-                                        arduino, f"G0 X{Analise[model][str(angle+90)][indexPos]['X']+analise['offsetX']} E{str(angle+90)} F{xMaxFed}")
-                                else:
-                                    Fast.sendGCODE(
-                                        arduino, f"G0 X{Analise[model][str(angle+90)][indexPos]['X']+analise['offsetX']} F{xMaxFed}")
-                                Fast.sendGCODE(
-                                    arduino, f"G0 Y{Analise[model][str(angle+90)][indexPos]['Y']+analise['offsetY']} F{yMaxFed}")
+                        
+                            if lados in repetidos:
+                                A = str(angle+90) if changePos and angle != 270 else str(angle)
+                                I = str(int(not changePos))
+                                E = str(angle)
+                                print('\n')
+                                print(f"ATUAL   >> model:{model}, angle:{angle}, index:{indexPos}")
+                                print(f"Proximo >> model:{model}, angle:{str(angle+90) if changePos != False else str(angle)}, index:{str(int(not changePos))}")
                             else:
+                                print(f"ATUAL   >> model:{model}, angle:{angle}, index:{indexPos}")
+                                print(f"Proximo >> model:{model}, angle:{str(angle+90) }, index:{str(1)}")
+                                A = str(angle+90) if angle != 270 else str(angle)
+                                I = str(int(False))
+                                E = str(angle+90)
 
-                                if lados not in repetidos:
-                                    Fast.sendGCODE(
-                                        arduino, f"G0 X{analise['X']+analise['offsetX']+analise['offsetX']} Y{analise['Y']+analise['offsetY']} E{angle} F{yMaxFed}")
-                                else:
-                                    Fast.sendGCODE(
-                                        arduino, f"G0 X{analise['X']+analise['offsetX']+analise['offsetX']} Y{analise['Y']+analise['offsetY']} F{yMaxFed}")
-                                #Fast.sendGCODE(arduino, f"G0  Y{analise['Y']} F{yMaxFed}")
+                            Y = Analise[model][A][I]['Y']+analise['offsetY']
+                            X = Analise[model][A][I]['X']+analise['offsetX']
+                            Fast.sendGCODE(arduino, f"G0 Y{Y}, X{X} E{E} F{yMaxFed}")  
+                                # Fast.sendGCODE(
+                                #     arduino, f"G0 Y{Analise[model][str(angle+90)][indexPos]['Y']+analise['offsetY']} F{yMaxFed}")
+
+                                # if lados not in repetidos:
+                                #     Fast.sendGCODE(
+                                #         arduino, f"G0 X{Analise[model][str(angle+90)][indexPos]['X']+analise['offsetX']} E{str(angle+90)} F{xMaxFed}")
+                                # else:
+                                #     Fast.sendGCODE(
+                                #         arduino, f"G0 X{Analise[model][str(angle+90)][indexPos]['X']+analise['offsetX']} F{xMaxFed}")
+                                
+                            # else:
+
+                            #     if lados not in repetidos:
+                            #         Fast.sendGCODE(
+                            #             arduino, f"G0 X{analise['X']+analise['offsetX']+analise['offsetX']} Y{analise['Y']+analise['offsetY']} E{angle} F{yMaxFed}")
+                            #     else:
+                            #         Fast.sendGCODE(
+                            #             arduino, f"G0 X{analise['X']+analise['offsetX']+analise['offsetX']} Y{analise['Y']+analise['offsetY']} F{yMaxFed}")
+                            #     Fast.sendGCODE(arduino, f"G0  Y{analise['Y']} F{yMaxFed}")
 
                             Fast.M400(arduino)
                             parafusadas += 1
@@ -1232,7 +1260,11 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                             faltadeFuro = True
                             break
                     else:
-                        time.sleep(0.2)
+                        tt = timeit.default_timer()
+                        while timeit.default_timer() - tt <= 0.2:
+                #            frame = globals()['frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])]
+                            continue
+                        #tempo modificado time.sleep(0.2)
                 else:
                     if DebugPictures:
                         d = datetime.now()
@@ -1244,6 +1276,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                     tentativas += 1
                     possivelErro += 1
 
+            changePos = not changePos if lados in repetidos else False
             if lados not in repetidos:
                 angle += 90
     Fast.sendGCODE(arduino, f"g90")
@@ -1263,6 +1296,17 @@ def shutdown_server():
 
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                 Async-Functions                                                      #
+
+async def updateAssembly(parm):
+    global selected
+    convert ={"0": 0, "1":90, "2":90, "3":180, "4":270, "5":270}
+    for part in parm["listOfParts"]:
+        for hole in part["listOfHoles"]:
+            if hole["mount"]:
+                selected[str(part["index"])][str(hole["index"]-1)] = convert[str(hole["index"]-1)]
+                #mm[str(hole["index"]-1)] = convert[str(hole["index"]-1)]
+            print(part["index"], hole["index"], hole["mount"])
+    print(selected)
 
 
 async def checkUpdate(branch="Auto_Pull"):
@@ -1724,6 +1768,28 @@ async def updateUsers(parm):
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                       Exec                                                           #
 
+def precisionTest(id):
+    c = 0
+    mm = 30
+    Fast.sendGCODE(arduino, "G90")
+    while True:
+        for x in range(6):
+            Fast.sendGCODE(arduino, f"G0 Y{mm2coordinate(mm)}")
+            Fast.M400(arduino)
+            t0 =timeit.default_timer()
+            while timeit.default_timer() - t0 <=2:
+                frame = globals()[
+                    'frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])]    
+            c += 1
+            cv2.imwrite(f'TESTE_Image/{c}.jpg', frame)
+            Fast.sendGCODE(arduino, f"G0 Y{10}")
+            Fast.sendGCODE(arduino, "G91")
+            Fast.sendGCODE(arduino, f"G0 X{-50}")
+            Fast.sendGCODE(arduino, f"G0 X{50}")
+            Fast.sendGCODE(arduino, "G90")
+            Fast.M400(arduino)
+        Fast.sendGCODE(arduino, 'G28 Y')
+
 if __name__ == "__main__":
     app = Flask(__name__)
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
@@ -1747,6 +1813,10 @@ if __name__ == "__main__":
     globals()["tempFileFilter"] = mainParamters["Filtros"]["HSV"]
     globals()["pecaReset"] = 0
     modelo_atual = "1"
+    selected = {
+        "0":{"1":0},
+        "1":{"3":180, "5":270}
+    }
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Json-Variables                        #
     for model in ["0", "1"]:

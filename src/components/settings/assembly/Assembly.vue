@@ -42,7 +42,6 @@
                 class="checkbox"
                 v-model="item.mount"
                 color="red"
-                value="red"
                 hide-details
                 @click="
                   () => {

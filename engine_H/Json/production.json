@@ -308,131 +308,59 @@
                 "partNumber": 0,
                 "production": {
                     "total": {
-                        "total": 2294,
+                        "total": 2296,
                         "rigth": 679,
-                        "wrong": 1445,
+                        "wrong": 1447,
                         "timePerCicleMax": 133,
                         "timePerCicleMin": 68.2
                     },
                     "dailyAvarege": {
-                        "total": 137.7,
-                        "rigth": 47.4,
-                        "wrong": 80.7,
-                        "times": 92.2,
+                        "total": 157.9,
+                        "rigth": 66.4,
+                        "wrong": 80.0,
+                        "times": 88.5,
                         "week_total": [
-                            151,
                             69,
                             126,
                             245,
                             48,
                             180,
-                            145
+                            145,
+                            292
                         ],
                         "week_rigth": [
-                            35,
                             23,
                             16,
                             89,
                             4,
                             102,
-                            63
+                            63,
+                            168
                         ],
                         "week_wrong": [
-                            107,
                             46,
                             97,
                             140,
                             39,
                             63,
-                            73
+                            73,
+                            102
                         ],
                         "week_times": [
-                            99.9,
                             89.6,
                             97.7,
                             94.8,
                             91.9,
                             87.0,
-                            84.7
+                            84.7,
+                            74.1
                         ]
                     },
                     "yesterday": {
-                        "day": 31,
-                        "total": 145,
-                        "rigth": 63,
-                        "wrong": 73,
-                        "timePerCicle": 84.7,
-                        "timesPerCicles": [
-                            83.7,
-                            84.0,
-                            84.1,
-                            84.1,
-                            83.5,
-                            85.5,
-                            86.8,
-                            84.1,
-                            83.0,
-                            85.4,
-                            84.3,
-                            87.6,
-                            83.9,
-                            87.3,
-                            89.0,
-                            82.5,
-                            83.3,
-                            85.0,
-                            83.2,
-                            85.9,
-                            84.2,
-                            82.9,
-                            85.5,
-                            82.8,
-                            86.0,
-                            83.9,
-                            85.1,
-                            82.9,
-                            86.3,
-                            83.6,
-                            84.2,
-                            84.4,
-                            84.1,
-                            84.2,
-                            85.5,
-                            85.4,
-                            82.5,
-                            86.0,
-                            84.6,
-                            85.0,
-                            85.5,
-                            87.2,
-                            87.4,
-                            83.9,
-                            85.4,
-                            82.9,
-                            87.3,
-                            83.8,
-                            87.4,
-                            84.0,
-                            83.5,
-                            83.4,
-                            84.8,
-                            83.4,
-                            85.7,
-                            83.8,
-                            85.4,
-                            87.1,
-                            84.4,
-                            83.0,
-                            85.3,
-                            83.9,
-                            83.9
-                        ]
-                    },
-                    "today": {
                         "day": 1,
-                        "total": 291,
+                        "total": 292,
                         "rigth": 168,
-                        "wrong": 101,
+                        "wrong": 102,
                         "timePerCicle": 74.1,
                         "timesPerCicles": [
                             83.6,
@@ -604,6 +532,14 @@
                             72.9,
                             74.0
                         ]
+                    },
+                    "today": {
+                        "day": 2,
+                        "total": 1,
+                        "rigth": 0,
+                        "wrong": 1,
+                        "timePerCicle": 0,
+                        "timesPerCicles": []
                     }
                 },
                 "mistakes": {
@@ -620,11 +556,11 @@
                 "partNumber": 1,
                 "production": {
                     "total": {
-                        "total": 55,
-                        "rigth": 26,
-                        "wrong": 29,
+                        "total": 159,
+                        "rigth": 51,
+                        "wrong": 94,
                         "timePerCicleMax": 92.3,
-                        "timePerCicleMin": 71.7
+                        "timePerCicleMin": 71.3
                     },
                     "dailyAvarege": {
                         "total": 0,
@@ -646,10 +582,10 @@
                     },
                     "today": {
                         "day": 2,
-                        "total": 55,
-                        "rigth": 26,
-                        "wrong": 29,
-                        "timePerCicle": 73.4,
+                        "total": 159,
+                        "rigth": 51,
+                        "wrong": 94,
+                        "timePerCicle": 75.9,
                         "timesPerCicles": [
                             72.9,
                             73.4,
@@ -676,17 +612,108 @@
                             72.6,
                             73.1,
                             72.1,
-                            73.7
+                            73.7,
+                            74.2,
+                            75.3,
+                            73.3,
+                            75.2,
+                            74.3,
+                            75.0,
+                            75.0,
+                            73.0,
+                            88.5,
+                            89.2,
+                            89.0,
+                            90.3,
+                            89.7,
+                            89.6,
+                            76.3,
+                            77.5,
+                            76.1,
+                            76.9,
+                            77.8,
+                            75.9,
+                            77.1,
+                            76.0,
+                            77.4,
+                            71.3,
+                            72.1
                         ]
                     }
                 },
                 "mistakes": {
-                    "F0": {},
-                    "F1": {},
-                    "F2": {},
-                    "F3": {},
-                    "F4": {},
-                    "F5": {}
+                    "F0": {
+                        "15": false,
+                        "16": false,
+                        "4": false,
+                        "5": false,
+                        "19": false,
+                        "1": false,
+                        "2": false,
+                        "3": false
+                    },
+                    "F1": {
+                        "10": false,
+                        "15": false,
+                        "2": false,
+                        "4": false,
+                        "11": false,
+                        "22": false,
+                        "25": false,
+                        "1": false,
+                        "3": false
+                    },
+                    "F2": {
+                        "2": false,
+                        "10": false,
+                        "15": false,
+                        "4": false,
+                        "6": false,
+                        "1": false,
+                        "12": false,
+                        "16": false,
+                        "17": false,
+                        "20": false,
+                        "22": false,
+                        "23": false,
+                        "24": false,
+                        "25": false,
+                        "26": false,
+                        "29": false,
+                        "3": false
+                    },
+                    "F3": {
+                        "12": false,
+                        "14": false,
+                        "9": false,
+                        "20": false,
+                        "23": false,
+                        "1": false,
+                        "2": false,
+                        "3": false
+                    },
+                    "F4": {
+                        "6": false,
+                        "11": false,
+                        "1": false,
+                        "7": false,
+                        "15": false,
+                        "17": false,
+                        "20": false,
+                        "22": false,
+                        "2": false,
+                        "4": false,
+                        "10": false,
+                        "3": false
+                    },
+                    "F5": {
+                        "2": false,
+                        "18": false,
+                        "19": false,
+                        "4": false,
+                        "1": false,
+                        "3": false
+                    }
                 }
             }
         ]
