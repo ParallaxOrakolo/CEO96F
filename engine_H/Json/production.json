@@ -314,11 +314,11 @@
         "name": "Estribo Maior",
         "production": {
             "total": {
-                "total": 4,
-                "rigth": 1,
-                "wrong": 3,
-                "timePerCicleMax": -1,
-                "timePerCicleMin": 73.2
+                "total": 15,
+                "rigth": 6,
+                "wrong": 8,
+                "timePerCicleMax": 76.3,
+                "timePerCicleMin": 72.3
             },
             "dailyAvarege": {
                 "total": 0,
@@ -340,12 +340,17 @@
             },
             "today": {
                 "day": 1,
-                "total": 4,
-                "rigth": 1,
-                "wrong": 3,
-                "timePerCicle": 73.2,
+                "total": 15,
+                "rigth": 6,
+                "wrong": 8,
+                "timePerCicle": 73.5,
                 "timesPerCicles": [
-                    73.2
+                    73.2,
+                    72.4,
+                    73.8,
+                    72.3,
+                    76.3,
+                    73.0
                 ]
             }
         },
