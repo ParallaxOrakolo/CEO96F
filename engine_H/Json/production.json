@@ -556,163 +556,62 @@
                 "partNumber": 1,
                 "production": {
                     "total": {
-                        "total": 159,
-                        "rigth": 51,
-                        "wrong": 94,
-                        "timePerCicleMax": 92.3,
-                        "timePerCicleMin": 71.3
+                        "total": 0,
+                        "rigth": 0,
+                        "wrong": 0,
+                        "timePerCicleMax": -1,
+                        "timePerCicleMin": 99
                     },
                     "dailyAvarege": {
                         "total": 0,
                         "rigth": 0,
                         "wrong": 0,
                         "times": 0,
-                        "week_total": [],
-                        "week_rigth": [],
-                        "week_wrong": [],
-                        "week_times": []
+                        "week_total": [
+                            0
+                        ],
+                        "week_rigth": [
+                            0
+                        ],
+                        "week_wrong": [
+                            0
+                        ],
+                        "week_times": [
+                            0
+                        ]
                     },
                     "yesterday": {
-                        "day": 0,
+                        "day": 2,
                         "total": 0,
                         "rigth": 0,
                         "wrong": 0,
-                        "timePerCicle": 1,
-                        "timesPerCicles": []
+                        "timePerCicle": 0,
+                        "timesPerCicles": [
+                            
+                        ]
                     },
                     "today": {
-                        "day": 2,
-                        "total": 159,
-                        "rigth": 51,
-                        "wrong": 94,
-                        "timePerCicle": 75.9,
+                        "day": 3,
+                        "total": 0,
+                        "rigth": 0,
+                        "wrong": 0,
+                        "timePerCicle": 0,
                         "timesPerCicles": [
-                            72.9,
-                            73.4,
-                            74.2,
-                            74.6,
-                            73.3,
-                            73.5,
-                            73.5,
-                            72.3,
-                            74.1,
-                            72.7,
-                            73.2,
-                            72.5,
-                            72.5,
-                            73.2,
-                            74.8,
-                            74.6,
-                            73.6,
-                            71.7,
-                            74.1,
-                            72.5,
-                            73.6,
-                            75.0,
-                            72.6,
-                            73.1,
-                            72.1,
-                            73.7,
-                            74.2,
-                            75.3,
-                            73.3,
-                            75.2,
-                            74.3,
-                            75.0,
-                            75.0,
-                            73.0,
-                            88.5,
-                            89.2,
-                            89.0,
-                            90.3,
-                            89.7,
-                            89.6,
-                            76.3,
-                            77.5,
-                            76.1,
-                            76.9,
-                            77.8,
-                            75.9,
-                            77.1,
-                            76.0,
-                            77.4,
-                            71.3,
-                            72.1
                         ]
                     }
                 },
                 "mistakes": {
                     "F0": {
-                        "15": false,
-                        "16": false,
-                        "4": false,
-                        "5": false,
-                        "19": false,
-                        "1": false,
-                        "2": false,
-                        "3": false
                     },
                     "F1": {
-                        "10": false,
-                        "15": false,
-                        "2": false,
-                        "4": false,
-                        "11": false,
-                        "22": false,
-                        "25": false,
-                        "1": false,
-                        "3": false
                     },
                     "F2": {
-                        "2": false,
-                        "10": false,
-                        "15": false,
-                        "4": false,
-                        "6": false,
-                        "1": false,
-                        "12": false,
-                        "16": false,
-                        "17": false,
-                        "20": false,
-                        "22": false,
-                        "23": false,
-                        "24": false,
-                        "25": false,
-                        "26": false,
-                        "29": false,
-                        "3": false
                     },
                     "F3": {
-                        "12": false,
-                        "14": false,
-                        "9": false,
-                        "20": false,
-                        "23": false,
-                        "1": false,
-                        "2": false,
-                        "3": false
                     },
                     "F4": {
-                        "6": false,
-                        "11": false,
-                        "1": false,
-                        "7": false,
-                        "15": false,
-                        "17": false,
-                        "20": false,
-                        "22": false,
-                        "2": false,
-                        "4": false,
-                        "10": false,
-                        "3": false
                     },
                     "F5": {
-                        "2": false,
-                        "18": false,
-                        "19": false,
-                        "4": false,
-                        "1": false,
-                        "3": false
                     }
                 }
             }

@@ -239,6 +239,30 @@
             "description": "Parada manual pelo operador",
             "type": "warning",
             "date": 1630606718
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630677890
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630686423
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630687167
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1630688201
         }
     ]
 }

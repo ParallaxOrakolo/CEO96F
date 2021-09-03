@@ -86,7 +86,58 @@ operation = {
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                      Class                                                           #
 
+class Hole_Filter(threading.Thread):
+    def __init__(self):
+        super(Hole_Filter, self).__init__()
+        self._stop_event = threading.Event()
+        self.get_data = threading.Event()
+        self.Mx = None
+        self.My = None
+        self.mmy = []
+        self.mmx = []
+        self.frame = None
+        self.draw = None
 
+    def stop(self):
+        self._stop_event.set()
+
+    def stopped(self):
+        return self._stop_event.is_set()
+
+    def run(self):
+        while not self.stopped():
+            self.frame =globals()['frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])]
+            RR, _, _, self.draw = Process_Image_Hole(
+                        self.frame,
+                        mainParamters['Mask_Parameters']['hole']['areaMin'],
+                        mainParamters['Mask_Parameters']['hole']['areaMax'],
+                        mainParamters['Mask_Parameters']['hole']['perimeter'],
+                        mainParamters['Filtros']['HSV']['hole']['Valores']
+                    )
+            if RR:
+                self.mmx.append(RR[0][1])
+                self.mmy.append(RR[0][0])
+
+                while len(self.mmx) > 5:
+                    self.mmx.pop(0)
+                while len(self.mmy) > 5:
+                    self.mmy.pop(0)
+
+                self.Mx = sum(self.mmx)/len(self.mmx)
+                self.My = sum(self.mmy)/len(self.mmy)
+            else:
+                print("Nothing has find, clear noise.")
+                self.Mx = None
+                self.My = None
+                self.mmx = []
+                self.mmy = []
+
+
+    def getData(self):
+        print("Return:", self.Mx, self.My)
+        return self.Mx, self.My, self.frame, self.draw
+            
+            
 class CamThread(threading.Thread):
     def __init__(self, previewName, camID):
         threading.Thread.__init__(self)
@@ -331,6 +382,8 @@ class Process(threading.Thread):
     async def Mount(self):
         Fast.sendGCODE(arduino, "M42 P36 S255")
         pega = True
+        Filter = Hole_Filter()
+        Filter.start()
         self.infoCode = verificaCLP(nano)
         while self.qtd != (self.corretas if self.only else self.rodada) and not intencionalStop and self.infoCode not in stopReasons:
             self.infoCode = verificaCLP(nano)
@@ -356,13 +409,12 @@ class Process(threading.Thread):
                 break
 
             # ------------ Acha as coordenadas parciais do furo ------------ #
-            
             parcialFuro, parafusados = Processo_Hole(None,
                                                      mainParamters['Mask_Parameters']['hole']['areaMin'],
                                                      mainParamters['Mask_Parameters']['hole']['areaMax'],
                                                      mainParamters['Mask_Parameters']['hole']['perimeter'],
                                                      mainParamters['Filtros']['HSV']['hole']['Valores'],
-                                                     ids=self.id, model=self.model, rodada=self.rodada)
+                                                     ids=self.id, model=self.model, rodada=self.rodada, thread=Filter)
             Fast.sendGCODE(arduino, "M42 P34 S0")
             Fast.sendGCODE(arduino, "M42 P33 S255")
 
@@ -370,7 +422,7 @@ class Process(threading.Thread):
             #         # ------------ Verifica se a montagme está ok ------------ #
             self.infoCode = verificaCLP(nano)
             if self.infoCode not in stopReasons and not intencionalStop:
-                if parafusados == 6:
+                if parafusados == len(selected[modelo_atual]):
                     # montar=sum(montar)
                     print("Montagem finalizada.")
                     print("Iniciando processo de validação.")
@@ -439,7 +491,7 @@ class Process(threading.Thread):
                     #await updateMistakes({"round": self.rodada, "failIndex": failIndex}, self.id)
                     await updateMistakes(failIndex, self.rodada)
                     validar = timeit.default_timer()-validar
-                    if encontrados == 6:
+                    if  not any(x in map(int, list(selected[modelo_atual].keys())) for x in failIndex):
                         self.status_estribo = "Certo"
                         self.corretas += 1
                     else:
@@ -462,7 +514,8 @@ class Process(threading.Thread):
             print("update Operation - Finish")
             await descarte(self.status_estribo)
             print(f"{self.cor} ID:{self.id}--> {self.rodada}{Fast.ColorPrint.ENDC}")
-
+            Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, Pega=True)
+        Filter.stop()
         await descarte(self.status_estribo)
         self.terminou = True
 
@@ -979,18 +1032,13 @@ def Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues):
     return Resultados, R, per, img_draw
 
 
-def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model="A", rodada=0):
+def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model="A", rodada=0, thread=None):
     global Analise, modelo_atual, Problema, px2mmEcho
     nome = Fast.randomString()
+    Filter = thread
 
-    faltadeFuro = False
-    repetidos = [1, 4]
-    changePos = False
-    possivelErro = 0
+    first = True
     parafusadas = 0
-    precicao = 0.42
-    Reverse = False
-    vazio = False
     angle = 0
     Pos = []
     Fast.writeJson(f'Json/Analise.json', Analise)
@@ -1006,280 +1054,103 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
         d = datetime.now()
 
         os.makedirs(f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}")
-        os.makedirs(
-            f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/normal")
-        os.makedirs(
-            f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/filtro")
-        os.makedirs(
-            f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha")
+        os.makedirs(f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/normal")
+        os.makedirs(f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/filtro")
+        os.makedirs(f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha")
 
         os.makedirs(f"{path}_{str(d.day)+str(d.month)}/validar/{rodada}")
-        os.makedirs(
-            f"{path}_{str(d.day)+str(d.month)}/validar/{rodada}/normal")
-        os.makedirs(
-            f"{path}_{str(d.day)+str(d.month)}/validar/{rodada}/filtro")
+        os.makedirs(f"{path}_{str(d.day)+str(d.month)}/validar/{rodada}/normal")
+        os.makedirs(f"{path}_{str(d.day)+str(d.month)}/validar/{rodada}/filtro")
         os.makedirs(f"{path}_{str(d.day)+str(d.month)}/validar/{rodada}/falha")
+    #for lados in range(6):
+    def indexs(n , especial=[2,5]):
+        a = "1" if int(n) in especial else "0"
+        return a
+        
+    for lados, angle in selected[modelo_atual].items():
+        if first:
+            index = indexs(lados)
+            analise = Analise[modelo_atual][str(angle)][index]
+            print("Atual", lados, angle, index)
+            print("Normal:", analise["X"], analise["Y"], '\n')
+            Fast.sendGCODE(arduino, f"G0 X{analise['X']+analise['offsetX']} Y{analise['Y']+analise['offsetY']} E{angle} F{yMaxFed}")
+            Fast.M400(arduino)
+            tt = timeit.default_timer()
+            while timeit.default_timer()-tt <= 2:
+                pass
+            first = False
+        Fast.M400(arduino)
+        # tt = timeit.default_timer()
+        # while timeit.default_timer()-tt <= 0.5:
+        #     frame = globals()[
+        #     'frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])]
 
-    for lados in range(6):
+        posicao = Fast.M114(arduino)
 
-        if vazio and lados == 0:
+        # Resultados, R, per, img_draw = Process_Image_Hole(
+        #             frame, areaMin, areaMax, perimeter, HSValues)
+        MX, MY, frame, img_draw = Filter.getData()
+        if MX and MY:
+            # MY = Resultados[0][0]
+            # MX = Resultados[0][1]
+            #MX = Resultados[0]
+            #MY = Resultados[1]
+            for axis in ['X', 'Y']:
+                if axis ==  'Y':
+                    CordenadaCC = analise['Y']
+                    offMM = MY
+                    CordenadaMM = mm2coordinate(CordenadaCC)
+                    CordenadaMM += offMM
+                    CordenadaMMcc = mm2coordinate(CordenadaMM, reverse=True)
+                    offCC = CordenadaMMcc-CordenadaCC 
+                    globals()[f"medMov{model}_{axis}_{angle}_{index}"].recebido = offCC
+                else:
+                    globals()[f"medMov{model}_{axis}_{angle}_{index}"].recebido = MX
+                globals()[f"medMov{model}_{axis}_{angle}_{index}"].atualizaVetor()
+
+            for axis in ['X', 'Y']:
+                print(f"medMov{model}_{axis}_{angle}_{index}>>")
+                if globals()[f"medMov{model}_{axis}_{angle}_{index}"].atualizaMedia():
+                    print(globals()[f"medMov{model}_{axis}_{angle}_{index}"].valores)
+                    print(globals()[f"medMov{model}_{axis}_{angle}_{index}"].media)
+                    analise[f'offset{axis}'] = round(globals()[f"medMov{model}_{axis}_{angle}_{index}"].media, 4)
+
+            Pos.append(posicao)
+            posicao = {
+                'X': -round(cameCent['X']-posicao['X']-MX, 4)+parafCent['X'],
+                'Y': -round(cameCent['Y']-posicao['Y']+mm2coordinate(MY), 4)+parafCent['Y'],
+                'E': posicao['E']
+            }
+                                #Fast.sendGCODE(arduino, f"g0  E{posicao['E']} F{xMaxFed}")
+            Fast.sendGCODE(arduino, f"g0 Y{posicao['Y']} X{posicao['X']} F{yMaxFed}")
+                        
+            Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'],  parafusaCommand['mm'], zFRPD2, zFRPU2)
+            parafusadas += 1
+
+        temp = list(selected[modelo_atual])
+        try:
+            lados = temp[temp.index(lados) + 1]
+            angle = selected[modelo_atual][lados]
+            index = indexs(lados)
+            analise = Analise[modelo_atual][str(angle)][index]
+        except (ValueError, IndexError):
             break
 
-        Fast.M400(arduino)
-        if not intencionalStop and not faltadeFuro:
-            tentativas, dsts = 0, 0
-            Fast.sendGCODE(arduino, "G90")
-
-            indexPos = str(int(changePos))
-            analise = Analise[model][str(angle)][indexPos]
-
-            # Não é aqui
-            if lados == 0:
-                Fast.sendGCODE(
-                    arduino, f"G0 Y{analise['Y']+analise['offsetY']} F{yMaxFed}")
-                #Fast.sendGCODE(arduino, f"^ O PROBLEMA TA ALI 1")
-
-                Fast.sendGCODE(
-                    arduino, f"G0 X{analise['X']+analise['offsetX']} E{str(angle)} F{xMaxFed}")
-
-                Fast.M400(arduino)
-            #precisionTest(0)
-            defaultCoordY = analise['Y']
-            atualCoordY = mm2coordinate(defaultCoordY, reverse=True)
-
-            #Fast.sendGCODE(arduino, "M42 P34 S255")
-            Fast.sendGCODE(arduino, "G91")
-            forceThisY = 0
-
+        Fast.sendGCODE(arduino, f"G0 Y{analise['Y']}, X{analise['X']} E{angle} F{yMaxFed}")  
             
-                          
+        if MX and MY:
+            if globals()["pecaReset"] >= 3:
+                Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, reset=True, Pega=True)
+                globals()["pecaReset"] = 0
+            else:
+                Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, Pega=True)
+        elif DebugPictures:
+            d = datetime.now()
+            cv2.imwrite(
+                f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_NE.jpg", cv2.resize(frame, None, fx=0.3, fy=0.3))
+            cv2.imwrite(
+                f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_FE.jpg", cv2.resize(img_draw, None, fx=0.3, fy=0.3))
 
-            while tentativas <= 10 and not intencionalStop:
-                if possivelErro >= 3 and vazio:
-                    possivelErro = 0
-                    break
-
-                tt = timeit.default_timer()
-                while timeit.default_timer()-tt <= 1:
-                    frame = globals()[
-                    'frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])]
-                    continue
-                # frame = globals()[
-                #     'frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])]
-                #px2mmEcho = None
-                Resultados, R, per, img_draw = Process_Image_Hole(
-                    frame, areaMin, areaMax, perimeter, HSValues)
-
-                # Problema.append(px2mmEcho)
-                # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
-                #                     Verifica a distância                   #
-                if Resultados:
-                    vazio = False
-
-                    #if DebugPictures:
-                    #    d = datetime.now()
-                    #    cv2.imwrite(
-                    #        f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/normal/L{lados}_T{tentativas}.jpg", frame)
-                    #    cv2.imwrite(
-                    #        f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/filtro/L{lados}_T{tentativas}.jpg", img_draw)
-
-                    try:
-                        if DebugPrint:
-                            print("^^"*15)
-                            print(
-                                f"Coordenada atual {defaultCoordY};  {atualCoordY}mm do 0")
-                            print(
-                                "Quer mover", Resultados[dsts][0], "em relação a coordenada atual")
-
-                        MY = Resultados[dsts][0]
-                        MX = Resultados[dsts][1]
-
-                        
-                        #medMovY.recebido = mm2coordinate(MY)
-                        # medMovY.atualizaVetor()
-
-                        #Problema.append({"nome": nome, "lado": lados, "XDst":MX, "YDst":MY })
-                        #cv2.imwrite(f"nm_{nome}__lado_{lados}.jpg", frame)
-
-                        # Calcula quantos mm tem que se mover, e soma com a posição atual, pra saber pra onde deve ir em relação ao zero
-                        if (MY+atualCoordY) >= 0:
-                            yReal = (MY)+atualCoordY
-                        else:
-                            print("Quer mover além do 0")
-                            forceThisY = MY
-                            yReal = 0
-                            MY = 0
-                        if DebugPrint:
-                            print("Ou seja, quer ir para: ", yReal)
-
-                        print(
-                            f"\n AtualCoorY:{atualCoordY}\n MY:{MY}\n yReal:{yReal}\n")
-
-                    except IndexError:
-                        print("Falha de identificação, corrija o filtro..")
-                        break
-                    
-                    # if not DebugDireto:
-                    #     if abs(MY) > precicao or abs(MX) > precicao:
-                    #         yImaginario = mm2coordinate(abs(yReal))
-                    #         defaultCoordY = yImaginario
-                    #         atualCoordY = yReal
-                    #         pp = Fast.M114(arduino)
-                    #         if DebugPrint:
-                    #             print(
-                    #                 f"Devera ir para coordenada {yImaginario}; {atualCoordY}mm em relação ao 0")
-
-                    #         Fast.sendGCODE(arduino, f"G90")
-                    #         Fast.sendGCODE(
-                    #             arduino, f"G0 Y{yImaginario} X{MX+pp['X']} F{int(yMaxFed/2)}", echo=True)
-                    #         Fast.sendGCODE(arduino, f"G91")
-
-                    #     Fast.M400(arduino)
-                    #     tt = timeit.default_timer()
-                    #     while timeit.default_timer() - tt <= 0.5:
-                    #         frame = globals()['frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])]
-                    #         continue
-                    #     #tempo modificado time.sleep(0.5)
-                    #     tentativas += 1
-                        
-                    if DebugPrint:
-                        print("Tentativa:", tentativas)
-
-                    # Caso a precisão em ambos os eixos esteja ok, ou tnha exedido o numero de tentativas.
-                    #abs(MY) <= precicao and abs(MX) <= precicao or 
-                    if tentativas >= 9 or DebugDireto:
-                        #abs(MY) <= precicao and abs(MX) <= precicao or
-                        if  DebugDireto:
-#                            if DebugPictures:
-#                                d = datetime.now()
-#                                cv2.imwrite(
-#                                    f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_T{tentativas}_N.jpg", frame)
-#                                cv2.imwrite(
-#                                    f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_T{tentativas}_F.jpg", img_draw)
-
-                            # Faz os valores ficarem acima do permiido pra evita que entre no loop novamente.z
-                            tentativas = 99
-                            posicao = Fast.M114(arduino)
-                            Pos.append(posicao)
-                            
-                            for axis in ['X', 'Y']:
-                                if axis ==  'Y':
-                                    CordenadaCC = analise['Y']
-                                    offMM = MY
-                                    CordenadaMM = mm2coordinate(CordenadaCC)
-                                    CordenadaMM += offMM
-                                    CordenadaMMcc = mm2coordinate(CordenadaMM, reverse=True)
-                                    offCC = CordenadaMMcc-CordenadaCC 
-                                    globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].recebido = offCC
-                                else:
-                                    globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].recebido = MX
-                                globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].atualizaVetor()
-
-                            for axis in ['X', 'Y']:
-                                print(f"medMov{model}_{axis}_{angle}_{indexPos}>>")
-                                if globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].atualizaMedia():
-                                    print(globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].valores)
-                                    print(globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].media)
-                                    analise[f'offset{axis}'] = round(globals()[f"medMov{model}_{axis}_{angle}_{indexPos}"].media, 4)
-
-                            # Ajusta define a coordenada do centro com base na distância da camera e da parafusadeira
-                            if not DebugDireto:
-                                posicao = {
-                                    'X': -round(cameCent['X']-posicao['X'], 4)+parafCent['X'],
-                                    'Y': -round((cameCent['Y']-posicao['Y'])+forceThisY, 4)+parafCent['Y'],
-                                    'E': posicao['E']
-                                }
-                            else:
-                                posicao = {
-                                    'X': -round(cameCent['X']-posicao['X']-MX, 4)+parafCent['X'],
-                                    'Y': -round(cameCent['Y']-posicao['Y']+mm2coordinate(MY)+forceThisY, 4)+parafCent['Y'],
-                                    'E': posicao['E']
-                                }
-
-                            # Vai até a coordenada
-                            Fast.sendGCODE(arduino, 'g90')
-                            #Fast.sendGCODE(arduino, f"g0  E{posicao['E']} F{xMaxFed}")
-                            Fast.sendGCODE(
-                                arduino, f"g0 Y{posicao['Y']} X{posicao['X']} F{yMaxFed}")
-                            if DebugPrint:
-                                print(
-                                    f"Parafusando em: X{posicao['X']} E{posicao['E']} Y{posicao['Y']} F{xMaxFed}")
-                            # Parafusa
-
-                            Parafusa(
-                                parafusaCommand['Z'], parafusaCommand['voltas'],  parafusaCommand['mm'], zFRPD2, zFRPU2)
-                        
-                            if lados in repetidos:
-                                A = str(angle+90) if changePos and angle != 270 else str(angle)
-                                I = str(int(not changePos))
-                                E = str(angle)
-                                print('\n')
-                                print(f"ATUAL   >> model:{model}, angle:{angle}, index:{indexPos}")
-                                print(f"Proximo >> model:{model}, angle:{str(angle+90) if changePos != False else str(angle)}, index:{str(int(not changePos))}")
-                            else:
-                                print(f"ATUAL   >> model:{model}, angle:{angle}, index:{indexPos}")
-                                print(f"Proximo >> model:{model}, angle:{str(angle+90) }, index:{str(1)}")
-                                A = str(angle+90) if angle != 270 else str(angle)
-                                I = str(int(False))
-                                E = str(angle+90)
-
-                            Y = Analise[model][A][I]['Y']+analise['offsetY']
-                            X = Analise[model][A][I]['X']+analise['offsetX']
-                            Fast.sendGCODE(arduino, f"G0 Y{Y}, X{X} E{E} F{yMaxFed}")  
-                                # Fast.sendGCODE(
-                                #     arduino, f"G0 Y{Analise[model][str(angle+90)][indexPos]['Y']+analise['offsetY']} F{yMaxFed}")
-
-                                # if lados not in repetidos:
-                                #     Fast.sendGCODE(
-                                #         arduino, f"G0 X{Analise[model][str(angle+90)][indexPos]['X']+analise['offsetX']} E{str(angle+90)} F{xMaxFed}")
-                                # else:
-                                #     Fast.sendGCODE(
-                                #         arduino, f"G0 X{Analise[model][str(angle+90)][indexPos]['X']+analise['offsetX']} F{xMaxFed}")
-                                
-                            # else:
-
-                            #     if lados not in repetidos:
-                            #         Fast.sendGCODE(
-                            #             arduino, f"G0 X{analise['X']+analise['offsetX']+analise['offsetX']} Y{analise['Y']+analise['offsetY']} E{angle} F{yMaxFed}")
-                            #     else:
-                            #         Fast.sendGCODE(
-                            #             arduino, f"G0 X{analise['X']+analise['offsetX']+analise['offsetX']} Y{analise['Y']+analise['offsetY']} F{yMaxFed}")
-                            #     Fast.sendGCODE(arduino, f"G0  Y{analise['Y']} F{yMaxFed}")
-
-                            Fast.M400(arduino)
-                            parafusadas += 1
-
-                            if globals()["pecaReset"] >= 3:
-                                Parafusa(
-                                    parafusaCommand['Z'], parafusaCommand['voltas'], 1, reset=True, Pega=True)
-                                globals()["pecaReset"] = 0
-                            elif not DebugPreciso:
-                                Parafusa(
-                                    parafusaCommand['Z'], parafusaCommand['voltas'], 1, Pega=True)
-                        else:
-                            faltadeFuro = True
-                            break
-                    else:
-                        tt = timeit.default_timer()
-                        while timeit.default_timer() - tt <= 0.2:
-                #            frame = globals()['frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])]
-                            continue
-                        #tempo modificado time.sleep(0.2)
-                else:
-                    if DebugPictures:
-                        d = datetime.now()
-                        cv2.imwrite(
-                            f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_T{tentativas}_NE.jpg", cv2.resize(frame, None, fx=0.3, fy=0.3))
-                        cv2.imwrite(
-                            f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_T{tentativas}_FE.jpg", cv2.resize(img_draw, None, fx=0.3, fy=0.3))
-                    vazio = True
-                    tentativas += 1
-                    possivelErro += 1
-
-            changePos = not changePos if lados in repetidos else False
-            if lados not in repetidos:
-                angle += 90
-    Fast.sendGCODE(arduino, f"g90")
     Fast.sendGCODE(arduino, f"G0 E360 F{xMaxFed}")
     return Pos, parafusadas
 
@@ -1644,45 +1515,46 @@ async def startProcess(parm):
 
 async def updateProduction(cicleSeconds, valor):
     global production
+    prodd = production["production"]["productionPartList"][int(modelo_atual)]["production"]
     print("updateProducion")
-    production["production"]["productionPartList"][int(modelo_atual)]["production"]["today"]["total"] += 1
-    production["production"]["productionPartList"][int(modelo_atual)]["production"]["total"]["total"] += 1
+    prodd["today"]["total"] += 1
+    prodd["total"]["total"] += 1
     if valor != "Errado":
         print("Valor Certo")
-        production["production"]["productionPartList"][int(modelo_atual)]["production"]["today"]["rigth"] += 1
-        production["production"]["productionPartList"][int(modelo_atual)]["production"]["total"]["rigth"] += 1
+        prodd["today"]["rigth"] += 1
+        prodd["total"]["rigth"] += 1
 
-        if cicleSeconds < production["production"]["productionPartList"][int(modelo_atual)]["production"]["total"]["timePerCicleMin"]:
-            production["production"]["productionPartList"][int(modelo_atual)]["production"]["total"]["timePerCicleMin"] = cicleSeconds
-        elif cicleSeconds > production["production"]["productionPartList"][int(modelo_atual)]["production"]["total"]["timePerCicleMax"]:
-            production["production"]["productionPartList"][int(modelo_atual)]["production"]["total"]["timePerCicleMax"] = cicleSeconds
+        if cicleSeconds < prodd["total"]["timePerCicleMin"]:
+            prodd["total"]["timePerCicleMin"] = cicleSeconds
+        elif cicleSeconds > prodd["total"]["timePerCicleMax"]:
+            prodd["total"]["timePerCicleMax"] = cicleSeconds
 
-        production["production"]["productionPartList"][int(modelo_atual)]["production"]["today"]["timesPerCicles"].append(
+        prodd["today"]["timesPerCicles"].append(
             cicleSeconds)
         print(">>> ", timer(cicleSeconds))
     elif not intencionalStop:
         print("Valor Errado")
-        production["production"]["productionPartList"][int(modelo_atual)]["production"]["today"]["wrong"] += 1
-        production["production"]["productionPartList"][int(modelo_atual)]["production"]["total"]["wrong"] += 1
+        prodd["today"]["wrong"] += 1
+        prodd["total"]["wrong"] += 1
     current_time = datetime.now()
     print(f"{current_time} vs {int(production['production']['productionPartList'][int(modelo_atual)]['production']['today']['day'])}")
-    if int(production["production"]["productionPartList"][int(modelo_atual)]["production"]["today"]["day"]) != int(current_time.day):
-        production["production"]["productionPartList"][int(modelo_atual)]["production"]["yesterday"] = production["production"]["productionPartList"][int(modelo_atual)]["production"]["today"]
+    if int(prodd["today"]["day"]) != int(current_time.day):
+        prodd["yesterday"] = prodd["today"]
         # Zera o dia de hoje
-        production["production"]["productionPartList"][int(modelo_atual)]["production"]["today"] = {"day": int(
+        prodd["today"] = {"day": int(
             current_time.day), "total": 0, "rigth": 0, "wrong": 0, "timePerCicle": 0, "timesPerCicles": []}
-        production["production"]["productionPartList"][int(modelo_atual)]["production"]["dailyAvarege"]["week_times"].append(
-            production["production"]["productionPartList"][int(modelo_atual)]["production"]["yesterday"]["timePerCicle"])
-        production["production"]["productionPartList"][int(modelo_atual)]["production"]["dailyAvarege"]["week_total"].append(
-            production["production"]["productionPartList"][int(modelo_atual)]["production"]["yesterday"]["total"])
-        production["production"]["productionPartList"][int(modelo_atual)]["production"]["dailyAvarege"]["week_rigth"].append(
-            production["production"]["productionPartList"][int(modelo_atual)]["production"]["yesterday"]["rigth"])
-        production["production"]["productionPartList"][int(modelo_atual)]["production"]["dailyAvarege"]["week_wrong"].append(
-            production["production"]["productionPartList"][int(modelo_atual)]["production"]["yesterday"]["wrong"])
-        week_time = production["production"]["productionPartList"][int(modelo_atual)]["production"]["dailyAvarege"]["week_times"]
-        week_total = production["production"]["productionPartList"][int(modelo_atual)]["production"]["dailyAvarege"]["week_total"]
-        week_rigth = production["production"]["productionPartList"][int(modelo_atual)]["production"]["dailyAvarege"]["week_rigth"]
-        week_wrong = production["production"]["productionPartList"][int(modelo_atual)]["production"]["dailyAvarege"]["week_wrong"]
+        prodd["dailyAvarege"]["week_times"].append(
+            prodd["yesterday"]["timePerCicle"])
+        prodd["dailyAvarege"]["week_total"].append(
+            prodd["yesterday"]["total"])
+        prodd["dailyAvarege"]["week_rigth"].append(
+            prodd["yesterday"]["rigth"])
+        prodd["dailyAvarege"]["week_wrong"].append(
+            prodd["yesterday"]["wrong"])
+        week_time = prodd["dailyAvarege"]["week_times"]
+        week_total = prodd["dailyAvarege"]["week_total"]
+        week_rigth = prodd["dailyAvarege"]["week_rigth"]
+        week_wrong = prodd["dailyAvarege"]["week_wrong"]
         appends = {"times": week_time, "total": week_total,
                    "rigth": week_rigth, "wrong": week_wrong}
         if week_time:
@@ -1691,12 +1563,12 @@ async def updateProduction(cicleSeconds, valor):
                     v.pop(0)
                 media = round(sum(v) / len(v), 1)
                 print(k, v, media)
-                production["production"]["productionPartList"][int(modelo_atual)]["production"]["dailyAvarege"][k] = media
+                prodd["dailyAvarege"][k] = media
 
-    valores = production["production"]["productionPartList"][int(modelo_atual)]["production"]["today"]["timesPerCicles"]
+    valores = prodd["today"]["timesPerCicles"]
     if valores:
         media = round(sum(valores) / len(valores), 1)
-        production["production"]["productionPartList"][int(modelo_atual)]["production"]["today"]["timePerCicle"] = media
+        prodd["today"]["timePerCicle"] = media
     print("Escrevendo")
     Fast.writeJson('Json/production.json', production)
     await sendWsMessage("update", production)
@@ -1813,9 +1685,9 @@ if __name__ == "__main__":
     globals()["tempFileFilter"] = mainParamters["Filtros"]["HSV"]
     globals()["pecaReset"] = 0
     modelo_atual = "1"
-    selected = {
-        "0":{"1":0},
-        "1":{"3":180, "5":270}
+    selected= {
+        "0":{"0":0, "1":90, "2":90, "3":180},
+        "1":{"1":90, "2":90, "4":270, "5":270}
     }
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Json-Variables                        #
