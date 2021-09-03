@@ -4,7 +4,7 @@
     <v-card class="mx-auto">
       <div class="pa-3">
         <v-row>
-          <div class="text--secondary ml-3 mb-6">{{ title }}</div>
+          <div class="text--secondary ml-3 mb-6">Tempo produção de <b>hoje</b> por peça</div>
           <v-spacer></v-spacer>
           <DropdownData @selected-item="selectedArray"></DropdownData>
         </v-row>
@@ -70,12 +70,9 @@ export default {
     dataSeries: null,
     icon: null,
     number: 6,
-    title: "Tempo produção de hoje por peça",
     unit: "peças",
     sampleGender: 1,
     intervalDays: 7,
-    selectedDataSet: 0,
-
     chartOptions: {
       colors: ["#2E93fA"],
       fill: {},
@@ -153,20 +150,13 @@ export default {
 
       if (!this.dataSeries) {
         data[0].data = this.allParts.production.today.timesPerCicles;
-        console.log("data1", data);
+        // console.log("data1", data);
       } else {
         data[0].data = this.dataSeries.production.today.timesPerCicles;
-        console.log("data2", data);
-
-        // data = [
-        //   {
-        //     name: "Total",
-        //     data: this.dataSeries.production.today.timesPerCicles,
-        //   },
-        // ];
+        // console.log("data2", data);
       }
 
-      console.log("ultima data: ", data[0].data);
+      // console.log("ultima data: ", data[0].data);
       this.chartOptions.yaxis.min = Math.min(...data[0].data) - 15;
       this.chartOptions.yaxis.max = Math.max(...data[0].data) + 15;
 
@@ -178,13 +168,13 @@ export default {
 
       if (!this.dataSeries) {
         data = this.allParts;
-        console.log("data1 info", data);
+        // console.log("data1 info", data);
       } else {
         data = this.dataSeries;
-        console.log("data2 info", data);
+        // console.log("data2 info", data);
       }
 
-      console.log("infolist: ", data);
+      // console.log("infolist: ", data);
 
       let list = [
         {
