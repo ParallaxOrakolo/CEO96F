@@ -83,7 +83,7 @@
                   parameter: stopReasonsMessage(reason.code),
                 });
                 overlay = false;
-                state.operation.finished = true
+                state.operation.finished = true;
               }
             "
           >
@@ -110,7 +110,7 @@
 
 <script>
 //import ProgressStatus from "../components/ProgressStatus";
-import { mapGetters, mapMutations } from "vuex";
+import { MapperForStateWithNamespace, mapMutations, mapState } from "vuex";
 import { actions } from "../store/index";
 import VideoProgress from "../components/VideoProgress";
 import StartButton from "../components/StartButton";
@@ -134,19 +134,23 @@ export default {
   },
 
   computed: {
-    ...mapGetters(["state"]),
+    ...mapState({
+      operation: (state) => state.operation,
+      state: (state) => state,
+    }),
 
-    numberParts() {
-      console.log("next page");
-      if (this.state.operation.finished)
+    numberParts: function () {
+      if (this.operation.finished) {
         this.$router.push({ path: "/success" }).catch(() => {});
-
-      if (this.state.operation.total) {
-        return (
-          this.state.operation.placed + " de " + this.state.operation.total
-        );
+      }
+      if (this.operation.total) {
+        return this.operation.placed + " de " + this.operation.total;
       } else {
-        return this.state.operation.placed + " de infinitas";
+        if (this.operation.onlyCorrectParts) {
+          return this.operation.placed + " de infinitas";
+        } else {
+          this.operation.right + this.operation.wrong + " de infinitas";
+        }
       }
     },
   },

@@ -1,8 +1,10 @@
 <template>
   <v-expansion-panel>
-    <v-expansion-panel-header><div>
+    <v-expansion-panel-header
+      ><div>
         <v-icon class="mr-2">mdi-screwdriver</v-icon>Definições de montagem
-      </div></v-expansion-panel-header>
+      </div></v-expansion-panel-header
+    >
     <v-expansion-panel-content>
       <v-divider></v-divider>
       <div class="mt-3 d-flex align-center justify-center">
@@ -23,38 +25,39 @@
           <div class="text-h5">Escolha quais parafusos serão montados</div>
         </div>
         <div class="img">
-<transition name="fade">
-          <v-img
-            :src="
-              require(`@/assets/img/${configuration.assembly.listOfParts[selectedPart].frontImg}`)
-            "
-            max-width="350"
-            contain
-            :key="configuration.assembly.listOfParts[selectedPart].frontImg"
-          >
-            <div
-              v-for="item in configuration.assembly.listOfParts[selectedPart]
-                .listOfHoles"
-              :key="item.index"
+          <transition name="fade">
+            <v-img
+              :src="
+                require(`@/assets/img/${configuration.assembly.listOfParts[selectedPart].frontImg}`)
+              "
+              max-width="350"
+              contain
+              :key="configuration.assembly.listOfParts[selectedPart].frontImg"
             >
-              <v-checkbox
-                :style="item.checkboxPosition"
-                class="checkbox"
-                v-model="item.mount"
-                color="red"
-                hide-details
-                @click="
-                  () => {
-                    SEND_MESSAGE({
-                      command: actions.UPDATE_ASSEMBLY,
-                      parameter: configuration.assembly,
-                    });
-                    selectedPart = item.index;                  }
-                "
-              ></v-checkbox>
-            </div> 
-          </v-img>
-        </transition>
+              <div
+                v-for="item in configuration.assembly.listOfParts[selectedPart]
+                  .listOfHoles"
+                :key="item.index"
+              >
+                <v-checkbox
+                  :style="item.checkboxPosition"
+                  class="checkbox"
+                  v-model="item.mount"
+                  color="red"
+                  hide-details
+                  @click="
+                    () => {
+                      SEND_MESSAGE({
+                        command: actions.UPDATE_ASSEMBLY,
+                        parameter: configuration.assembly,
+                      });
+                      selectedPart = item.index;
+                    }
+                  "
+                ></v-checkbox>
+              </div>
+            </v-img>
+          </transition>
         </div>
       </div>
     </v-expansion-panel-content>
@@ -71,7 +74,7 @@ export default {
   components: {},
   name: "Assembly",
   data: () => ({
-          actions,
+    actions,
     imgUrlSelected: "",
     selectedPart: 0,
   }),
@@ -106,19 +109,19 @@ export default {
 //   width: 50px;
 // }
 
-.img{
+.img {
   height: 100%;
 }
 
-.img2{
-height: 150px;
+.img2 {
+  height: 150px;
 }
-.title{
+.title {
   min-width: 120px;
 }
-.wrap{
-  min-height: 300px;}
-
+.wrap {
+  min-height: 300px;
+}
 
 .checkbox {
   position: absolute;

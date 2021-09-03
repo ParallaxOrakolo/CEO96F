@@ -68,10 +68,11 @@
                       command: actions.START_PROCESS,
                       parameter: {
                         total: 99999,
-                        onlyCorrectParts: onlyCorrectParts,
+                        onlyCorrectParts: state.operation.onlyCorrectParts,
                         partId: selectedPart,
-                      },
-                    });
+                      }
+                    },
+                    );
                     //startStatusChage
                     dialog = false;
                     state.operation.total = 0;
@@ -136,7 +137,7 @@
                           command: actions.START_PROCESS,
                           parameter: {
                             total: state.operation.total,
-                            onlyCorrectParts: onlyCorrectParts,
+                            onlyCorrectParts: state.operation.onlyCorrectParts,
                             partId: selectedPart,
                           }, // Change selection -> state.operation.total -HB
                         });
@@ -153,7 +154,7 @@
 
                 <v-row class="ml-n16 d-flex justify-center" v-if="selection">
                   <v-checkbox
-                    v-model="onlyCorrectParts"
+                    v-model="state.operation.onlyCorrectParts"
                     label="Considerar apenas peças corretas"
                     color="orange"
                     hide-details
@@ -194,7 +195,7 @@ export default {
 
   data: () => ({
     selectedPart: 1,
-    onlyCorrectParts: true,
+    // onlyCorrectParts: true,
     selection: false,
     actions,
     dialog: false,

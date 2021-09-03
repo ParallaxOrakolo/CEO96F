@@ -26,14 +26,14 @@
         ></Total-card>
       </v-col>
     </v-row>
-    <v-row>  <v-col cols="card.flex"> <ProductionAverageChartCard></ProductionAverageChartCard> </v-col>  </v-row>
-    <v-row>  <v-col cols="card.flex"> <TimeLineChartCard></TimeLineChartCard> </v-col>  </v-row>
+     <!-- <v-row>  <v-col cols="card.flex"> <ProductionAverageChartCard></ProductionAverageChartCard> </v-col>  </v-row> -->
+    <v-row><v-col cols="card.flex"> <TimeLineChartCard></TimeLineChartCard></v-col></v-row>
   </v-container>
 </template>
 
 <script>
 //import ProgressStatus from "../components/ProgressStatus";
-import { mapGetters, mapMutations } from "vuex";
+import { mapState, mapMutations } from "vuex";
 import { actions } from "../store/index";
 import TotalCard from "../components/dashboard/TotalCard.vue";
 import ProductionAverageChartCard from "../components/dashboard/ProductionAverageChartCard.vue";
@@ -54,13 +54,13 @@ export default {
   components: {
     TotalCard,
     ProductionAverageChartCard,
-    TimeLineChartCard
+    TimeLineChartCard,
   },
 
   computed: {
-    ...mapGetters(["state"]),
-
-    allParts:()=> this.state.production.allParts.production
+    ...mapState({
+      allParts: state => state.production.allParts.production
+      }),
   },
 
   methods: {
