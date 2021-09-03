@@ -26,8 +26,8 @@
         ></Total-card>
       </v-col>
     </v-row>
-    <!-- <v-row>  <v-col cols="card.flex"> <ProductionAverageChartCard></ProductionAverageChartCard> </v-col>  </v-row>
-    <v-row>  <v-col cols="card.flex"> <TimeLineChartCard></TimeLineChartCard> </v-col>  </v-row> -->
+     <!-- <v-row>  <v-col cols="card.flex"> <ProductionAverageChartCard></ProductionAverageChartCard> </v-col>  </v-row> -->
+    <v-row><v-col cols="card.flex"> <TimeLineChartCard></TimeLineChartCard></v-col></v-row>
   </v-container>
 </template>
 
@@ -54,16 +54,13 @@ export default {
   components: {
     TotalCard,
     ProductionAverageChartCard,
-    TimeLineChartCard
+    TimeLineChartCard,
   },
 
   computed: {
-    ...mapState(["production"]),
-
-    allParts:()=> {
-      this.production.allParts.production
-      console.log(this.production);
-      }
+    ...mapState({
+      allParts: state => state.production.allParts.production
+      }),
   },
 
   methods: {
