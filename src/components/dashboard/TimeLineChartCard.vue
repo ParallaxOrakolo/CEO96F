@@ -73,6 +73,7 @@ export default {
     unit: "peças",
     sampleGender: 1,
     intervalDays: 7,
+    selectedDataSet: 0,
     chartOptions: {
       colors: ["#2E93fA"],
       fill: {},

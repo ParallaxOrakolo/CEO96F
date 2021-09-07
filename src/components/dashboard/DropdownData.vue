@@ -50,7 +50,7 @@ export default {
           let concatenatedArray=[]
           concatenatedArray = state.production.productionPartList
           concatenatedArray = concatenatedArray.concat([state.production.allParts])
-          console.log(concatenatedArray);
+          // console.log(concatenatedArray);
           return concatenatedArray
       },
       defaultArrayName: state => state.production.allParts.name
@@ -61,7 +61,7 @@ export default {
       select(selectedItem){
           this.selectedArray = selectedItem
           this.$emit('selected-item', selectedItem)
-          console.log(selectedItem);
+          // console.log(selectedItem);
       }
   },
 };

@@ -68,7 +68,11 @@ export default {
     sampleGender: 1,
     intervalDays: 7,
     chartOptions: {
-      colors: ["#81C784", "#E57373"],
+      
+      stroke: {
+        curve: "smooth",
+      },
+      colors: ["#E57373", "#81C784"],
       plotOptions: {
         bar: {
           horizontal: false,
@@ -78,7 +82,7 @@ export default {
 
       chart: {
         height: 400,
-        type: "bar",
+        // type: "gradient",
         stacked: true,
 
         toolbar: {
@@ -102,6 +106,7 @@ export default {
       xaxis: {
         type: "datetime",
         categories: [],
+        tickPlacement: "on",
       },
 
       tooltip: {
@@ -144,30 +149,39 @@ export default {
 
       let serie = [
         {
-          name: "Certas",
+          name: "Erradas",
+          type: "column",
           data: [],
         },
         {
-          name: "Erradas",
+          name: "Certas",
+          type: "column",
+
           data: [],
         },
       ];
 
-      serie[0].data = data.production.dailyAvarege.week_rigth.slice(0).reverse()
-      serie[1].data = data.production.dailyAvarege.week_wrong.slice(0).reverse()
+      
+      serie[0].data = data.production.dailyAvarege.week_wrong
+        .slice(0)
+        .reverse();
+      serie[1].data = data.production.dailyAvarege.week_total
+        .slice(0)
+        .reverse();
       // this.series[0].data = this.state.production.dailyAvarege.week_total.slice(0).reverse();
       // this.series[1].data = this.state.production.dailyAvarege.week_rigth.slice(0).reverse();
       // this.series[2].data = this.state.production.dailyAvarege.week_wrong.slice(0).reverse();
-
+      this.chartOptions.xaxis.categories = [];
       for (var i = 0; i < this.intervalDays; i++) {
         var result = new Date();
-        result.setDate(result.getDate() - this.intervalDays +i );
+        result.setDate(result.getDate() - this.intervalDays + i);
         result = result.getTime();
+
         this.chartOptions.xaxis.categories.push(result);
         // console.log(this.chartOptions.xaxis.categories);
-        console.log((new Date(result)).getDate() );
+        console.log(new Date(result).getDate());
       }
-  
+
       console.log("series: ", serie);
       return serie;
     },
@@ -218,7 +232,6 @@ export default {
   },
 
   methods: {
-
     selectedArray(event) {
       this.dataSeries = event;
       console.log("event: ", event);
@@ -242,7 +255,6 @@ export default {
           // console.log(this.series[0].data);
         }
 
-  
         console.log(this.series);
       }, 1000);
     },
