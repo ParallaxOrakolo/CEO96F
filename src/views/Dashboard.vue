@@ -26,7 +26,7 @@
         ></Total-card>
       </v-col>
     </v-row>
-     <!-- <v-row>  <v-col cols="card.flex"> <ProductionAverageChartCard></ProductionAverageChartCard> </v-col>  </v-row> -->
+     <v-row>  <v-col cols="card.flex"> <ProductionAverageChartCard></ProductionAverageChartCard> </v-col>  </v-row>
     <v-row><v-col cols="card.flex"> <TimeLineChartCard></TimeLineChartCard></v-col></v-row>
   </v-container>
 </template>

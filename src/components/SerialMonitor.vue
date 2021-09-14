@@ -39,7 +39,7 @@
         :key="item.text"
         link
         @click="sendChip(item.sendDirect, item.command)"
-        >{{ item.text }}{{ item.sendDirect ? " +" : "" }}</v-chip
+        >{{ item.text }}{{ item.sendDirect ? "" : "+" }}</v-chip
       >
     </div>
     <div class="textArea" ref="textArea">
@@ -204,7 +204,8 @@ export default {
         this.selectedItemCommandList = this.sendCommandList.length;
         this.clearMessage();
       }
-      setTimeout(()=> this.scrollToEnd(), 200);
+      setTimeout(()=> this.scrollToEnd(), 200)
+      this.setFocus();
     },
 
     setFocus() {
@@ -214,7 +215,7 @@ export default {
     sendChip(sendDirect, command) {
       this.message = command;
 
-      if (!sendDirect) {
+      if (sendDirect) {
         this.send();
       } else {
         this.setFocus();

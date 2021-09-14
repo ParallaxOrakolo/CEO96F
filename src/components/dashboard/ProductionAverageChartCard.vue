@@ -3,7 +3,9 @@
     <v-card class="mx-auto" v-if="series[0].data">
       <div class="pa-3">
         <v-row>
-          <div class="text--secondary ml-3 mb-4">{{ title }}</div>
+          <div class="text--secondary ml-3 mb-6">{{ title }}</div>
+          <v-spacer></v-spacer>
+          <DropdownData @selected-item="selectedArray"></DropdownData>
         </v-row>
         <v-row>
           <div class="pr-5 pl-3 d-flex justify-space-around statistics">
@@ -33,7 +35,6 @@
         <template>
           <div>
             <apexchart
-              ref="sampleGender"
               type="bar"
               height="350"
               :options="chartOptions"
@@ -47,44 +48,41 @@
 </template>
 
 <script>
-//import ProgressStatus from "../components/ProgressStatus";
-import { mapGetters } from "vuex";
-// import VideoProgress from "../components/VideoProgress"; Remove VideoProgress
+import { mapState } from "vuex";
+import DropdownData from "@/components/dashboard/DropdownData.vue";
 
 export default {
   // mixins: [mixins],
   name: "ProductionAverageChartCard",
+
+  components: {
+    DropdownData,
+  },
+
   data: () => ({
+    dataSeries: null,
     icon: null,
     number: 6,
     title: "Média Total Produção Diaria",
     unit: "peças",
     sampleGender: 1,
     intervalDays: 7,
-    
-
     chartOptions: {
-       colors: [ "#81C784", "#E57373"],
-      //  colors: ["#2E93fA", "#81C784", "#E57373"],
-      // fill: {
-      //   type: "gradient",
-      // },
-      // markers: {
-      //   size: 6,
-      //   hover: {
-      //     size: 9,
-      //   },
-      // },
+      
+      stroke: {
+        curve: "smooth",
+      },
+      colors: ["#E57373", "#81C784"],
       plotOptions: {
         bar: {
           horizontal: false,
-          borderRadius: 10,
+          borderRadius: 8,
         },
       },
 
       chart: {
         height: 400,
-        type: "bar",
+        // type: "gradient",
         stacked: true,
 
         toolbar: {
@@ -96,10 +94,6 @@ export default {
         },
       },
 
-      //  fill: {
-      //     opacity: 1
-      //   },
-
       dataLabels: {
         enabled: false,
         background: {
@@ -108,13 +102,11 @@ export default {
           borderWidth: 3,
         },
       },
-      // stroke: {
-      //   curve: "smooth",
-      // },
 
       xaxis: {
         type: "datetime",
         categories: [],
+        tickPlacement: "on",
       },
 
       tooltip: {
@@ -136,74 +128,101 @@ export default {
   //   icon: String,
   // },
 
- 
-
   computed: {
-    ...mapGetters(["state"]),
-    // week_total: function () {
-    //   this.series[0].data = this.state.production.dailyAvarege.week_total;
-    // },
+    // ...mapGetters(["state"]),
 
-    series: function() {
-      let list = [
-        {
-          name: "Certas",
-          data: [],
-        },
+    ...mapState({
+      allParts: (state) => state.production.allParts,
+      productionPartList: (state) => state.production.productionPartList,
+    }),
+
+    series: function () {
+      let data;
+
+      if (!this.dataSeries) {
+        data = this.allParts;
+        // console.log("data1 info", data);
+      } else {
+        data = this.dataSeries;
+        // console.log("data2 info", data);
+      }
+
+      let serie = [
         {
           name: "Erradas",
+          type: "column",
           data: [],
         },
-      ]
+        {
+          name: "Certas",
+          type: "column",
 
-      console.log(this.state)
+          data: [],
+        },
+      ];
 
-      // list[0].data = this.state.production.dailyAvarege.week_rigth.slice(0).reverse()
-      // list[1].data = this.state.production.dailyAvarege.week_wrong.slice(0).reverse()
-      // // this.series[0].data = this.state.production.dailyAvarege.week_total.slice(0).reverse();
-      // // this.series[1].data = this.state.production.dailyAvarege.week_rigth.slice(0).reverse();
-      // // this.series[2].data = this.state.production.dailyAvarege.week_wrong.slice(0).reverse();
+      
+      serie[0].data = data.production.dailyAvarege.week_wrong
+        .slice(0)
+        .reverse();
+      serie[1].data = data.production.dailyAvarege.week_total
+        .slice(0)
+        .reverse();
+      // this.series[0].data = this.state.production.dailyAvarege.week_total.slice(0).reverse();
+      // this.series[1].data = this.state.production.dailyAvarege.week_rigth.slice(0).reverse();
+      // this.series[2].data = this.state.production.dailyAvarege.week_wrong.slice(0).reverse();
+      this.chartOptions.xaxis.categories = [];
+      for (var i = 0; i < this.intervalDays; i++) {
+        var result = new Date();
+        result.setDate(result.getDate() - this.intervalDays + i);
+        result = result.getTime();
 
-      // for (var i = 0; i < 7; i++) {
-      //   var result = new Date();
-      //   result.setDate(result.getDate() - i - 1);
-      //   result = result.getTime();
-      //   this.chartOptions.xaxis.categories.push(result);
-      //   // console.log(this.chartOptions.xaxis.categories);
-      //   // console.log(this.series[0].data);
-      // }
-        
+        this.chartOptions.xaxis.categories.push(result);
+        // console.log(this.chartOptions.xaxis.categories);
+        console.log(new Date(result).getDate());
+      }
 
-    return list
+      console.log("series: ", serie);
+      return serie;
     },
 
     infoList: function () {
+      let data;
+
+      if (!this.dataSeries) {
+        data = this.allParts;
+        // console.log("data1 info", data);
+      } else {
+        data = this.dataSeries;
+        // console.log("data2 info", data);
+      }
+
       let list = [
         {
           text: "Total",
           unit: "",
-          number: this.state.production.dailyAvarege.total,
+          number: data.production.dailyAvarege.total,
           icon: "mdi-chart-timeline-variant",
           color: "blue lighten-2",
         },
         {
           text: "Certas",
           unit: "",
-          number: this.state.production.dailyAvarege.rigth,
+          number: data.production.dailyAvarege.rigth,
           icon: "mdi-check",
           color: "green lighten-2",
         },
         {
           text: "Erradas",
           unit: "",
-          number: this.state.production.dailyAvarege.wrong,
+          number: data.production.dailyAvarege.wrong,
           icon: "mdi-close",
           color: "red lighten-2",
         },
         {
           text: "Tempo médio",
           unit: "s",
-          number: this.state.production.dailyAvarege.times.toFixed(1),
+          number: data.production.dailyAvarege.times.toFixed(1),
           icon: "mdi-timer-outline",
           color: "blue lighten-2",
         },
@@ -213,6 +232,11 @@ export default {
   },
 
   methods: {
+    selectedArray(event) {
+      this.dataSeries = event;
+      console.log("event: ", event);
+    },
+
     updateChart() {
       setTimeout(() => {
         this.series[0].data = this.state.production.dailyAvarege.week_total;
@@ -222,7 +246,7 @@ export default {
         // this.series[1].data = this.state.production.dailyAvarege.week_rigth.slice(0).reverse();
         // this.series[2].data = this.state.production.dailyAvarege.week_wrong.slice(0).reverse();
 
-        for (var i = 0; i < 7; i++) {
+        for (var i = 0; i < this.intervalDays; i++) {
           var result = new Date();
           result.setDate(result.getDate() - i - 1);
           result = result.getTime();
@@ -231,8 +255,6 @@ export default {
           // console.log(this.series[0].data);
         }
 
-        this.$refs.sampleGender = i;
-        window.dispatchEvent(new Event("resize"));
         console.log(this.series);
       }, 1000);
     },

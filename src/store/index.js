@@ -453,7 +453,7 @@ const store = new Vuex.Store({
       );
 
       wsConnection.onmessage = function (event) {
-        console.log("Recebido:");
+        console.log("%c Recebido:", 'color: #51a4f7')
         console.log(event.data);
         // state.message = JSON.parse(event.data);
         // state.message = JSON.parse(event.data);
@@ -572,8 +572,9 @@ const store = new Vuex.Store({
     SEND_MESSAGE: (state, payload) => {
       state.ws_message.command = payload.command;
       state.ws_message.parameter = payload.parameter;
-      wsConnection.send(JSON.stringify(state.ws_message));
-      console.log("Enviado: " + JSON.stringify(state.ws_message));
+      wsConnection.send(JSON.stringify(state.ws_message));      
+      console.log("%c Enviado:", 'color: #bada55');
+      console.log(JSON.stringify(state.ws_message, null, 2));
     },
 
     START: (state) => {
