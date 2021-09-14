@@ -44,7 +44,8 @@ operation = {
         "placed": 0,
         "right": 0,
         "wrong": 0,
-        "finished": False
+        "finished": False,
+        "onlyCorrectParts": False
     },
 }
 
@@ -126,7 +127,6 @@ class Hole_Filter(threading.Thread):
                 self.Mx = sum(self.mmx)/len(self.mmx)
                 self.My = sum(self.mmy)/len(self.mmy)
             else:
-                print("Nothing has find, clear noise.")
                 self.Mx = None
                 self.My = None
                 self.mmx = []
@@ -391,14 +391,14 @@ class Process(threading.Thread):
             self.rodada += 1
 
             Fast.sendGCODE(arduino, "M42 P33 S0")
-            Fast.sendGCODE(arduino, "M42 P34 S255")
+            Fast.sendGCODE(arduino, "M42 P34 S255") #desativado-ruido
 
             self.status_estribo = "Errado"
             # ------------ Vai ate tombador e pega ------------ #
             try:
                 if pega:
-                    while verificaCLP(nano) == 10:
-                        continue
+                    # while verificaCLP(nano) == 10:
+                    #     continue
                         #time.sleep(0.5)
                     PegaObjeto()
                 if DebugPreciso:
@@ -416,7 +416,7 @@ class Process(threading.Thread):
                                                      mainParamters['Filtros']['HSV']['hole']['Valores'],
                                                      ids=self.id, model=self.model, rodada=self.rodada, thread=Filter)
             Fast.sendGCODE(arduino, "M42 P34 S0")
-            Fast.sendGCODE(arduino, "M42 P33 S255")
+            Fast.sendGCODE(arduino, "M42 P33 S255") #desativado-ruido
 
             globals()["pecaReset"] += 1
             #         # ------------ Verifica se a montagme está ok ------------ #
@@ -430,7 +430,7 @@ class Process(threading.Thread):
                         'machine']['defaultPosition']['validaParafuso']
 
                     Fast.sendGCODE(arduino, "G90")
-                    Fast.sendGCODE(arduino, f"G0 X{ValidaPos['X']} Y{ValidaPos['Y']}  E360 f{xMaxFed}")
+                    Fast.sendGCODE(arduino, f"G0 X{ValidaPos['X']} Y{ValidaPos['Y']} A360 f{yMaxFed}")
                     Fast.M400(arduino)
 
                     # Fast.sendGCODE(arduino, "M42 P34 S0")      #aaaaaaaax
@@ -438,12 +438,12 @@ class Process(threading.Thread):
 
                     #Fast.sendGCODE(arduino, "G28 Y") #aqui
 
-                    #Fast.sendGCODE(arduino, f"G0 E{ValidaPos['E']}, f{eMaxFed}")
+                    #Fast.sendGCODE(arduino, f"G0 E{ValidaPos['A']}, f{eMaxFed}")
                     #Fast.M400(arduino)
 
                     validar = timeit.default_timer()
                     tt = timeit.default_timer()
-                    while timeit.default_timer() - tt <= 1.5:
+                    while timeit.default_timer() - tt <= 2.5:
                         frame = globals()[
                             'frame'+str(mainParamters["Cameras"]["screw"]["Settings"]["id"])]
                     #tempo modificado
@@ -489,7 +489,7 @@ class Process(threading.Thread):
 
                     print("Depois")
                     #await updateMistakes({"round": self.rodada, "failIndex": failIndex}, self.id)
-                    await updateMistakes(failIndex, self.rodada)
+                    #await updateMistakes(failIndex, self.rodada)
                     validar = timeit.default_timer()-validar
                     if  not any(x in map(int, list(selected[modelo_atual].keys())) for x in failIndex):
                         self.status_estribo = "Certo"
@@ -536,7 +536,6 @@ class Process(threading.Thread):
                 await logRequest(item)
                 await sendWsMessage("error", item)
         print(f"{self.cor} ID:{self.id}--> POS Mount Finish{Fast.ColorPrint.ENDC}")
-
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Functions                                                         #
 
@@ -821,12 +820,13 @@ def mm2coordinate(x, c=160, aMin=148.509, reverse=False):
 
 def HomingAll():
     Fast.sendGCODE(arduino, "G28 Y")
-    Fast.sendGCODE(arduino, "G28 X")
-    Fast.G28(arduino, offset=-28)
-    Fast.sendGCODE(arduino, "G28 Z")
-    Fast.sendGCODE(arduino, "G92 X0 Y0 Z0 E0")
+    Fast.sendGCODE(arduino, "G28 XAZ")
+    Fast.sendGCODE(arduino, "G0 A324 F50000")
+    #Fast.G28(arduino, offset=-28)
+    #Fast.sendGCODE(arduino, "G28 Z")
+    Fast.sendGCODE(arduino, "G92 X0 Y0 Z0 A0")
     Fast.sendGCODE(arduino, "G92.1")
-    Fast.sendGCODE(arduino, "M17 X Y Z E")
+    Fast.sendGCODE(arduino, "M17 X Y Z A")
     #Parafusa(132, mm=5, voltas=20)
     Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, Pega=True)
 
@@ -872,7 +872,7 @@ def Parafusa(pos, voltas=2, mm=0, ZFD=100, ZFU=100, dowLess=False, reset=False, 
     Fast.sendGCODE(arduino, f'g0 z{mm} F{zMaxFedUp}')
 
     if not DebugPreciso:
-        Fast.sendGCODE(arduino, f"M42 p32 s255")
+        Fast.sendGCODE(arduino, f"M42 p32 s255") #desativado-ruido
         t0 = timeit.default_timer()
 
         while timeit.default_timer() - t0 < (voltas*40/500 if not Pega else voltas*40/3000):
@@ -897,11 +897,10 @@ async def descarte(valor="Errado", Deposito={"Errado": {"X": 230, "Y": 0}}):
     if not DebugPreciso:
         pos = machineParamters["configuration"]["informations"]["machine"]["defaultPosition"]["descarte"+valor]
         Fast.sendGCODE(arduino, f"G90")
-        Fast.sendGCODE(arduino, f"G0 Y{pos['Y']} f{yMaxFed}")
-        Fast.sendGCODE(arduino, f"G0 X{pos['X']} f{xMaxFed}")
+        Fast.sendGCODE(arduino, f"G0 X{pos['X']} Y{pos['Y']} f{yMaxFed}")
         Fast.M400(arduino)
         Fast.sendGCODE(arduino, "M42 P31 S0")
-        Fast.sendGCODE(arduino, f"G0 E0 f{eMaxFed}")
+        Fast.sendGCODE(arduino, f"G0 A0 f{eMaxFed}")
 #    Fast.M400(arduino)
 #    Fast.sendGCODE(arduino, f"G28 Y")
         cicleSeconds = round(timeit.default_timer()-Total0, 1)
@@ -928,7 +927,7 @@ def PegaObjeto():
     pegaPos = machineParamters['configuration']['informations']['machine']['defaultPosition']['pegaTombador']
     Total0 = timeit.default_timer()
     Fast.sendGCODE(arduino, "G90")
-    Fast.sendGCODE(arduino, f"G0 X{pegaPos['X']} E0 F{xMaxFed}")
+    Fast.sendGCODE(arduino, f"G0 X{pegaPos['X']} A0 F{xMaxFed}")
     Fast.sendGCODE(arduino, f"G0 Y{pegaPos['Y']} F{yMaxFed}")
     Fast.M400(arduino)
     Fast.sendGCODE(arduino, "M42 P31 S255")
@@ -1073,7 +1072,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             analise = Analise[modelo_atual][str(angle)][index]
             print("Atual", lados, angle, index)
             print("Normal:", analise["X"], analise["Y"], '\n')
-            Fast.sendGCODE(arduino, f"G0 X{analise['X']+analise['offsetX']} Y{analise['Y']+analise['offsetY']} E{angle} F{yMaxFed}")
+            Fast.sendGCODE(arduino, f"G0 X{analise['X']+analise['offsetX']} Y{analise['Y']+analise['offsetY']} A{angle} F{yMaxFed}")
             Fast.M400(arduino)
             tt = timeit.default_timer()
             while timeit.default_timer()-tt <= 2:
@@ -1116,12 +1115,46 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                     analise[f'offset{axis}'] = round(globals()[f"medMov{model}_{axis}_{angle}_{index}"].media, 4)
 
             Pos.append(posicao)
+            """
+            posYmm = mm2coordinate(posicao['Y'], reverse=True)
+            posXmm = MX
+
+            invDiffY = MY
+            invDiffX = MX*-1
+
+            posParafYmm = mm2coordinate(parafCent['Y'], reverse=True)
+            posParafXmm = parafCent['X']
+
+            poscameCentYmm = mm2coordinate(cameCent['Y'], reverse=True)
+            poscameCentXmm = cameCent['X']
+             
+            yNOVO = round(mm2coordinate(posYmm + invDiffY + (posParafYmm - poscameCentYmm)), 3)
+            xNOVO = round(posXmm + invDiffX + (posParafXmm - poscameCentXmm), 3)
+            """
+            offsetYFixo = 0 #0.9
+            offsetXFixo = 0 #4.5
+            #xNOVO = analise['X']+analise['offsetX']+MX+offsetXFixo
+            xNOVO = -round(cameCent['X']-posicao['X']-MX, 4)+parafCent['X']+offsetXFixo
+
+            #Fast.M114(arduino)['X'] + (MX*-1) + (parafCent['X']-cameCent['X'])
+            #yNovo = mm2coordinate(mm2coordinate(Fast.M114(arduino)['Y'], reverse=True) + (MY*-1) + (mm2coordinate(parafCent['X'], reverse=True) - mm2coordinate(cameCent['X'], reverse=True)))
+
+            # yNOVO = mm2coordinate(mm2coordinate(analise['Y']+analise['offsetY'], reverse=True)+MY+offsetYFixo)
+            yNOVO = mm2coordinate(mm2coordinate(40, reverse=True)+MY+offsetYFixo)
+
             posicao = {
-                'X': -round(cameCent['X']-posicao['X']-MX, 4)+parafCent['X'],
-                'Y': -round(cameCent['Y']-posicao['Y']+mm2coordinate(MY), 4)+parafCent['Y'],
-                'E': posicao['E']
+                'X': xNOVO,   
+                'Y': yNOVO,
+                'A': posicao['A']
             }
-                                #Fast.sendGCODE(arduino, f"g0  E{posicao['E']} F{xMaxFed}")
+
+
+            # posicao = {
+            #     'X': -round(cameCent['X']-posicao['X']-MX, 4)+parafCent['X'],
+            #     'Y': -round(cameCent['Y']-posicao['Y']+mm2coordinate(MY), 4)+parafCent['Y'],
+            #     'A': posicao['A']
+            # }
+                                #Fast.sendGCODE(arduino, f"g0  E{posicao['A']} F{xMaxFed}")
             Fast.sendGCODE(arduino, f"g0 Y{posicao['Y']} X{posicao['X']} F{yMaxFed}")
                         
             Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'],  parafusaCommand['mm'], zFRPD2, zFRPU2)
@@ -1136,8 +1169,8 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
         except (ValueError, IndexError):
             break
 
-        Fast.sendGCODE(arduino, f"G0 Y{analise['Y']}, X{analise['X']} E{angle} F{yMaxFed}")  
-            
+        #Fast.sendGCODE(arduino, f"G0 Y{analise['Y']} X{analise['X']} E{angle} F{yMaxFed}")  
+        Fast.sendGCODE(arduino, f"G0 X{round(analise['X']+analise['offsetX'], 4)} Y{round(analise['Y']+analise['offsetY'], 4)} A{angle} F{yMaxFed}")   
         if MX and MY:
             if globals()["pecaReset"] >= 3:
                 Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, reset=True, Pega=True)
@@ -1151,7 +1184,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             cv2.imwrite(
                 f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_FE.jpg", cv2.resize(img_draw, None, fx=0.3, fy=0.3))
 
-    Fast.sendGCODE(arduino, f"G0 E360 F{xMaxFed}")
+    Fast.sendGCODE(arduino, f"G0 A360 F{xMaxFed}")
     return Pos, parafusadas
 
 
@@ -1169,7 +1202,12 @@ def shutdown_server():
 #                                                 Async-Functions                                                      #
 
 async def updateAssembly(parm):
-    global selected
+    global selected, assembly, machineParamters
+    selected= {
+        "0":{},
+        "1":{}
+    }
+    machineParamters["configuration"]["assembly"] = assembly = parm
     convert ={"0": 0, "1":90, "2":90, "3":180, "4":270, "5":270}
     for part in parm["listOfParts"]:
         for hole in part["listOfHoles"]:
@@ -1177,6 +1215,7 @@ async def updateAssembly(parm):
                 selected[str(part["index"])][str(hole["index"]-1)] = convert[str(hole["index"]-1)]
                 #mm[str(hole["index"]-1)] = convert[str(hole["index"]-1)]
             print(part["index"], hole["index"], hole["mount"])
+    await sendWsMessage("update", assembly) 
     print(selected)
 
 
@@ -1288,6 +1327,7 @@ async def funcs():
 async def stopProcess():
     global intencionalStop
     intencionalStop = True
+    operation["operation"]["finished"] = True
     await sendWsMessage("stopProcess_success")
 
 
@@ -1367,7 +1407,7 @@ async def logRefresh(timeout=1):
 
 
 async def startAutoCheck(date=None):
-    global arduino, nano, conexaoStatusArdu, conexaoStatusNano, threadStatus, infoCode
+    global arduino, nano, conexaoStatusArdu, conexaoStatusNano, threadStatus, infoCode, assembly
     if date and platform.system() == "Linux":
         subprocess.run(
             ["date", "-s", f"{date[:len(date)-len('(Horário Padrão de Brasília)')]}"])
@@ -1377,6 +1417,7 @@ async def startAutoCheck(date=None):
     setCameraFilter()
     await logRefresh()
     await refreshJson()
+    await updateAssembly(assembly)
     AutoCheckStatus = True
     connection = {
         "connectionStatus": "Tentantiva de conexão identificada"
@@ -1497,7 +1538,7 @@ async def startAutoCheck(date=None):
 
 async def startProcess(parm):
     global modelo_atual
-    qtd, only, model = parm['total'], parm['onlyCorrectParts'], str(
+    qtd, only, model = int(parm['total']), parm['onlyCorrectParts'], str(
         parm['partId'])
     modelo_atual = model
     t0 = timeit.default_timer()
@@ -1516,6 +1557,7 @@ async def startProcess(parm):
 async def updateProduction(cicleSeconds, valor):
     global production
     prodd = production["production"]["productionPartList"][int(modelo_atual)]["production"]
+    all_prodd = production["production"]["allParts"]["production"]
     print("updateProducion")
     prodd["today"]["total"] += 1
     prodd["total"]["total"] += 1
@@ -1569,6 +1611,68 @@ async def updateProduction(cicleSeconds, valor):
     if valores:
         media = round(sum(valores) / len(valores), 1)
         prodd["today"]["timePerCicle"] = media
+    
+    tt = 0
+    tr = 0
+    tw = 0
+    ttmin=0
+    ttmax=0
+    tdt = 0
+    tdr = 0
+    tdw = 0
+    tdtc = 0
+    ydt = 0
+    ydr = 0
+    ydw = 0
+    ydtc = 0
+    tdd=[]
+    ydd=[]
+    for mod in production["production"]["productionPartList"]:
+        tt += mod["production"]["total"]["total"]
+        tr += mod["production"]["total"]["rigth"]
+        tw += mod["production"]["total"]["wrong"]
+
+        ttmin += mod["production"]["total"]["timePerCicleMin"]
+        ttmax += mod["production"]["total"]["timePerCicleMax"]
+
+        tdd.append(mod["production"]["today"]["day"])
+        tdt += mod["production"]["today"]["total"]
+        tdr += mod["production"]["today"]["rigth"]
+        tdw += mod["production"]["today"]["wrong"]
+
+        tdtc += mod["production"]["today"]["timePerCicle"]
+
+        ydd.append(mod["production"]["today"]["day"])
+        ydt += mod["production"]["yesterday"]["total"]
+        ydr += mod["production"]["yesterday"]["rigth"]
+        ydw += mod["production"]["yesterday"]["wrong"]
+
+        ydtc += mod["production"]["yesterday"]["timePerCicle"]
+
+    all_prodd["total"]["total"] = tt
+    all_prodd["total"]["rigth"] = tr
+    all_prodd["total"]["wrong"] = tw
+
+
+    all_prodd["today"]["total"] = tdt
+    all_prodd["today"]["rigth"] = tdr
+    all_prodd["today"]["wrong"] = tdw
+    all_prodd["today"]["timePerCicle"] = tdtc/len(tdd)
+
+    all_prodd["yesterday"]["total"] = ydt
+    all_prodd["yesterday"]["rigth"] = ydr
+    all_prodd["yesterday"]["wrong"] = ydw
+    all_prodd["yesterday"]["timePerCicle"] = ydtc/len(ydd)
+
+
+    all_prodd["total"]["timePerCicleMin"] = ttmin/len(production["production"]["productionPartList"])
+    all_prodd["total"]["timePerCicleMax"] = ttmax/len(production["production"]["productionPartList"])
+
+    
+
+    # if tdd.count(tdd[0]) == len(tdd):
+    # if ydd.count(ydd[0]) == len(ydd):
+        
     print("Escrevendo")
     Fast.writeJson('Json/production.json', production)
     await sendWsMessage("update", production)
@@ -1682,12 +1786,13 @@ if __name__ == "__main__":
     production = Fast.readJson("Json/production.json")
     parafusaCommand = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusar']
     camera = machineParamters["configuration"]["camera"]
+    assembly = machineParamters["configuration"]["assembly"]
     globals()["tempFileFilter"] = mainParamters["Filtros"]["HSV"]
     globals()["pecaReset"] = 0
     modelo_atual = "1"
     selected= {
-        "0":{"0":0, "1":90, "2":90, "3":180},
-        "1":{"1":90, "2":90, "4":270, "5":270}
+        "0":{},
+        "1":{}
     }
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Json-Variables                        #
@@ -1859,8 +1964,18 @@ if __name__ == "__main__":
 
     async def serialMonitor(obj):
         if str(obj).upper() == "REBOOT":
-            print("sys.reboot")
+            await restart_raspberry()
         else:
+            Fed = obj.find('F')
+            if Fed != -1:
+                speed = int(obj[Fed+1:len(obj)])
+                for ax in ['X', 'Y', 'Z', 'A']:
+                    a = ax if obj.find(ax) != -1 else -1
+                    if a != -1:
+                        break
+                
+                Newspeed = int(maxFeedrate[f"{a.lower()}Max"]*((speed/10)/100))
+                obj = obj.replace(str(speed), str(Newspeed)) 
             Resposta = Fast.sendGCODE(arduino, str(obj), echo=True)
             for msg in Resposta:
                 await sendWsMessage("serialMonitor_response", msg)

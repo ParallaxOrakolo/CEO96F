@@ -127,10 +127,10 @@ def sendGCODE(serial, command, **kargs):
         
         # Garante que os motores estarão travados
 #        serial.write(str("M17 X Y Z E" + '{0}'.format('\n')).encode('ascii'))
-        log = open('logMarlin.txt', 'a')
-            #f.write(serial)
-        log.write(f">> {command} \n")
-        log.close()
+        # log = open('logMarlin.txt', 'a')
+        #     #f.write(serial)
+        # log.write(f"{command} \n")
+        # log.close()
         # Limpa o buffer.
         serial.flush()
         serial.flushInput()
@@ -187,7 +187,7 @@ def sendGCODE(serial, command, **kargs):
         return ["Comando não enviado, falha na conexão com a serial."]
 
 
-def M114(serial, where=[("X:", " Y:"), ("Y:", " Z:"), ("Z:", " E:"), ("E:", " Count")]):
+def M114(serial, where=[("X:", " Y:"), ("Y:", " Z:"), ("Z:", " A:"), ("A:", " Count")]):
     for _ in range(2):
         Echo = (sendGCODE(serial, "M114", echo=True))[0]
     try:
@@ -195,7 +195,7 @@ def M114(serial, where=[("X:", " Y:"), ("Y:", " Z:"), ("Z:", " E:"), ("E:", " Co
         for get in where:
             left, right = get[0], get[1]
             Pos.append(float(Echo[Echo.index(left)+len(left):Echo.index(right)]))
-        return dict(zip(['X', 'Y', 'Z', 'E'], Pos))
+        return dict(zip(['X', 'Y', 'Z', 'A'], Pos))
     except ValueError:
         print("Recebi:", Echo)
         return Echo

@@ -68,7 +68,7 @@
                       command: actions.START_PROCESS,
                       parameter: {
                         total: 99999,
-                        onlyCorrectParts: state.operation.onlyCorrectParts,
+                        onlyCorrectParts: state.operation.onlyCorrectParts ? state.operation.onlyCorrectParts : false,
                         partId: selectedPart,
                       }
                     },
@@ -137,7 +137,7 @@
                           command: actions.START_PROCESS,
                           parameter: {
                             total: state.operation.total,
-                            onlyCorrectParts: state.operation.onlyCorrectParts,
+                            onlyCorrectParts: state.operation.onlyCorrectParts ? state.operation.onlyCorrectParts : false ,
                             partId: selectedPart,
                           }, // Change selection -> state.operation.total -HB
                         });

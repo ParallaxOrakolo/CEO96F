@@ -51,7 +51,6 @@
                         command: actions.UPDATE_ASSEMBLY,
                         parameter: configuration.assembly,
                       });
-                      selectedPart = item.index;
                     }
                   "
                 ></v-checkbox>

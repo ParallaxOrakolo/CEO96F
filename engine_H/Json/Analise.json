@@ -2,12 +2,12 @@
     "0": {
         "0": {
             "0": {
-                "X": 243,
-                "Y": 6,
+                "X": 237,
+                "Y": 5,
                 "Z": null,
                 "E": null,
-                "offsetX": -1.15,
-                "offsetY": -0.12
+                "offsetX": 1.5356,
+                "offsetY": 0.7178
             },
             "1": {
                 "X": 243,
@@ -21,29 +21,29 @@
         "90": {
             "0": {
                 "X": 240,
-                "Y": 7,
+                "Y": 6,
                 "Z": null,
                 "E": null,
-                "offsetX": -1.02,
-                "offsetY": -0.83
+                "offsetX": 0,
+                "offsetY": 0
             },
             "1": {
                 "X": 260,
-                "Y": 7,
+                "Y": 5,
                 "Z": null,
                 "E": null,
-                "offsetX": -1.15,
-                "offsetY": -0.96
+                "offsetX": 0,
+                "offsetY": 0
             }
         },
         "180": {
             "0": {
-                "X": 265,
-                "Y": 7,
+                "X": 260,
+                "Y": 6,
                 "Z": null,
                 "E": null,
-                "offsetX": -0.91,
-                "offsetY": -0.86
+                "offsetX": 1.3465,
+                "offsetY": -0.4203
             },
             "1": {
                 "X": 265,
@@ -56,20 +56,20 @@
         },
         "270": {
             "0": {
-                "X": 243,
-                "Y": 7,
+                "X": 236,
+                "Y": 6,
                 "Z": null,
                 "E": null,
-                "offsetX": 0.42,
-                "offsetY": -0.49
+                "offsetX": 0.1703,
+                "offsetY": -0.4027
             },
             "1": {
-                "X": 270,
-                "Y": 7,
+                "X": 261,
+                "Y": 6,
                 "Z": null,
                 "E": null,
-                "offsetX": 0.59,
-                "offsetY": -0.71
+                "offsetX": 1.8421,
+                "offsetY": -0.2534
             }
         }
     },
@@ -80,8 +80,8 @@
                 "Y": 5,
                 "Z": null,
                 "E": null,
-                "offsetX": 0.323,
-                "offsetY": 0.2308
+                "offsetX": 0,
+                "offsetY": 0
             },
             "1": {
                 "X": 249,
@@ -94,20 +94,20 @@
         },
         "90": {
             "0": {
-                "X": 245,
-                "Y": 6,
+                "X": 240,
+                "Y": 7,
                 "Z": null,
                 "E": null,
-                "offsetX": 0.887,
-                "offsetY": -0.5372
+                "offsetX": 0,
+                "offsetY": 0
             },
             "1": {
-                "X": 270,
+                "X": 264,
                 "Y": 6,
                 "Z": null,
                 "E": null,
-                "offsetX": 1.3005,
-                "offsetY": -0.7244
+                "offsetX": 0,
+                "offsetY": 0
             }
         },
         "180": {
@@ -116,8 +116,8 @@
                 "Y": 6,
                 "Z": null,
                 "E": null,
-                "offsetX": 0.1178,
-                "offsetY": -0.0328
+                "offsetX": 0,
+                "offsetY": 0
             },
             "1": {
                 "X": 254,
@@ -130,20 +130,20 @@
         },
         "270": {
             "0": {
-                "X": 234,
+                "X": 241,
                 "Y": 6,
                 "Z": null,
                 "E": null,
-                "offsetX": -1.6144,
-                "offsetY": -0.2629
+                "offsetX": 0,
+                "offsetY": 0
             },
             "1": {
-                "X": 260,
+                "X": 267,
                 "Y": 6,
                 "Z": null,
                 "E": null,
-                "offsetX": -2.0792,
-                "offsetY": -1.5993
+                "offsetX": 0,
+                "offsetY": 0
             }
         }
     },
