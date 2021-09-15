@@ -380,6 +380,7 @@ class Process(threading.Thread):
         print(f"{self.cor} ID:{self.id}--> pre Mount Finish{Fast.ColorPrint.ENDC}")
 
     async def Mount(self):
+        global temPeça
         Fast.sendGCODE(arduino, "M42 P36 S255")
         pega = True
         Filter = Hole_Filter()
@@ -397,10 +398,12 @@ class Process(threading.Thread):
             # ------------ Vai ate tombador e pega ------------ #
             try:
                 if pega:
-                    # while verificaCLP(nano) == 10:
-                    #     continue
+                    while not temPeça:
+                        continue
                         #time.sleep(0.5)
+                    G28()
                     PegaObjeto()
+                    temPeça = False
                 if DebugPreciso:
                     pega = False
             except MyException as Mye:
@@ -817,6 +820,12 @@ def mm2coordinate(x, c=160, aMin=148.509, reverse=False):
     # Piragoras tava certo :/
     return round(quero, 2)
 
+def G28(Axis="A", offset=324, speed=50000):
+    Fast.sendGCODE(arduino, F"G28 {Axis}")
+    Fast.sendGCODE(arduino, f"G0 {Axis}{offset} F{speed}")
+    Fast.sendGCODE(arduino, f"G92 {Axis}0")
+    Fast.sendGCODE(arduino, "G92.1")
+    Fast.sendGCODE(arduino, f"M17 {Axis}")
 
 def HomingAll():
     Fast.sendGCODE(arduino, "G28 Y")
@@ -832,12 +841,13 @@ def HomingAll():
 
 
 def verificaCLP(serial):
-    global wrongSequence, limitWrongSequence
+    global wrongSequence, limitWrongSequence, temPeça
     print("Sequêcina de peças erradas:", wrongSequence)
     if wrongSequence >= limitWrongSequence:
         wrongSequence = 0
         #Fast.sendGCODE(arduino, "M42 P36 S0")
         return 18
+    temPeça = True
     return "ok"
     echo = Fast.sendGCODE(serial, 'F', echo=True)
     echo = str(echo[len(echo)-1])
@@ -882,6 +892,23 @@ def Parafusa(pos, voltas=2, mm=0, ZFD=100, ZFU=100, dowLess=False, reset=False, 
                     break
             except KeyError:
                 pass
+        else:
+            if not Pega:
+                Fast.sendGCODE(arduino, 'G91')
+                Fast.sendGCODE(arduino, 'G0 Z10')
+                Fast.M119(arduino)["z_probe"]
+                Fast.sendGCODE(arduino, "G4 S0.2")
+                Fast.sendGCODE(arduino, f'g38.3 z-{pos} F{int(zMaxFedDown*(ZFD/100))}')
+                Fast.sendGCODE(arduino, f'g0 z{mm} F{zMaxFedUp}')
+                Fast.M119(arduino)["z_probe"]
+                t0 = timeit.default_timer()
+                while timeit.default_timer() - t0 < (voltas*40/500):
+                    try:
+                        if Fast.M119(arduino)["z_probe"] == "open":
+                            Fast.sendGCODE(arduino, f"M42 p32 s0")
+                            break
+                    except KeyError:
+                        pass
         Fast.sendGCODE(arduino, f"M42 p32 s0")
 
     if reset:
@@ -933,6 +960,8 @@ def PegaObjeto():
     Fast.sendGCODE(arduino, "M42 P31 S255")
     Fast.sendGCODE(arduino, "G4 S0.3")
     Fast.sendGCODE(arduino, "G28 Y")
+    Fast.sendGCODE(arduino, "M17 X Y Z A")
+
 #    alinhar()
 
 def alinhar():
@@ -1046,7 +1075,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
 
     cameCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['camera0Centro']
     parafCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusadeiraCentro'].copy()
-    parafCent['Y'] = mm2coordinate(parafCent['Y'], reverse=True)
+    #parafCent['Y'] = mm2coordinate(parafCent['Y'], reverse=True)
     # Pega a coordenada de inicio e aplica na formula, pra saber a quantos "mm" do "0" a maquina está.
 
     if not os.path.exists(path):
@@ -1140,7 +1169,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             #yNovo = mm2coordinate(mm2coordinate(Fast.M114(arduino)['Y'], reverse=True) + (MY*-1) + (mm2coordinate(parafCent['X'], reverse=True) - mm2coordinate(cameCent['X'], reverse=True)))
 
             # yNOVO = mm2coordinate(mm2coordinate(analise['Y']+analise['offsetY'], reverse=True)+MY+offsetYFixo)
-            yNOVO = mm2coordinate(mm2coordinate(40, reverse=True)+MY+offsetYFixo)
+            yNOVO = mm2coordinate(mm2coordinate(parafCent['Y'], reverse=True)+MY+offsetYFixo)
 
             posicao = {
                 'X': xNOVO,   
@@ -1215,7 +1244,8 @@ async def updateAssembly(parm):
                 selected[str(part["index"])][str(hole["index"]-1)] = convert[str(hole["index"]-1)]
                 #mm[str(hole["index"]-1)] = convert[str(hole["index"]-1)]
             print(part["index"], hole["index"], hole["mount"])
-    await sendWsMessage("update", assembly) 
+    await sendWsMessage("update", assembly)
+    Fast.writeJson("Json/machineParamters.json", machineParamters)
     print(selected)
 
 
@@ -1414,6 +1444,7 @@ async def startAutoCheck(date=None):
     # await updateSlider('Normal')
     await sendWsMessage("update", machineParamters)
     await sendWsMessage("update", production)
+    await sendWsMessage("update", stopReasonsList)
     setCameraFilter()
     await logRefresh()
     await refreshJson()
@@ -1617,14 +1648,26 @@ async def updateProduction(cicleSeconds, valor):
     tw = 0
     ttmin=0
     ttmax=0
+    
     tdt = 0
     tdr = 0
     tdw = 0
     tdtc = 0
+
     ydt = 0
     ydr = 0
     ydw = 0
     ydtc = 0
+
+    dat = 0
+    dar = 0
+    daw = 0
+    datpc = 0
+
+    dtw_ttpc = []
+    dtw_t = []
+    dtw_w = []
+    dtw_r = []
     tdd=[]
     ydd=[]
     for mod in production["production"]["productionPartList"]:
@@ -1648,6 +1691,28 @@ async def updateProduction(cicleSeconds, valor):
         ydw += mod["production"]["yesterday"]["wrong"]
 
         ydtc += mod["production"]["yesterday"]["timePerCicle"]
+
+        dat += mod["production"]["dailyAvarege"]["total"]
+        dar += mod["production"]["dailyAvarege"]["rigth"]
+        daw += mod["production"]["dailyAvarege"]["wrong"]
+        datpc += mod["production"]["dailyAvarege"]["times"]
+
+        dtw_t.append(np.array(mod["production"]["dailyAvarege"]["week_total"], dtype=object))
+        dtw_r.append(np.array(mod["production"]["dailyAvarege"]["week_rigth"], dtype=object))
+        dtw_w.append(np.array(mod["production"]["dailyAvarege"]["week_wrong"], dtype=object))
+        dtw_ttpc.append(np.array(mod["production"]["dailyAvarege"]["week_times"], dtype=object))
+    
+    all_prodd["dailyAvarege"]["total"] = dat
+    all_prodd["dailyAvarege"]["rigth"] = dar
+    all_prodd["dailyAvarege"]["wrong"] = daw
+    all_prodd["dailyAvarege"]["times"] = datpc
+
+    all_prodd["dailyAvarege"]["week_total"] = (np.sum(np.array(dtw_t), axis=0)).tolist() 
+    all_prodd["dailyAvarege"]["week_rigth"] = (np.sum(np.array(dtw_r), axis=0)).tolist() 
+    all_prodd["dailyAvarege"]["week_wrong"] = (np.sum(np.array(dtw_w), axis=0)).tolist() 
+    all_prodd["dailyAvarege"]["week_times"] = (np.average(np.array(dtw_ttpc), axis=0)).tolist() 
+    
+    
 
     all_prodd["total"]["total"] = tt
     all_prodd["total"]["rigth"] = tr
@@ -1794,6 +1859,7 @@ if __name__ == "__main__":
         "0":{},
         "1":{}
     }
+    temPeça = True
     # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
     #                      Json-Variables                        #
     for model in ["0", "1"]:

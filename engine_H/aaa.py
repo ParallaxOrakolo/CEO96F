@@ -1,3 +1,12 @@
+import numpy as np
+a = [5,2,5,5,7]
+b = [6,6,6,-5]
+c = [np.array(a, dtype=object),np.array(b, dtype=object)]
+print(np.sum(np.array(c, dtype=object), axis=0))
+print(np.average(np.array(c, dtype=object), axis=0))
+exit()
+
+
 import FastFunctions as Fast
 from random import choice, randint
 from time import sleep
