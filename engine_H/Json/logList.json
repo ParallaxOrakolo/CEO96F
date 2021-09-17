@@ -983,6 +983,282 @@
             "description": "Parada manual pelo operador",
             "type": "warning",
             "date": 1631722794
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1631723780
+        },
+        {
+            "code": 8,
+            "description": "Verificar calha de alimetanção do Aro",
+            "type": "error",
+            "date": 1631731874
+        },
+        {
+            "code": 8,
+            "description": "Verificar calha de alimetanção do Aro",
+            "type": "error",
+            "date": 1631731876
+        },
+        {
+            "code": 8,
+            "description": "Verificar calha de alimetanção do Aro",
+            "type": "error",
+            "date": 1631731879
+        },
+        {
+            "code": 8,
+            "description": "Verificar calha de alimetanção do Aro",
+            "type": "error",
+            "date": 1631731881
+        },
+        {
+            "code": 8,
+            "description": "Verificar calha de alimetanção do Aro",
+            "type": "error",
+            "date": 1631731884
+        },
+        {
+            "code": 8,
+            "description": "Verificar calha de alimetanção do Aro",
+            "type": "error",
+            "date": 1631731886
+        },
+        {
+            "code": 2,
+            "description": "Falta de Material - Arruela",
+            "type": "error",
+            "date": 1631731890
+        },
+        {
+            "code": 2,
+            "description": "Falta de Material - Arruela",
+            "type": "error",
+            "date": 1631731893
+        },
+        {
+            "code": 2,
+            "description": "Falta de Material - Arruela",
+            "type": "error",
+            "date": 1631731895
+        },
+        {
+            "code": 2,
+            "description": "Falta de Material - Arruela",
+            "type": "error",
+            "date": 1631731898
+        },
+        {
+            "code": 2,
+            "description": "Falta de Material - Arruela",
+            "type": "error",
+            "date": 1631731900
+        },
+        {
+            "code": 2,
+            "description": "Falta de Material - Arruela",
+            "type": "error",
+            "date": 1631731903
+        },
+        {
+            "code": 2,
+            "description": "Falta de Material - Arruela",
+            "type": "error",
+            "date": 1631731905
+        },
+        {
+            "code": 2,
+            "description": "Falta de Material - Arruela",
+            "type": "error",
+            "date": 1631731908
+        },
+        {
+            "code": 2,
+            "description": "Falta de Material - Arruela",
+            "type": "error",
+            "date": 1631731910
+        },
+        {
+            "code": 2,
+            "description": "Falta de Material - Arruela",
+            "type": "error",
+            "date": 1631731913
+        },
+        {
+            "code": 2,
+            "description": "Falta de Material - Arruela",
+            "type": "error",
+            "date": 1631731915
+        },
+        {
+            "code": 2,
+            "description": "Falta de Material - Arruela",
+            "type": "error",
+            "date": 1631731918
+        },
+        {
+            "code": 8,
+            "description": "Verificar calha de alimetanção do Aro",
+            "type": "error",
+            "date": 1631732436
+        },
+        {
+            "code": 8,
+            "description": "Verificar calha de alimetanção do Aro",
+            "type": "error",
+            "date": 1631732439
+        },
+        {
+            "code": 8,
+            "description": "Verificar calha de alimetanção do Aro",
+            "type": "error",
+            "date": 1631732441
+        },
+        {
+            "code": 8,
+            "description": "Verificar calha de alimetanção do Aro",
+            "type": "error",
+            "date": 1631732444
+        },
+        {
+            "code": 8,
+            "description": "Verificar calha de alimetanção do Aro",
+            "type": "error",
+            "date": 1631732449
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1631732489
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1631736014
+        },
+        {
+            "code": 8,
+            "description": "Verificar calha de alimetanção do Aro",
+            "type": "error",
+            "date": 1631816447
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1631816950
+        },
+        {
+            "code": 8,
+            "description": "Verificar calha de alimetanção do Aro",
+            "type": "error",
+            "date": 1631817973
+        },
+        {
+            "code": 2,
+            "description": "Falta de Material - Arruela",
+            "type": "error",
+            "date": 1631818092
+        },
+        {
+            "code": 2,
+            "description": "Falta de Material - Arruela",
+            "type": "error",
+            "date": 1631818453
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1631821828
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1631822219
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1631822534
+        },
+        {
+            "code": 3,
+            "description": "Falta de Material - Parafuso",
+            "type": "error",
+            "date": 1631822775
+        },
+        {
+            "code": 3,
+            "description": "Falta de Material - Parafuso",
+            "type": "error",
+            "date": 1631822844
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1631822971
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1631823449
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1631823785
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1631824161
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1631824429
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1631824855
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1631878448
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1631878710
+        },
+        {
+            "code": 3,
+            "description": "Falta de Material - Parafuso",
+            "type": "error",
+            "date": 1631879066
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1631882198
         }
     ]
 }

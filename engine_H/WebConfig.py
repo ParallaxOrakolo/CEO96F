@@ -4,6 +4,11 @@
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                    Imports                                                           #
 
+"""
+trasnformar infCode em uma lsita[] que se atualizata o tempo inteiro atraves de umathread.
+sempre que for tratar o erro, rodar um for na lsita e seguir a trativa atual. 
+o numero "10", com peça, não entra na lista, só muda a variavel assim que chegar.
+"""
 
 from flask import Flask, Response, request, jsonify
 from FastFunctions import MyException
@@ -44,10 +49,15 @@ operation = {
         "placed": 0,
         "right": 0,
         "wrong": 0,
-        "finished": False,
+        "stopped": True,
+        "finished": True,
+        "started": False,
+        "running": False,
         "onlyCorrectParts": False
     },
 }
+
+
 
 """
     Inicia -> Escuta a conexão.
@@ -86,7 +96,50 @@ operation = {
 """
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
 #                                                      Class                                                           #
+class CLP(threading.Thread):
+    def __init__(self, serial, interval):
+        super(CLP, self).__init__()
+        self.serial = serial
+        self.Status_Atual = "ok"
+        self.errorList = ["ok"]
+        self.readInterval = interval
+        self._stop_event = threading.Event()
+        self._read_event = threading.Event()
 
+    def stop(self):
+        self._stop_event.set()
+
+    def stopped(self):
+        return self._stop_event.is_set()
+
+    def removeDuplicate(self):
+        return list(dict.fromkeys(self.errorList))
+    
+    def getStatus(self):
+        self._read_event.set()
+        if self.errorList:
+            self.Status_Atual = self.errorList[0]
+            del self.errorList[0]
+        else:
+            self.Status_Atual = "ok"
+        print(f"nano: get {self.Status_Atual} from {self.errorList}")
+        self._read_event.clear()
+        return self.Status_Atual
+
+    def getList(self):
+        return self.errorList
+
+    def run(self):
+        while not self.stopped():
+            tt = timeit.default_timer()
+            while timeit.default_timer() - tt <= self.readInterval:
+                pass
+            if not self._read_event.is_set():
+                a = verificaCLP(self.serial) 
+                if a !=  None and a >= 0:
+                    self.errorList.append(a)
+                self.errorList = self.removeDuplicate()
+            
 class Hole_Filter(threading.Thread):
     def __init__(self):
         super(Hole_Filter, self).__init__()
@@ -134,7 +187,7 @@ class Hole_Filter(threading.Thread):
 
 
     def getData(self):
-        print("Return:", self.Mx, self.My)
+        #print("Return: X[", self.Mx,"] | Y[", self.My,"]")
         return self.Mx, self.My, self.frame, self.draw
             
             
@@ -320,16 +373,16 @@ class mediaMovel():
 
     def atualizaMedia(self):
         if len(self.valores) >= self.limite:
-            self.media = sum(self.valores)/len(self.valores)
+            self.media = round(sum(self.valores)/len(self.valores), 4)
             return self.media
         else:
-            return None
+            return False
 
 
 class Process(threading.Thread):
     def __init__(self, quantidad, id, model, only):
         threading.Thread.__init__(self)
-        global intencionalStop, arduino, nano
+        global intencionalStop, arduino, nano, infoCode
         self.qtd = quantidad
         self.corretas = 0
         self.erradas = 0
@@ -365,6 +418,7 @@ class Process(threading.Thread):
             return my
 
     def preMount(self):
+        Fast.sendGCODE(arduino, "M42 P36 S255")
         self.terminou = False
         print(f"{self.cor} ID:{self.id}--> pre Mount Start{Fast.ColorPrint.ENDC}")
         print(f"Foi requisitado a montagem de {self.qtd} peças certas.")
@@ -381,16 +435,22 @@ class Process(threading.Thread):
 
     async def Mount(self):
         global temPeça
-        Fast.sendGCODE(arduino, "M42 P36 S255")
         pega = True
         Filter = Hole_Filter()
         Filter.start()
-        self.infoCode = verificaCLP(nano)
+        erroDetectado = False
+        self.infoCode = clp.getStatus()
+        print("Preparando para iniciar clico de montagem, infoCode:", self.infoCode)
+        G28()
         while self.qtd != (self.corretas if self.only else self.rodada) and not intencionalStop and self.infoCode not in stopReasons:
-            self.infoCode = verificaCLP(nano)
-            print("Prblemão:", Problema)
+            self.infoCode = clp.getStatus()
+            print(f"Ciclo {self.rodada} iniciou, infoCode:", self.infoCode)
+            for item in stopReasons:
+                if self.infoCode == item['code']:
+                    print("erro no inicio do ciclo.")
+                    erroDetectado = True
+                    break
             self.rodada += 1
-
             Fast.sendGCODE(arduino, "M42 P33 S0")
             Fast.sendGCODE(arduino, "M42 P34 S255") #desativado-ruido
 
@@ -398,21 +458,40 @@ class Process(threading.Thread):
             # ------------ Vai ate tombador e pega ------------ #
             try:
                 if pega:
-                    while not temPeça:
-                        continue
-                        #time.sleep(0.5)
-                    G28()
-                    PegaObjeto()
-                    temPeça = False
+                    
+                    print("~~"*10)
+                    while not temPeça and not erroDetectado:
+                        self.infoCode = clp.getStatus()
+                        print("Esperando peça, infoCode:", self.infoCode)
+                        for item in stopReasons:
+                            if self.infoCode == item['code']:
+                                print("Erro encontrado durante a espera da peça.")
+                                erroDetectado = True
+                                break
+                            else:
+                                erroDetectado = False
+                        tt = timeit.default_timer()
+                        while timeit.default_timer() - tt <= 1.5:
+                            pass
+                    else:
+                        print("Peça Chgeou...")
+                    if temPeça and not erroDetectado:
+                        PegaObjeto()
+                    else:
+                        print("Não a peça, e deu erro, saindo... ")
+                        break
                 if DebugPreciso:
                     pega = False
-            except MyException as Mye:
-                print(Mye)
+            except MyException as my:
+                for item in stopReasons:
+                    if my == item["description"]:
+                        await sendWsMessage("error", item)
+                print("Erro meu:", my)
                 await descarte("Errado")
                 break
 
             # ------------ Acha as coordenadas parciais do furo ------------ #
-            parcialFuro, parafusados = Processo_Hole(None,
+            status, parafusados = Processo_Hole(None,
                                                      mainParamters['Mask_Parameters']['hole']['areaMin'],
                                                      mainParamters['Mask_Parameters']['hole']['areaMax'],
                                                      mainParamters['Mask_Parameters']['hole']['perimeter'],
@@ -423,11 +502,15 @@ class Process(threading.Thread):
 
             globals()["pecaReset"] += 1
             #         # ------------ Verifica se a montagme está ok ------------ #
-            self.infoCode = verificaCLP(nano)
+            if status == -1:
+                self.infoCode = parafusados
+                erroDetectado = True
+                break
+            self.infoCode = clp.getStatus()
             if self.infoCode not in stopReasons and not intencionalStop:
                 if parafusados == len(selected[modelo_atual]):
                     # montar=sum(montar)
-                    print("Montagem finalizada.")
+                    print("Montagem finalizada. infoCode:", self.infoCode)
                     print("Iniciando processo de validação.")
                     ValidaPos = machineParamters['configuration']['informations'][
                         'machine']['defaultPosition']['validaParafuso']
@@ -504,8 +587,10 @@ class Process(threading.Thread):
                 else:
                     print(f"Foram parafusados apenas {parafusados} parafusos")
                     self.status_estribo = "Errado"
+                    self.erradas += 1
             else:
                 self.status_estribo = "Errado"
+                self.erradas += 1
                 print("Problema encontrado antes de validar a montagem")
                 break
 
@@ -529,6 +614,11 @@ class Process(threading.Thread):
         operation["operation"]["right"] = self.corretas
         operation["operation"]["wrong"] = self.erradas
         operation["operation"]["placed"] = self.rodada
+        
+        operation["operation"]["stopped"] = True
+        operation["operation"]["finished"] = True
+        operation["operation"]["running"] = False
+
         await sendWsMessage("update", operation)
         print("Info Code", self.infoCode)
         if intencionalStop:
@@ -842,20 +932,25 @@ def HomingAll():
 
 def verificaCLP(serial):
     global wrongSequence, limitWrongSequence, temPeça
-    print("Sequêcina de peças erradas:", wrongSequence)
     if wrongSequence >= limitWrongSequence:
+        print("Sequêcina de peças erradas:", wrongSequence)
         wrongSequence = 0
-        #Fast.sendGCODE(arduino, "M42 P36 S0")
         return 18
-    temPeça = True
-    return "ok"
+
+    
+    #return "ok"
     echo = Fast.sendGCODE(serial, 'F', echo=True)
     echo = str(echo[len(echo)-1])
-    print("Echo >>>", echo)
+    if echo == "10":
+        temPeça = True
+        return None
+    #print("Echo >>>", echo)
     if echo != "ok":
-        return int(echo)
-    else:
-        return echo
+        try:
+            return int(echo)
+        except Exception:
+            pass
+    return None
     #if echo == "Comando não enviado, falha na conexão com a serial.":
         # return 4
     #    return "ok"
@@ -871,6 +966,7 @@ def verificaCLP(serial):
 def Parafusa(pos, voltas=2, mm=0, ZFD=100, ZFU=100, dowLess=False, reset=False, Pega=False):
     #Fast.M400(arduino)     #aqui
     #print(pos, mm, voltas)
+    deuBoa = True
     Fast.sendGCODE(arduino, f'g91')
     if dowLess:
         Fast.sendGCODE(arduino, f"g38.3 Z-105 F{int(zMaxFedDown*(ZFD/100))}")
@@ -909,12 +1005,15 @@ def Parafusa(pos, voltas=2, mm=0, ZFD=100, ZFU=100, dowLess=False, reset=False, 
                             break
                     except KeyError:
                         pass
+                else:
+                    deuBoa = False
         Fast.sendGCODE(arduino, f"M42 p32 s0")
 
     if reset:
         Fast.sendGCODE(arduino, "G28 Z")
     Fast.sendGCODE(arduino, 'g90')
     Fast.sendGCODE(arduino, f'g0 z{pos} F{int(zMaxFedUp*(ZFU/100))}')
+    return deuBoa
     #print(f'g0 z{pos} F{int(zMaxFedUp*(ZFU/100))}')
     # Fast.M400(arduino)
 
@@ -927,11 +1026,15 @@ async def descarte(valor="Errado", Deposito={"Errado": {"X": 230, "Y": 0}}):
         Fast.sendGCODE(arduino, f"G0 X{pos['X']} Y{pos['Y']} f{yMaxFed}")
         Fast.M400(arduino)
         Fast.sendGCODE(arduino, "M42 P31 S0")
-        Fast.sendGCODE(arduino, f"G0 A0 f{eMaxFed}")
+        #Fast.sendGCODE(arduino, f"G0 A0 f{eMaxFed}")
+        G28()
 #    Fast.M400(arduino)
 #    Fast.sendGCODE(arduino, f"G28 Y")
-        cicleSeconds = round(timeit.default_timer()-Total0, 1)
-        await updateProduction(cicleSeconds, valor)
+        try:
+            cicleSeconds = round(timeit.default_timer()-Total0, 1)
+            await updateProduction(cicleSeconds, valor)
+        except Exception:
+            pass
         print("updateProducion - Finish")
         if valor == "Errado" and not intencionalStop:
             wrongSequence += 1
@@ -950,7 +1053,7 @@ def timer(total):
 
 
 def PegaObjeto():
-    global Total0
+    global Total0, temPeça
     pegaPos = machineParamters['configuration']['informations']['machine']['defaultPosition']['pegaTombador']
     Total0 = timeit.default_timer()
     Fast.sendGCODE(arduino, "G90")
@@ -961,6 +1064,7 @@ def PegaObjeto():
     Fast.sendGCODE(arduino, "G4 S0.3")
     Fast.sendGCODE(arduino, "G28 Y")
     Fast.sendGCODE(arduino, "M17 X Y Z A")
+    temPeça = False
 
 #    alinhar()
 
@@ -1059,10 +1163,19 @@ def Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues):
     # cv2.waitKey(1)
     return Resultados, R, per, img_draw
 
+async def Resolva(item):
+    global isSolved
+    isSolved = False
+    await logRequest(item)
+    await sendWsMessage("error", item)
+
+async def popupResponseSolve():
+    global isSolved
+    isSolved = True
+
 
 def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model="A", rodada=0, thread=None):
     global Analise, modelo_atual, Problema, px2mmEcho
-    nome = Fast.randomString()
     Filter = thread
 
     first = True
@@ -1099,8 +1212,8 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
         if first:
             index = indexs(lados)
             analise = Analise[modelo_atual][str(angle)][index]
-            print("Atual", lados, angle, index)
-            print("Normal:", analise["X"], analise["Y"], '\n')
+            # zzzzz print("Atual", lados, angle, index)
+            # zzzzz print("Normal:", analise["X"], analise["Y"], '\n')
             Fast.sendGCODE(arduino, f"G0 X{analise['X']+analise['offsetX']} Y{analise['Y']+analise['offsetY']} A{angle} F{yMaxFed}")
             Fast.M400(arduino)
             tt = timeit.default_timer()
@@ -1108,39 +1221,32 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                 pass
             first = False
         Fast.M400(arduino)
-        # tt = timeit.default_timer()
-        # while timeit.default_timer()-tt <= 0.5:
-        #     frame = globals()[
-        #     'frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])]
-
         posicao = Fast.M114(arduino)
 
-        # Resultados, R, per, img_draw = Process_Image_Hole(
-        #             frame, areaMin, areaMax, perimeter, HSValues)
+        infoCode = clp.getStatus()
+        for item in stopReasons:
+            if infoCode == item['code']:
+                return -1, infoCode
         MX, MY, frame, img_draw = Filter.getData()
         if MX and MY:
-            # MY = Resultados[0][0]
-            # MX = Resultados[0][1]
-            #MX = Resultados[0]
-            #MY = Resultados[1]
             for axis in ['X', 'Y']:
                 if axis ==  'Y':
-                    CordenadaCC = analise['Y']
+                    CordenadaCC = posicao['Y']
                     offMM = MY
                     CordenadaMM = mm2coordinate(CordenadaCC)
                     CordenadaMM += offMM
                     CordenadaMMcc = mm2coordinate(CordenadaMM, reverse=True)
                     offCC = CordenadaMMcc-CordenadaCC 
-                    globals()[f"medMov{model}_{axis}_{angle}_{index}"].recebido = offCC
+                    globals()[f"medMov{model}_{axis}_{angle}_{index}"].recebido = round(offCC,4)
                 else:
-                    globals()[f"medMov{model}_{axis}_{angle}_{index}"].recebido = MX
+                    globals()[f"medMov{model}_{axis}_{angle}_{index}"].recebido = round((MX/2), 4)
                 globals()[f"medMov{model}_{axis}_{angle}_{index}"].atualizaVetor()
 
             for axis in ['X', 'Y']:
-                print(f"medMov{model}_{axis}_{angle}_{index}>>")
+                # zzzzz print(f"medMov{model}_{axis}_{angle}_{index}>>")
                 if globals()[f"medMov{model}_{axis}_{angle}_{index}"].atualizaMedia():
-                    print(globals()[f"medMov{model}_{axis}_{angle}_{index}"].valores)
-                    print(globals()[f"medMov{model}_{axis}_{angle}_{index}"].media)
+                    # zzzzz print(globals()[f"medMov{model}_{axis}_{angle}_{index}"].valores)
+                    # zzzzz print(globals()[f"medMov{model}_{axis}_{angle}_{index}"].media)
                     analise[f'offset{axis}'] = round(globals()[f"medMov{model}_{axis}_{angle}_{index}"].media, 4)
 
             Pos.append(posicao)
@@ -1162,31 +1268,19 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             """
             offsetYFixo = 0 #0.9
             offsetXFixo = 0 #4.5
+
             #xNOVO = analise['X']+analise['offsetX']+MX+offsetXFixo
             xNOVO = -round(cameCent['X']-posicao['X']-MX, 4)+parafCent['X']+offsetXFixo
-
-            #Fast.M114(arduino)['X'] + (MX*-1) + (parafCent['X']-cameCent['X'])
-            #yNovo = mm2coordinate(mm2coordinate(Fast.M114(arduino)['Y'], reverse=True) + (MY*-1) + (mm2coordinate(parafCent['X'], reverse=True) - mm2coordinate(cameCent['X'], reverse=True)))
-
-            # yNOVO = mm2coordinate(mm2coordinate(analise['Y']+analise['offsetY'], reverse=True)+MY+offsetYFixo)
             yNOVO = mm2coordinate(mm2coordinate(parafCent['Y'], reverse=True)+MY+offsetYFixo)
-
             posicao = {
                 'X': xNOVO,   
                 'Y': yNOVO,
                 'A': posicao['A']
             }
 
-
-            # posicao = {
-            #     'X': -round(cameCent['X']-posicao['X']-MX, 4)+parafCent['X'],
-            #     'Y': -round(cameCent['Y']-posicao['Y']+mm2coordinate(MY), 4)+parafCent['Y'],
-            #     'A': posicao['A']
-            # }
-                                #Fast.sendGCODE(arduino, f"g0  E{posicao['A']} F{xMaxFed}")
             Fast.sendGCODE(arduino, f"g0 Y{posicao['Y']} X{posicao['X']} F{yMaxFed}")
-                        
-            Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'],  parafusaCommand['mm'], zFRPD2, zFRPU2)
+
+            deuBoa = Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'],  parafusaCommand['mm'], zFRPD2, zFRPU2)
             parafusadas += 1
 
         temp = list(selected[modelo_atual])
@@ -1198,20 +1292,24 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
         except (ValueError, IndexError):
             break
 
-        #Fast.sendGCODE(arduino, f"G0 Y{analise['Y']} X{analise['X']} E{angle} F{yMaxFed}")  
         Fast.sendGCODE(arduino, f"G0 X{round(analise['X']+analise['offsetX'], 4)} Y{round(analise['Y']+analise['offsetY'], 4)} A{angle} F{yMaxFed}")   
+
         if MX and MY:
             if globals()["pecaReset"] >= 3:
                 Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, reset=True, Pega=True)
                 globals()["pecaReset"] = 0
             else:
                 Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, Pega=True)
-        elif DebugPictures:
-            d = datetime.now()
-            cv2.imwrite(
-                f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_NE.jpg", cv2.resize(frame, None, fx=0.3, fy=0.3))
-            cv2.imwrite(
-                f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_FE.jpg", cv2.resize(img_draw, None, fx=0.3, fy=0.3))
+        else:
+            tt = timeit.default_timer()
+            while timeit.default_timer() - tt <= 2:
+                pass
+            if DebugPictures:
+                d = datetime.now()
+                cv2.imwrite(
+                    f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_NE.jpg", cv2.resize(frame, None, fx=0.3, fy=0.3))
+                cv2.imwrite(
+                    f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_FE.jpg", cv2.resize(img_draw, None, fx=0.3, fy=0.3))
 
     Fast.sendGCODE(arduino, f"G0 A360 F{xMaxFed}")
     return Pos, parafusadas
@@ -1357,7 +1455,7 @@ async def funcs():
 async def stopProcess():
     global intencionalStop
     intencionalStop = True
-    operation["operation"]["finished"] = True
+    operation["operation"]["stopped"] = True
     await sendWsMessage("stopProcess_success")
 
 
@@ -1437,7 +1535,7 @@ async def logRefresh(timeout=1):
 
 
 async def startAutoCheck(date=None):
-    global arduino, nano, conexaoStatusArdu, conexaoStatusNano, threadStatus, infoCode, assembly
+    global arduino, nano, conexaoStatusArdu, conexaoStatusNano, threadStatus, infoCode, assembly, clp
     if date and platform.system() == "Linux":
         subprocess.run(
             ["date", "-s", f"{date[:len(date)-len('(Horário Padrão de Brasília)')]}"])
@@ -1492,6 +1590,10 @@ async def startAutoCheck(date=None):
                 SerialPath='Json/serial.json', name='Nano')
             if status_nano:
                 conexaoStatusNano = True
+                for _ in range (3):
+                    verificaCLP(nano) #Limpa buffer de conexão.
+                clp = CLP(nano, 0.1)
+                clp.start()
             else:
                 raise TypeError
         except TypeError:
@@ -1540,6 +1642,7 @@ async def startAutoCheck(date=None):
                         print(f"'thread{str(x)}' parou com sucesso.. \n")
                     except (KeyError, RuntimeError):
                         pass
+                clp.stop()
                 appTh.stop()
         except Exception as Exp:
             connection["connectionStatus"] = "Falha ao inicializar cameras!!!"
@@ -1576,7 +1679,10 @@ async def startProcess(parm):
     NewMont = Process(qtd, Fast.randomString(
         tamanho=5, pattern=""), model=modelo_atual, only=only)
     NewMont.start()
+    operation["operation"]["stopped"] = False
     operation["operation"]["finished"] = False
+    operation["operation"]["running"] = True
+    operation["operation"]["started"] = True
     operation["operation"]["placed"] = 0
     operation["operation"]["total"] = qtd if qtd < 999 else 0
     await sendWsMessage("update", operation)
@@ -1610,8 +1716,9 @@ async def updateProduction(cicleSeconds, valor):
         prodd["today"]["wrong"] += 1
         prodd["total"]["wrong"] += 1
     current_time = datetime.now()
-    print(f"{current_time} vs {int(production['production']['productionPartList'][int(modelo_atual)]['production']['today']['day'])}")
+    print(f"{current_time.day} vs {int(prodd['today']['day'])}")
     if int(prodd["today"]["day"]) != int(current_time.day):
+        print("Atualizando Dia de Hoje...")
         prodd["yesterday"] = prodd["today"]
         # Zera o dia de hoje
         prodd["today"] = {"day": int(
@@ -1642,7 +1749,8 @@ async def updateProduction(cicleSeconds, valor):
     if valores:
         media = round(sum(valores) / len(valores), 1)
         prodd["today"]["timePerCicle"] = media
-    
+    Fast.writeJson('Json/production.json', production)
+
     tt = 0
     tr = 0
     tw = 0
@@ -1866,7 +1974,7 @@ if __name__ == "__main__":
         for axis in ['X', 'Y']:
             for angle in [0, 90, 180, 270]:
                 for stage in ["0", "1"]:
-                    globals()[f"medMov{model}_{axis}_{angle}_{stage}"] = mediaMovel(30, inicializador=Analise[model][str(angle)][stage][f"offset{axis}"])
+                    globals()[f"medMov{model}_{axis}_{angle}_{stage}"] = mediaMovel(10, inicializador=Analise[model][str(angle)][stage][f"offset{axis}"])
 
     # if mainParamters["Recover"]["Status"]:
     #     mainParamters["Recover"]["Status"] = False
@@ -1925,8 +2033,9 @@ if __name__ == "__main__":
     StartedStream = False
     intencionalStop = False
     AP = True
-    nano = "lixo"
-    arduino = "lixo"
+    nano = "Ponteiro_Thread"
+    arduino = "Ponteiro_Thread"
+    clp = "Ponteiro_Thread"
     wrongSequence = 0
     limitWrongSequence = 3
     portFront = machineParamters["configuration"]["informations"]["port"]

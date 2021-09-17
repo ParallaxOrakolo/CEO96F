@@ -4,24 +4,25 @@
             "name": "Total",
             "production": {
                 "total": {
-                    "total": 173,
-                    "rigth": 87,
-                    "wrong": 68,
-                    "timePerCicleMax": 27.5,
-                    "timePerCicleMin": 71.45
+                    "total": 317,
+                    "rigth": 124,
+                    "wrong": 169,
+                    "timePerCicleMax": 60.65,
+                    "timePerCicleMin": 47.05
                 },
                 "dailyAvarege": {
-                    "total": 6.8,
-                    "rigth": 4.5,
-                    "wrong": 2.2,
-                    "times": 11.8,
+                    "total": 39.300000000000004,
+                    "rigth": 18.3,
+                    "wrong": 18.0,
+                    "times": 20.700000000000003,
                     "week_total": [
                         1,
                         11,
                         13,
                         10,
                         10,
-                        21
+                        21,
+                        209
                     ],
                     "week_rigth": [
                         3,
@@ -29,7 +30,8 @@
                         7,
                         7,
                         6,
-                        14
+                        14,
+                        85
                     ],
                     "week_wrong": [
                         2,
@@ -37,7 +39,8 @@
                         3,
                         3,
                         4,
-                        6
+                        6,
+                        104
                     ],
                     "week_times": [
                         2.5,
@@ -45,22 +48,23 @@
                         3.0,
                         5.5,
                         7.0,
-                        26.95
+                        26.95,
+                        24.25
                     ]
                 },
                 "yesterday": {
                     "day": 13,
-                    "total": 16,
-                    "rigth": 11,
-                    "wrong": 4,
-                    "timePerCicle": 22.95
+                    "total": 209,
+                    "rigth": 85,
+                    "wrong": 104,
+                    "timePerCicle": 24.25
                 },
                 "today": {
                     "day": 14,
-                    "total": 157,
-                    "rigth": 76,
-                    "wrong": 64,
-                    "timePerCicle": 24.2,
+                    "total": 56,
+                    "rigth": 18,
+                    "wrong": 36,
+                    "timePerCicle": 53.349999999999994,
                     "timesPerCicles": [
                         0,
                         0,
@@ -76,24 +80,25 @@
                 "partNumber": 0,
                 "production": {
                     "total": {
-                        "total": 173,
-                        "rigth": 87,
-                        "wrong": 68,
+                        "total": 304,
+                        "rigth": 119,
+                        "wrong": 161,
                         "timePerCicleMax": 57.0,
                         "timePerCicleMin": 43.9
                     },
                     "dailyAvarege": {
-                        "total": 6.8,
-                        "rigth": 4.5,
-                        "wrong": 2.2,
-                        "times": 11.8,
+                        "total": 35.6,
+                        "rigth": 16.0,
+                        "wrong": 16.6,
+                        "times": 17.1,
                         "week_total": [
                             1,
                             6,
                             8,
                             5,
                             5,
-                            16
+                            16,
+                            208
                         ],
                         "week_rigth": [
                             3,
@@ -101,7 +106,8 @@
                             4,
                             3,
                             3,
-                            11
+                            11,
+                            85
                         ],
                         "week_wrong": [
                             2,
@@ -109,7 +115,8 @@
                             1,
                             2,
                             2,
-                            4
+                            4,
+                            103
                         ],
                         "week_times": [
                             5,
@@ -117,35 +124,16 @@
                             5,
                             6,
                             8,
-                            45.9
+                            45.9,
+                            48.5
                         ]
                     },
                     "yesterday": {
-                        "day": 14,
-                        "total": 16,
-                        "rigth": 11,
-                        "wrong": 4,
-                        "timePerCicle": 45.9,
-                        "timesPerCicles": [
-                            48.2,
-                            44.5,
-                            44.2,
-                            43.9,
-                            48.2,
-                            43.9,
-                            47.5,
-                            45.0,
-                            45.8,
-                            45.0,
-                            49.2
-                        ]
-                    },
-                    "today": {
                         "day": 15,
-                        "total": 157,
-                        "rigth": 76,
-                        "wrong": 64,
-                        "timePerCicle": 48.4,
+                        "total": 208,
+                        "rigth": 85,
+                        "wrong": 103,
+                        "timePerCicle": 48.5,
                         "timesPerCicles": [
                             45.8,
                             45.0,
@@ -222,7 +210,38 @@
                             49.3,
                             46.9,
                             47.3,
-                            49.3
+                            49.3,
+                            47.2,
+                            49.3,
+                            47.6,
+                            49.0,
+                            49.4,
+                            47.4,
+                            49.3,
+                            49.0,
+                            53.9
+                        ]
+                    },
+                    "today": {
+                        "day": 16,
+                        "total": 44,
+                        "rigth": 13,
+                        "wrong": 29,
+                        "timePerCicle": 50.9,
+                        "timesPerCicles": [
+                            52.1,
+                            50.5,
+                            49.2,
+                            48.5,
+                            52.8,
+                            51.0,
+                            52.5,
+                            52.1,
+                            49.3,
+                            56.1,
+                            48.3,
+                            49.3,
+                            49.4
                         ]
                     }
                 },
@@ -240,24 +259,25 @@
                 "partNumber": 1,
                 "production": {
                     "total": {
-                        "total": 0,
-                        "rigth": 0,
-                        "wrong": 0,
-                        "timePerCicleMax": -2,
-                        "timePerCicleMin": 99
+                        "total": 13,
+                        "rigth": 5,
+                        "wrong": 8,
+                        "timePerCicleMax": 64.3,
+                        "timePerCicleMin": 50.2
                     },
                     "dailyAvarege": {
-                        "total": 0,
-                        "rigth": 0,
-                        "wrong": 0,
-                        "times": 0,
+                        "total": 3.7,
+                        "rigth": 2.3,
+                        "wrong": 1.4,
+                        "times": 3.6,
                         "week_total": [
                             0,
                             5,
                             5,
                             5,
                             5,
-                            5
+                            5,
+                            1
                         ],
                         "week_rigth": [
                             0,
@@ -265,7 +285,8 @@
                             3,
                             4,
                             3,
-                            3
+                            3,
+                            0
                         ],
                         "week_wrong": [
                             0,
@@ -273,7 +294,8 @@
                             2,
                             1,
                             2,
-                            2
+                            2,
+                            1
                         ],
                         "week_times": [
                             0,
@@ -281,28 +303,35 @@
                             1,
                             5,
                             6,
-                            8
+                            8,
+                            0
                         ]
                     },
                     "yesterday": {
-                        "day": 13,
-                        "total": 0,
-                        "rigth": 0,
-                        "wrong": 0,
-                        "timePerCicle": 0,
-                        "timesPerCicles": []
-                    },
-                    "today": {
                         "day": 14,
-                        "total": 0,
+                        "total": 1,
                         "rigth": 0,
-                        "wrong": 0,
+                        "wrong": 1,
                         "timePerCicle": 0,
                         "timesPerCicles": [
                             0,
                             5,
                             8,
                             0
+                        ]
+                    },
+                    "today": {
+                        "day": 17,
+                        "total": 12,
+                        "rigth": 5,
+                        "wrong": 7,
+                        "timePerCicle": 55.8,
+                        "timesPerCicles": [
+                            50.2,
+                            51.6,
+                            64.3,
+                            53.1,
+                            59.8
                         ]
                     }
                 },

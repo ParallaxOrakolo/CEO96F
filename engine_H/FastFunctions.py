@@ -25,7 +25,7 @@ def removeEmptyFolders(path, removeRoot=True):
   # if folder empty, delete it
   files = os.listdir(path)
   if len(files) == 0 and removeRoot:
-    print ("Removing empty folder:", path)
+    #print ("Removing empty folder:", path)
     os.rmdir(path)
 
 def randomString(tamanho=20, pattern=''):

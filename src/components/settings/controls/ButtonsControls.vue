@@ -197,7 +197,7 @@
                 SEND_MESSAGE({
                   command: actions.SERIAL_MONITOR,
                   parameter:
-                    'T1 \n G90 E0 \n G0 E' + this.rotationZ
+                    'G90 A \n G0 E' + this.rotationZ
                     // getRealValueToMove(this.rotationZ, 'b') +
                     // getMaxFeedrate('b'),
                 });

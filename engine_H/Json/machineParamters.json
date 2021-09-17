@@ -281,7 +281,7 @@
                     },
                     "parafusadeiraCentro": {
                         "X": 254,
-                        "Y": 40.3,
+                        "Y": 40.1,
                         "Z": 132,
                         "E": null
                     },
@@ -384,7 +384,7 @@
                     "listed": false,
                     "type": "error",
                     "button_text": "Entendi",
-                    "button_action": "None"
+                    "button_action": "popupResponseSolve"
                 },
                 {
                     "code": 2,
@@ -392,7 +392,7 @@
                     "listed": false,
                     "type": "error",
                     "button_text": "Entendi",
-                    "button_action": "None"
+                    "button_action": "popupResponseSolve"
                 },
                 {
                     "code": 3,
@@ -400,7 +400,7 @@
                     "listed": false,
                     "type": "error",
                     "button_text": "Entendi",
-                    "button_action": "None"
+                    "button_action": "popupResponseSolve"
                 },
                 {
                     "code": 4,
@@ -408,7 +408,7 @@
                     "listed": false,
                     "type": "error",
                     "button_text": "Entendi",
-                    "button_action": "None"
+                    "button_action": "popupResponseSolve"
                 },
                 {
                     "code": 5,
@@ -416,7 +416,7 @@
                     "listed": false,
                     "type": "error",
                     "button_text": "Entendi",
-                    "button_action": "None"
+                    "button_action": "popupResponseSolve"
                 },
                 {
                     "code": 6,
@@ -424,7 +424,7 @@
                     "listed": false,
                     "type": "error",
                     "button_text": "Entendi",
-                    "button_action": "None"
+                    "button_action": "popupResponseSolve"
                 },
                 {
                     "code": 7,
@@ -432,7 +432,7 @@
                     "listed": false,
                     "type": "error",
                     "button_text": "Entendi",
-                    "button_action": "None"
+                    "button_action": "popupResponseSolve"
                 },
                 {
                     "code": 8,
@@ -440,7 +440,7 @@
                     "listed": false,
                     "type": "error",
                     "button_text": "Entendi",
-                    "button_action": "None"
+                    "button_action": "popupResponseSolve"
                 },
                 {
                     "code": 11,
@@ -448,7 +448,7 @@
                     "listed": false,
                     "type": "error",
                     "button_text": "Entendi",
-                    "button_action": "None"
+                    "button_action": "popupResponseSolve"
                 },
                 {
                     "code": 12,
@@ -456,7 +456,7 @@
                     "listed": true,
                     "type": "error",
                     "button_text": "Entendi",
-                    "button_action": "None"
+                    "button_action": "popupResponseSolve"
                 },
                 {
                     "code": 13,
@@ -464,7 +464,7 @@
                     "listed": true,
                     "type": "info",
                     "button_text": "Entendi",
-                    "button_action": "None"
+                    "button_action": "popupResponseSolve"
                 },
                 {
                     "code": 14,
@@ -472,7 +472,7 @@
                     "listed": false,
                     "type": "error",
                     "button_text": "Entendi",
-                    "button_action": "None"
+                    "button_action": "popupResponseSolve"
                 },
                 {
                     "code": 15,
@@ -480,7 +480,7 @@
                     "listed": false,
                     "type": "error",
                     "button_text": "Entendi",
-                    "button_action": "None"
+                    "button_action": "popupResponseSolve"
                 },
                 {
                     "code": 16,
@@ -496,7 +496,7 @@
                     "listed": false,
                     "type": "warning",
                     "button_text": "Entendi",
-                    "button_action": "None"
+                    "button_action": "popupResponseSolve"
                 },
                 {
                     "code": 18,
@@ -504,7 +504,7 @@
                     "listed": false,
                     "type": "warning",
                     "button_text": "Entendi",
-                    "button_action": "None"
+                    "button_action": "popupResponseSolve"
                 },
                 {
                     "code": 998,
@@ -512,7 +512,7 @@
                     "listed": true,
                     "type": "info",
                     "button_text": "Entendi",
-                    "button_action": "None"
+                    "button_action": "popupResponseSolve"
                 },
                 {
                     "code": 999,
