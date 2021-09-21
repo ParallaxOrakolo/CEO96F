@@ -136,7 +136,7 @@ class CLP(threading.Thread):
                 pass
             if not self._read_event.is_set():
                 a = verificaCLP(self.serial) 
-                if a !=  None and a >= 0:
+                if a !=  None and a > 0:
                     self.errorList.append(a)
                 self.errorList = self.removeDuplicate()
             
@@ -395,6 +395,7 @@ class Process(threading.Thread):
         self.nano = nano
         self.model = model
         self.id = id
+        self.status_estribo = "Errado"
         self.cor = getattr(Fast.ColorPrint, random.choice(
             ["YELLOW", "GREEN", "BLUE", "RED"]))
 
@@ -461,6 +462,7 @@ class Process(threading.Thread):
                     
                     print("~~"*10)
                     while not temPeça and not erroDetectado:
+                        Fast.sendGCODE(arduino, f"\n g90 \n G0 X200 Y0 F{xMaxFed}")
                         self.infoCode = clp.getStatus()
                         print("Esperando peça, infoCode:", self.infoCode)
                         for item in stopReasons:
@@ -508,7 +510,8 @@ class Process(threading.Thread):
                 break
             self.infoCode = clp.getStatus()
             if self.infoCode not in stopReasons and not intencionalStop:
-                if parafusados == len(selected[modelo_atual]):
+                print("Parafusados :", parafusados, "vs len()-1:",len(selected[modelo_atual])-1 )
+                if parafusados == len(selected[modelo_atual])-1:
                     # montar=sum(montar)
                     print("Montagem finalizada. infoCode:", self.infoCode)
                     print("Iniciando processo de validação.")
@@ -516,20 +519,20 @@ class Process(threading.Thread):
                         'machine']['defaultPosition']['validaParafuso']
 
                     Fast.sendGCODE(arduino, "G90")
-                    Fast.sendGCODE(arduino, f"G0 X{ValidaPos['X']} Y{ValidaPos['Y']} A360 f{yMaxFed}")
-                    Fast.M400(arduino)
+                    Fast.MoveTo(arduino, ('X', ValidaPos['X']), ('Y', ValidaPos['Y']), ('A', 360), ('F', yMaxFed))
+                    #Fast.M400(arduino)
 
                     # Fast.sendGCODE(arduino, "M42 P34 S0")      #aaaaaaaax
                     # Fast.sendGCODE(arduino, "M42 P33 S255")    #aaaaaaaax
 
                     #Fast.sendGCODE(arduino, "G28 Y") #aqui
 
-                    #Fast.sendGCODE(arduino, f"G0 E{ValidaPos['A']}, f{eMaxFed}")
+                    #Fast.MoveTo  arduino,  E{ValidaPos['A']}, f{eMaxFed}")
                     #Fast.M400(arduino)
 
                     validar = timeit.default_timer()
                     tt = timeit.default_timer()
-                    while timeit.default_timer() - tt <= 2.5:
+                    while timeit.default_timer() - tt <= 1.2:
                         frame = globals()[
                             'frame'+str(mainParamters["Cameras"]["screw"]["Settings"]["id"])]
                     #tempo modificado
@@ -602,7 +605,11 @@ class Process(threading.Thread):
             print("update Operation - Finish")
             await descarte(self.status_estribo)
             print(f"{self.cor} ID:{self.id}--> {self.rodada}{Fast.ColorPrint.ENDC}")
-            Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, Pega=True)
+            #Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, Pega=True) #LLLLLL
+    
+            Fast.sendGCODE(arduino, f"G90")
+            Fast.sendGCODE(arduino, f"G0 Z-5 F{zMaxFedDown}")
+            Fast.sendGCODE(arduino, f"G0 Z{125 if modelo_atual == '0' else 150} F{zMaxFedUp}")
         Filter.stop()
         await descarte(self.status_estribo)
         self.terminou = True
@@ -912,22 +919,25 @@ def mm2coordinate(x, c=160, aMin=148.509, reverse=False):
 
 def G28(Axis="A", offset=324, speed=50000):
     Fast.sendGCODE(arduino, F"G28 {Axis}")
-    Fast.sendGCODE(arduino, f"G0 {Axis}{offset} F{speed}")
+    Fast.MoveTo(arduino, (Axis, offset), ('F', yMaxFed))
     Fast.sendGCODE(arduino, f"G92 {Axis}0")
     Fast.sendGCODE(arduino, "G92.1")
     Fast.sendGCODE(arduino, f"M17 {Axis}")
 
 def HomingAll():
-    Fast.sendGCODE(arduino, "G28 Y")
-    Fast.sendGCODE(arduino, "G28 XAZ")
+
+    Fast.sendGCODE(arduino, "G28 YA")
     Fast.sendGCODE(arduino, "G0 A324 F50000")
+    Fast.sendGCODE(arduino, f"M42 P32 S255")
+    Fast.sendGCODE(arduino, "G28 XZ")
     #Fast.G28(arduino, offset=-28)
     #Fast.sendGCODE(arduino, "G28 Z")
     Fast.sendGCODE(arduino, "G92 X0 Y0 Z0 A0")
     Fast.sendGCODE(arduino, "G92.1")
     Fast.sendGCODE(arduino, "M17 X Y Z A")
     #Parafusa(132, mm=5, voltas=20)
-    Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, Pega=True)
+    #Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, Pega=True)
+    Fast.sendGCODE(arduino, F'G0 Z{125 if modelo_atual == "0" else 150} F{zMaxFedUp}')
 
 
 def verificaCLP(serial):
@@ -964,58 +974,40 @@ def verificaCLP(serial):
 
 
 def Parafusa(pos, voltas=2, mm=0, ZFD=100, ZFU=100, dowLess=False, reset=False, Pega=False):
-    #Fast.M400(arduino)     #aqui
-    #print(pos, mm, voltas)
+    speed = int(zMaxFedDown*(ZFD/100))
     deuBoa = True
     Fast.sendGCODE(arduino, f'g91')
-    if dowLess:
-        Fast.sendGCODE(arduino, f"g38.3 Z-105 F{int(zMaxFedDown*(ZFD/100))}")
-        ZFD = 50
+    Fast.sendGCODE(arduino, f'g38.3 z-{pos} F{speed}')
+    Fast.MoveTo(arduino, ('Z', mm),  ('F' , speed) )
 
-    #Fast.M400(arduino) #aqui
-
-    Fast.sendGCODE(arduino, f'g38.3 z-{pos} F{int(zMaxFedDown*(ZFD/100))}')
-    Fast.sendGCODE(arduino, f'g0 z{mm} F{zMaxFedUp}')
-
-    if not DebugPreciso:
-        Fast.sendGCODE(arduino, f"M42 p32 s255") #desativado-ruido
-        t0 = timeit.default_timer()
-
-        while timeit.default_timer() - t0 < (voltas*40/500 if not Pega else voltas*40/3000):
-            try:
-                if Fast.M119(arduino)["z_probe"] == "open" and  not Pega:
-                    Fast.sendGCODE(arduino, f"M42 p32 s0")
-                    break
-            except KeyError:
-                pass
-        else:
-            if not Pega:
-                Fast.sendGCODE(arduino, 'G91')
-                Fast.sendGCODE(arduino, 'G0 Z10')
-                Fast.M119(arduino)["z_probe"]
-                Fast.sendGCODE(arduino, "G4 S0.2")
-                Fast.sendGCODE(arduino, f'g38.3 z-{pos} F{int(zMaxFedDown*(ZFD/100))}')
-                Fast.sendGCODE(arduino, f'g0 z{mm} F{zMaxFedUp}')
-                Fast.M119(arduino)["z_probe"]
-                t0 = timeit.default_timer()
-                while timeit.default_timer() - t0 < (voltas*40/500):
-                    try:
-                        if Fast.M119(arduino)["z_probe"] == "open":
-                            Fast.sendGCODE(arduino, f"M42 p32 s0")
-                            break
-                    except KeyError:
-                        pass
-                else:
-                    deuBoa = False
-        Fast.sendGCODE(arduino, f"M42 p32 s0")
+    t0 = timeit.default_timer()
+    while (timeit.default_timer() - t0 < (((voltas*40)/500)if not Pega else ((voltas*40)/3000))):
+        st = Fast.M119(arduino)["z_probe"]
+        print("Status Atual: ", st, "Time:",round(timeit.default_timer() - t0,2))
+        if st == "open":
+            deuBoa = True
+            break
+    else:                                                                                       # Caso o temo estoure e o loop termine de forma natural
+        if not Pega:   
+            Fast.sendGCODE(arduino, 'G91')                                                      # Garate que está em posição relativa 
+            Fast.MoveTo(arduino, ('Z', abs(mm)+10),  ('F' , speed))                                 # Sobe 20mm no eixo Z
+            Fast.sendGCODE(arduino, f'g38.3 z-{pos} F{speed}')             # Desce até tocar na peça usando o probe
+            Fast.MoveTo(arduino, ('Z', mm),  ('F' , speed) )                                # Avança mais 'x'mm para garantir a rosca correta
+            t0 = timeit.default_timer()                                                         # Inicialiança o temporizador
+            while (timeit.default_timer() - t0 < (voltas*40/500)):                              # Enquanto um tempo 'x' definido com base no numero de voltas desejado não execer.
+                st = Fast.M119(arduino)["z_probe"]
+                print("Status Atual: ", st, "Time:",round(timeit.default_timer() - t0,2))       # Mostra o status do sensor
+                if st  == "open":                                                               # Se o sensor 'abrir', pois deu rosca até econtrar a ponta.
+                    deuBoa = True                                                               # Avisa que 
+                    break                                                                       # quebra o loop
+            else:                                                                               # Caso não consiga
+                deuBoa = False                                                                  # Avisa que deu ruim
 
     if reset:
         Fast.sendGCODE(arduino, "G28 Z")
     Fast.sendGCODE(arduino, 'g90')
-    Fast.sendGCODE(arduino, f'g0 z{pos} F{int(zMaxFedUp*(ZFU/100))}')
+    # Fast.sendGCODE(arduino, f'g0 z{pos} F{int(zMaxFedUp*(ZFU/100))}')
     return deuBoa
-    #print(f'g0 z{pos} F{int(zMaxFedUp*(ZFU/100))}')
-    # Fast.M400(arduino)
 
 
 async def descarte(valor="Errado", Deposito={"Errado": {"X": 230, "Y": 0}}):
@@ -1023,10 +1015,10 @@ async def descarte(valor="Errado", Deposito={"Errado": {"X": 230, "Y": 0}}):
     if not DebugPreciso:
         pos = machineParamters["configuration"]["informations"]["machine"]["defaultPosition"]["descarte"+valor]
         Fast.sendGCODE(arduino, f"G90")
-        Fast.sendGCODE(arduino, f"G0 X{pos['X']} Y{pos['Y']} f{yMaxFed}")
-        Fast.M400(arduino)
+        Fast.MoveTo(arduino, ('X', pos['X']), ('Y', pos['Y']), ('F', yMaxFed))
+        #Fast.M400(arduino)
         Fast.sendGCODE(arduino, "M42 P31 S0")
-        #Fast.sendGCODE(arduino, f"G0 A0 f{eMaxFed}")
+        #Fast.MoveTo  arduino,  A0 f{eMaxFed}")
         G28()
 #    Fast.M400(arduino)
 #    Fast.sendGCODE(arduino, f"G28 Y")
@@ -1057,9 +1049,11 @@ def PegaObjeto():
     pegaPos = machineParamters['configuration']['informations']['machine']['defaultPosition']['pegaTombador']
     Total0 = timeit.default_timer()
     Fast.sendGCODE(arduino, "G90")
-    Fast.sendGCODE(arduino, f"G0 X{pegaPos['X']} A0 F{xMaxFed}")
-    Fast.sendGCODE(arduino, f"G0 Y{pegaPos['Y']} F{yMaxFed}")
-    Fast.M400(arduino)
+    #Fast.MoveTo  arduino,  X{pegaPos['X']} A0 F{xMaxFed}")
+    Fast.MoveTo(arduino, ('X', pegaPos['X']),('A', 0), ('F', xMaxFed))
+    Fast.MoveTo(arduino, ('Y', pegaPos['Y']),('A', 0), ('F', yMaxFed))
+    #Fast.MoveTo  arduino,  Y{pegaPos['Y']} F{yMaxFed}")
+    #Fast.M400(arduino)
     Fast.sendGCODE(arduino, "M42 P31 S255")
     Fast.sendGCODE(arduino, "G4 S0.3")
     Fast.sendGCODE(arduino, "G28 Y")
@@ -1071,8 +1065,9 @@ def PegaObjeto():
 def alinhar():
     alin = machineParamters['configuration']['informations']['machine']['defaultPosition']['alinhaPeca']
     Fast.sendGCODE(arduino, 'G90')
-    Fast.sendGCODE(arduino, f"G0 X{alin['X']} f{xMaxFed}")
-    Fast.sendGCODE(arduino, f"G0 Y{alin['Y']} f{yMaxFed}")
+    #Fast.MoveTo  arduino,  X{alin['X']} f{xMaxFed}")
+    Fast.MoveTo(arduino, ('X', alin['X']), ('Y', alin['Y']),  ('F', yMaxFed))
+    #Fast.MoveTo  arduino,  Y{alin['Y']} f{yMaxFed}")
 
 
 def Process_Image_Screw(frames, lower, upper, AreaMin, AreaMax, name="ScrewCuts", model="1"):
@@ -1184,8 +1179,6 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
     Pos = []
     Fast.writeJson(f'Json/Analise.json', Analise)
     path = f"Images/Process/{ids}"
-    Fast.removeEmptyFolders("Images/Process")
-
     cameCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['camera0Centro']
     parafCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusadeiraCentro'].copy()
     #parafCent['Y'] = mm2coordinate(parafCent['Y'], reverse=True)
@@ -1214,13 +1207,19 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             analise = Analise[modelo_atual][str(angle)][index]
             # zzzzz print("Atual", lados, angle, index)
             # zzzzz print("Normal:", analise["X"], analise["Y"], '\n')
-            Fast.sendGCODE(arduino, f"G0 X{analise['X']+analise['offsetX']} Y{analise['Y']+analise['offsetY']} A{angle} F{yMaxFed}")
-            Fast.M400(arduino)
-            tt = timeit.default_timer()
-            while timeit.default_timer()-tt <= 2:
-                pass
+            #Fast.MoveTo  arduino,  X{analise['X']+analise['offsetX']} Y{analise['Y']+analise['offsetY']} A{angle} F{yMaxFed}")
+            Fast.MoveTo(arduino, ('X', analise['X']+analise['offsetX']), ('Y', analise['Y']+analise['offsetY']), ('A', angle), ('F', yMaxFed))
+            #Fast.M400(arduino)
+            MX, MY, nada, nada2 = Filter.getData()
+            if not MX or not MY:
+                tt = timeit.default_timer()
+                while timeit.default_timer()-tt <= 2:
+                    pass
             first = False
-        Fast.M400(arduino)
+            MX, MY = None, None
+        # else:
+        #     Fast.M400(arduino)
+
         posicao = Fast.M114(arduino)
 
         infoCode = clp.getStatus()
@@ -1275,14 +1274,15 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             posicao = {
                 'X': xNOVO,   
                 'Y': yNOVO,
-                'A': posicao['A']
+                'A': posicao['A'],
+                'Z': 125 if modelo_atual == "0" else 150
             }
 
-            Fast.sendGCODE(arduino, f"g0 Y{posicao['Y']} X{posicao['X']} F{yMaxFed}")
-
+            #Fast.MoveTo  arduino,  Y{posicao['Y']} X{posicao['X']} F{yMaxFed}")
+            Fast.MoveTo(arduino, ('X', posicao['X']), ('Y', posicao['Y']), ('Z', posicao['Z']), ('F', yMaxFed))
             deuBoa = Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'],  parafusaCommand['mm'], zFRPD2, zFRPU2)
-            parafusadas += 1
-
+            # Fast.MoveTo(arduino, ('Z', posicao['Z']), ('F', zMaxFedUp))
+            Fast.sendGCODE(arduino, F"g0 Z{posicao['Z']+10} F {zMaxFedUp}")
         temp = list(selected[modelo_atual])
         try:
             lados = temp[temp.index(lados) + 1]
@@ -1292,14 +1292,25 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
         except (ValueError, IndexError):
             break
 
-        Fast.sendGCODE(arduino, f"G0 X{round(analise['X']+analise['offsetX'], 4)} Y{round(analise['Y']+analise['offsetY'], 4)} A{angle} F{yMaxFed}")   
+        #Fast.MoveTo  arduino,  X{round(analise['X']+analise['offsetX'], 4)} Y{round(analise['Y']+analise['offsetY'], 4)} A{angl    e} F{yMaxFed}")
+        Fast.MoveTo(arduino, ('X', round(analise['X']+analise['offsetX'], 4)), ('Y',round(analise['Y']+analise['offsetY'], 4)), ('A', angle ), ('F', yMaxFed))
+        
 
         if MX and MY:
-            if globals()["pecaReset"] >= 3:
-                Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, reset=True, Pega=True)
-                globals()["pecaReset"] = 0
-            else:
-                Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, Pega=True)
+            if deuBoa:
+                parafusadas += 1
+                if globals()["pecaReset"] >= 3:
+                    Fast.sendGCODE(arduino, "G90")
+                    Fast.sendGCODE(arduino, f"G0 Z-5 F{zMaxFedDown}")
+                    Fast.sendGCODE(arduino, "G28 Z")
+                    Fast.sendGCODE(arduino, F"G0 Z{posicao['Z']} F{zMaxFedUp}")
+                    #Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, reset=True, Pega=True)
+                    globals()["pecaReset"] = 0
+                else:
+                    Fast.sendGCODE(arduino, f"G90")
+                    Fast.sendGCODE(arduino, f"G0 Z-5 F{zMaxFedDown}")
+                    Fast.sendGCODE(arduino, F"G0 Z{posicao['Z']} F{zMaxFedUp}")
+                    #Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, Pega=True)
         else:
             tt = timeit.default_timer()
             while timeit.default_timer() - tt <= 2:
@@ -1311,7 +1322,9 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                 cv2.imwrite(
                     f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_FE.jpg", cv2.resize(img_draw, None, fx=0.3, fy=0.3))
 
-    Fast.sendGCODE(arduino, f"G0 A360 F{xMaxFed}")
+    #Fast.MoveTo  arduino,  A360 F{xMaxFed}")
+    Fast.MoveTo(arduino, ('A', 360), ('F', xMaxFed))
+    
     return Pos, parafusadas
 
 
@@ -1679,6 +1692,7 @@ async def startProcess(parm):
     NewMont = Process(qtd, Fast.randomString(
         tamanho=5, pattern=""), model=modelo_atual, only=only)
     NewMont.start()
+    Fast.removeEmptyFolders("Images/Process")
     operation["operation"]["stopped"] = False
     operation["operation"]["finished"] = False
     operation["operation"]["running"] = True
@@ -1923,7 +1937,9 @@ def precisionTest(id):
     Fast.sendGCODE(arduino, "G90")
     while True:
         for x in range(6):
-            Fast.sendGCODE(arduino, f"G0 Y{mm2coordinate(mm)}")
+            #Fast.MoveTo  arduino,  Y{mm2coordinate(mm)}")
+            Fast.MoveTo(arduino, ('Y', mm2coordinate(mm)), ('F', yMaxFed))
+            
             Fast.M400(arduino)
             t0 =timeit.default_timer()
             while timeit.default_timer() - t0 <=2:
@@ -1931,10 +1947,13 @@ def precisionTest(id):
                     'frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])]    
             c += 1
             cv2.imwrite(f'TESTE_Image/{c}.jpg', frame)
-            Fast.sendGCODE(arduino, f"G0 Y{10}")
+            #Fast.MoveTo  arduino,  Y{10}")
+            Fast.MoveTo(arduino, ('Y', 10), ('F', yMaxFed))
             Fast.sendGCODE(arduino, "G91")
-            Fast.sendGCODE(arduino, f"G0 X{-50}")
-            Fast.sendGCODE(arduino, f"G0 X{50}")
+#            Fast.MoveTo  arduino,  X{-50}")
+            Fast.MoveTo(arduino, ('X', -50), ('F', xMaxFed))
+            #Fast.MoveTo  arduino,  X{50}")
+            Fast.MoveTo(arduino, ('X', 50), ('F', xMaxFed))
             Fast.sendGCODE(arduino, "G90")
             Fast.M400(arduino)
         Fast.sendGCODE(arduino, 'G28 Y')

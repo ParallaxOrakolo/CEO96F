@@ -216,6 +216,7 @@
                 "maxFeedrate": {
                     "xMax": 20000,
                     "yMax": 50000,
+                    "zMax": 10000,
                     "zMaxD": 15000,
                     "zMaxU": 8000,
                     "aMax": 50000,
@@ -280,7 +281,7 @@
                         "E": null
                     },
                     "parafusadeiraCentro": {
-                        "X": 254,
+                        "X": 256,
                         "Y": 40.1,
                         "Z": 132,
                         "E": null
@@ -290,7 +291,7 @@
                         "Y": null,
                         "Z": 150,
                         "E": null,
-                        "mm": -1.5,
+                        "mm": -3.5,
                         "voltas": 25
                     }
                 }

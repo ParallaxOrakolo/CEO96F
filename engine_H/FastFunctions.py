@@ -187,9 +187,9 @@ def sendGCODE(serial, command, **kargs):
         return ["Comando não enviado, falha na conexão com a serial."]
 
 
-def M114(serial, where=[("X:", " Y:"), ("Y:", " Z:"), ("Z:", " A:"), ("A:", " Count")]):
+def M114(serial, type='', where=[("X:", " Y:"), ("Y:", " Z:"), ("Z:", " A:"), ("A:", " Count")]):
     for _ in range(2):
-        Echo = (sendGCODE(serial, "M114", echo=True))[0]
+        Echo = (sendGCODE(serial, f"M114 {type}", echo=True))[0]
     try:
         Pos = []
         for get in where:
@@ -204,8 +204,8 @@ def M114(serial, where=[("X:", " Y:"), ("Y:", " Z:"), ("Z:", " A:"), ("A:", " Co
 def M119(serial, cut=": "):
     pos=[]
     key=[]
-    for _ in range(2):
-        Echo = (sendGCODE(serial, "M119", echo=True))[1:-1]
+    #for _ in range(2):
+    Echo = (sendGCODE(serial, "M119", echo=True))[1:-1]
         #print(Echo)
     for info in Echo:
         try:
@@ -259,6 +259,28 @@ def M400(arduino, pattern='', **kwargs):
         else:
             print("Saiu m400")
             raise MyException(f"Movimento não pode ser concluido dentro de {timeout} segundos.")
+
+
+def MoveTo(arduino, *args):
+    cords = ""
+    for pos in args:
+        axis = pos[0].upper()
+        pp = pos[1]
+        cords+=f"{axis}{pp} "
+    sendGCODE(arduino, f"G0 {cords}")
+    futuro = M114(arduino)
+    real = M114(arduino, 'R')
+    #while True:
+    a = [v for v in futuro.values()]
+    b = [v for v in real.values()]
+    while not all((a[i] - 0.5 <= b[i] <= a[i] + 0.5) == True for i in range(len(b))):
+        real = M114(arduino, 'R')
+        b = [v for v in real.values()]
+        #print(a, b)
+        
+    real = M114(arduino, 'R')
+    #print(real, futuro)
+    pass
 
 # Estabelece uma conexão com base em um arquivo de configuração personalizado.
 def SerialConnect(SerialPath='../Json/serial.json', name='arduino'):

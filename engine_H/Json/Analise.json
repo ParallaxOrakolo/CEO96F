@@ -4,10 +4,10 @@
             "0": {
                 "X": 240,
                 "Y": 5,
-                "Z": null,
+                "Z": 115,
                 "E": null,
-                "offsetX": 2.4567,
-                "offsetY": -0.2604
+                "offsetX": 1.1081,
+                "offsetY": -0.4477
             },
             "1": {
                 "X": 243,
@@ -22,7 +22,7 @@
             "0": {
                 "X": 240,
                 "Y": 6,
-                "Z": null,
+                "Z": 115,
                 "E": null,
                 "offsetX": 0,
                 "offsetY": 0
@@ -30,7 +30,7 @@
             "1": {
                 "X": 260,
                 "Y": 5,
-                "Z": null,
+                "Z": 115,
                 "E": null,
                 "offsetX": 0,
                 "offsetY": 0
@@ -40,15 +40,15 @@
             "0": {
                 "X": 265,
                 "Y": 6,
-                "Z": null,
+                "Z": 115,
                 "E": null,
-                "offsetX": 2.282,
-                "offsetY": -0.5902
+                "offsetX": 0.6669,
+                "offsetY": -0.5054
             },
             "1": {
                 "X": 265,
                 "Y": 7,
-                "Z": null,
+                "Z": 115,
                 "E": null,
                 "offsetX": 0,
                 "offsetY": 0
@@ -58,18 +58,18 @@
             "0": {
                 "X": 239,
                 "Y": 6,
-                "Z": null,
+                "Z": 115,
                 "E": null,
-                "offsetX": 1.5196,
-                "offsetY": -0.47
+                "offsetX": -0.3174,
+                "offsetY": -0.8154
             },
             "1": {
                 "X": 263,
                 "Y": 6,
-                "Z": null,
+                "Z": 115,
                 "E": null,
-                "offsetX": 2.8617,
-                "offsetY": -0.4819
+                "offsetX": 1.1861,
+                "offsetY": -1.8083
             }
         }
     },
@@ -78,7 +78,7 @@
             "0": {
                 "X": 252,
                 "Y": 4,
-                "Z": null,
+                "Z": 150,
                 "E": null,
                 "offsetX": 0,
                 "offsetY": 0
@@ -86,7 +86,7 @@
             "1": {
                 "X": 249,
                 "Y": 6,
-                "Z": null,
+                "Z": 150,
                 "E": null,
                 "offsetX": 0,
                 "offsetY": 0
@@ -96,7 +96,7 @@
             "0": {
                 "X": 243,
                 "Y": 4,
-                "Z": null,
+                "Z": 150,
                 "E": null,
                 "offsetX": -0.172,
                 "offsetY": 0.7592
@@ -104,7 +104,7 @@
             "1": {
                 "X": 271,
                 "Y": 4,
-                "Z": null,
+                "Z": 150,
                 "E": null,
                 "offsetX": -0.6938,
                 "offsetY": 0.6301
@@ -114,7 +114,7 @@
             "0": {
                 "X": 259,
                 "Y": 4,
-                "Z": null,
+                "Z": 150,
                 "E": null,
                 "offsetX": 0,
                 "offsetY": 0
@@ -122,7 +122,7 @@
             "1": {
                 "X": 254,
                 "Y": 7,
-                "Z": null,
+                "Z": 150,
                 "E": null,
                 "offsetX": 0,
                 "offsetY": 0
@@ -132,7 +132,7 @@
             "0": {
                 "X": 243,
                 "Y": 5,
-                "Z": null,
+                "Z": 150,
                 "E": null,
                 "offsetX": -0.7753,
                 "offsetY": 0.5098
@@ -140,7 +140,7 @@
             "1": {
                 "X": 269,
                 "Y": 5,
-                "Z": null,
+                "Z": 150,
                 "E": null,
                 "offsetX": -0.5588,
                 "offsetY": 0.291
@@ -152,13 +152,13 @@
             "0": {
                 "X": 263,
                 "Y": 0,
-                "Z": null,
+                "Z": 150,
                 "E": null
             },
             "1": {
                 "X": 269,
                 "Y": 0,
-                "Z": null,
+                "Z": 150,
                 "E": null
             }
         },
