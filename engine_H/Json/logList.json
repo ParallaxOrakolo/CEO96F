@@ -1655,6 +1655,210 @@
             "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
             "type": "warning",
             "date": 1632169469
+        },
+        {
+            "code": 2,
+            "description": "Falta de Material - Arruela",
+            "type": "error",
+            "date": 1632224015
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632224068
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632224192
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632224345
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632224485
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632224610
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632225006
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632225124
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632225409
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632225504
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632225683
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632227595
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632227848
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632228050
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632228303
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632229225
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632229331
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632229617
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632229746
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632240468
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632240547
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632240714
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632240820
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632242363
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632247019
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632247156
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632247276
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632256833
+        },
+        {
+            "code": 2,
+            "description": "Falta de Material - Arruela",
+            "type": "error",
+            "date": 1632309398
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632309526
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632309616
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632309679
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632309817
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632309939
         }
     ]
 }

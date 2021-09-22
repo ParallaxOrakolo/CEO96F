@@ -180,15 +180,19 @@ class Hole_Filter(threading.Thread):
                 self.Mx = sum(self.mmx)/len(self.mmx)
                 self.My = sum(self.mmy)/len(self.mmy)
             else:
-                self.Mx = None
-                self.My = None
-                self.mmx = []
-                self.mmy = []
-
+                self.clear()
+    def clear(self):
+        self.Mx = None
+        self.My = None
+        self.mmx = []
+        self.mmy = []
 
     def getData(self):
         #print("Return: X[", self.Mx,"] | Y[", self.My,"]")
-        return self.Mx, self.My, self.frame, self.draw
+        edit(f"Retornando centro do filtro > X:{self.Mx}, Y:{self.My}")
+        a,b,c,d = self.Mx, self.My, self.frame, self.draw
+        self.clear()
+        return a,b,c,d
             
             
 class CamThread(threading.Thread):
@@ -442,7 +446,7 @@ class Process(threading.Thread):
         erroDetectado = False
         self.infoCode = clp.getStatus()
         print("Preparando para iniciar clico de montagem, infoCode:", self.infoCode)
-        G28()
+        # G28()
         while self.qtd != (self.corretas if self.only else self.rodada) and not intencionalStop and self.infoCode not in stopReasons:
             self.infoCode = clp.getStatus()
             print(f"Ciclo {self.rodada} iniciou, infoCode:", self.infoCode)
@@ -677,12 +681,21 @@ def findHole(imgAnalyse, minArea, maxArea, c_perimeter, HSValues, fixed_Point, e
 
                     cv2.line(chr_k, (int(
                         info_edge['centers'][0][0]), fixed_Point[1]), fixed_Point, (0, 0, 255), thickness=2)
-                    # (escala_real/(info_edge['dimension'][0]))
-                    px2mm = 0.026975195072293106
+                    #print((escala_real/(info_edge['dimension'][0])))
+                    #px2mm = 0.026975195072293106
+                    px2mm = 0.02318518518518518518518518518519
+                    #x = 0.02179487179487179487179487179487
                     px2mmEcho = px2mm
-                    distance_to_fix = (round(((info_edge['centers'][0][0] - fixed_Point[0])*px2mm), 4),
-                                       round(((info_edge['centers'][0][1] - fixed_Point[1])*px2mm), 4))
+                    a = info_edge['centers'][0][0] - fixed_Point[0]
+                    b = info_edge['centers'][0][1] - fixed_Point[1]
+                    distance_to_fix = (((a)*px2mm),
+                                       ((b)*px2mm))
 
+
+                    cv2.putText(chr_k, str(a), (50, 50), cv2.FONT_HERSHEY_COMPLEX_SMALL, 3, (255, 0, 0), 5)
+                    cv2.putText(chr_k, str(a*px2mm), (50, 100), cv2.FONT_HERSHEY_COMPLEX_SMALL, 3, (255, 0, 0), 5)
+                    cv2.putText(chr_k, str(b), (50, 150), cv2.FONT_HERSHEY_COMPLEX_SMALL, 3, (0, 0, 255), 5)
+                    cv2.putText(chr_k, str(b*px2mm), (50, 200), cv2.FONT_HERSHEY_COMPLEX_SMALL, 3, (0, 0, 255), 5)
                     # cv2.putText(chr_k, str(distance_to_fix[1]), (int(Circle['center'][0]), int(Circle['center'][1] / 2)),
                     #             cv2.FONT_HERSHEY_SIMPLEX, 1, (255, 0, 0), 3)
                     # cv2.putText(chr_k, str(distance_to_fix[0]), (int(Circle['center'][0] / 2), int(fixed_Point[1])),
@@ -905,9 +918,13 @@ def findScrew(imgAnalyse, FiltrosHSV, MainJson, processos, bh=0.3, **kwargs):
 
 def mm2coordinate(x, c=160, aMin=148.509, reverse=False):
     if not reverse:
-        return round(aMin-(c**2 - ((c**2-aMin**2)**0.5+x)**2)**0.5, 4)
+        r = aMin-(c**2 - ((c**2-aMin**2)**0.5+x)**2)**0.5
+        edit(f"Convertendo {x} em {r} | reverse=False\n")
+        return r
     else:
-        return round(((c**2 - (aMin-x)**2)**0.5)-(c**2 - aMin**2)**0.5, 4)
+        r = ((c**2 - (aMin-x)**2)**0.5)-(c**2 - aMin**2)**0.5
+        edit(f"Convertendo {x} em {r} | reverse=True\n")
+        return r
 
     # return round((0.0059*(x**2)) + (0.2741*x) + (0.6205), 2)       # Antiga
     # return round((0.0051*(x**2)) + (0.302*x) + (0.5339), 2)        # 19/07 - 2/2 0->30
@@ -990,15 +1007,15 @@ def Parafusa(pos, voltas=2, mm=0, ZFD=100, ZFU=100, dowLess=False, reset=False, 
     else:                                                                                       # Caso o temo estoure e o loop termine de forma natural
         if not Pega:   
             Fast.sendGCODE(arduino, 'G91')                                                      # Garate que está em posição relativa 
-            Fast.MoveTo(arduino, ('Z', abs(mm)+10),  ('F' , speed))                                 # Sobe 20mm no eixo Z
-            Fast.sendGCODE(arduino, f'g38.3 z-{pos} F{speed}')             # Desce até tocar na peça usando o probe
-            Fast.MoveTo(arduino, ('Z', mm),  ('F' , speed) )                                # Avança mais 'x'mm para garantir a rosca correta
+            Fast.MoveTo(arduino, ('Z', abs(mm)+10),  ('F' , speed))                             # Sobe 20mm no eixo Z
+            Fast.sendGCODE(arduino, f'g38.3 z-{pos} F{speed}')                                  # Desce até tocar na peça usando o probe
+            Fast.MoveTo(arduino, ('Z', mm),  ('F' , speed) )                                    # Avança mais 'x'mm para garantir a rosca correta
             t0 = timeit.default_timer()                                                         # Inicialiança o temporizador
             while (timeit.default_timer() - t0 < (voltas*40/500)):                              # Enquanto um tempo 'x' definido com base no numero de voltas desejado não execer.
                 st = Fast.M119(arduino)["z_probe"]
                 print("Status Atual: ", st, "Time:",round(timeit.default_timer() - t0,2))       # Mostra o status do sensor
                 if st  == "open":                                                               # Se o sensor 'abrir', pois deu rosca até econtrar a ponta.
-                    deuBoa = True                                                               # Avisa que 
+                    deuBoa = True                                                               # Avisa que deuBoa
                     break                                                                       # quebra o loop
             else:                                                                               # Caso não consiga
                 deuBoa = False                                                                  # Avisa que deu ruim
@@ -1168,6 +1185,10 @@ async def popupResponseSolve():
     global isSolved
     isSolved = True
 
+def edit(command, file='movments.txt'):
+    log = open(file, 'a')
+    log.write(f"{command} \n")
+    log.close()
 
 def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model="A", rodada=0, thread=None):
     global Analise, modelo_atual, Problema, px2mmEcho
@@ -1208,9 +1229,12 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             # zzzzz print("Atual", lados, angle, index)
             # zzzzz print("Normal:", analise["X"], analise["Y"], '\n')
             #Fast.MoveTo  arduino,  X{analise['X']+analise['offsetX']} Y{analise['Y']+analise['offsetY']} A{angle} F{yMaxFed}")
-            Fast.MoveTo(arduino, ('X', analise['X']+analise['offsetX']), ('Y', analise['Y']+analise['offsetY']), ('A', angle), ('F', yMaxFed))
+            edit(f"Analisando lado {lados}> X:{analise['X']} Y:{analise['Y']} A:{angle} F:{yMaxFed}\n")
+            Fast.MoveTo(arduino, ('X', analise['X']), ('Y', analise['Y']), ('A', angle), ('F', yMaxFed))
+            #Fast.MoveTo(arduino, ('X', analise['X']+analise['offsetX']), ('Y', analise['Y']+analise['offsetY']), ('A', angle), ('F', yMaxFed))
             #Fast.M400(arduino)
             MX, MY, nada, nada2 = Filter.getData()
+            edit(f"Offset encontrado X:{MX} Y:{MY} \n")
             if not MX or not MY:
                 tt = timeit.default_timer()
                 while timeit.default_timer()-tt <= 2:
@@ -1221,12 +1245,13 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
         #     Fast.M400(arduino)
 
         posicao = Fast.M114(arduino)
-
+        edit(f"Posicao atual da maquina > X:{posicao['X']} Y:{posicao['Y']} A:{posicao['A']} \n")
         infoCode = clp.getStatus()
         for item in stopReasons:
             if infoCode == item['code']:
                 return -1, infoCode
         MX, MY, frame, img_draw = Filter.getData()
+        edit(f"Offset encontrado X:{MX} Y:{MY} \n")
         if MX and MY:
             for axis in ['X', 'Y']:
                 if axis ==  'Y':
@@ -1269,8 +1294,10 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             offsetXFixo = 0 #4.5
 
             #xNOVO = analise['X']+analise['offsetX']+MX+offsetXFixo
-            xNOVO = -round(cameCent['X']-posicao['X']-MX, 4)+parafCent['X']+offsetXFixo
+            xNOVO = -(cameCent['X']-posicao['X']-MX)+parafCent['X']+offsetXFixo
             yNOVO = mm2coordinate(mm2coordinate(parafCent['Y'], reverse=True)+MY+offsetYFixo)
+            edit(f"Posicao de parafusar: X = -({cameCent['X']}-{posicao['X']}-{MX})+{parafCent['X']}+{offsetXFixo} >> {xNOVO} \n")
+            edit(f"Posicao de parafusar: Y = mm2coordinate(mm2coordinate({parafCent['Y']}, reverse=True)+{MY}+{offsetYFixo}) >> {yNOVO} \n")
             posicao = {
                 'X': xNOVO,   
                 'Y': yNOVO,
@@ -1293,23 +1320,28 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             break
 
         #Fast.MoveTo  arduino,  X{round(analise['X']+analise['offsetX'], 4)} Y{round(analise['Y']+analise['offsetY'], 4)} A{angl    e} F{yMaxFed}")
-        Fast.MoveTo(arduino, ('X', round(analise['X']+analise['offsetX'], 4)), ('Y',round(analise['Y']+analise['offsetY'], 4)), ('A', angle ), ('F', yMaxFed))
+        #Fast.MoveTo(arduino, ('X', round(analise['X']+analise['offsetX'], 4)), ('Y',round(analise['Y']+analise['offsetY'], 4)), ('A', angle ), ('F', yMaxFed))
+        edit(f"Analisando lado {lados}> X:{analise['X']} Y:{analise['Y']} A:{angle} F:{yMaxFed}\n")
+        Fast.MoveTo(arduino, ('X', analise['X']), ('Y', analise['Y']), ('A', angle ), ('F', yMaxFed))
         
 
         if MX and MY:
             if deuBoa:
+                edit(f"deuBoa \n")
                 parafusadas += 1
                 if globals()["pecaReset"] >= 3:
                     Fast.sendGCODE(arduino, "G90")
                     Fast.sendGCODE(arduino, f"G0 Z-5 F{zMaxFedDown}")
                     Fast.sendGCODE(arduino, "G28 Z")
-                    Fast.sendGCODE(arduino, F"G0 Z{posicao['Z']} F{zMaxFedUp}")
+                    #Fast.sendGCODE(arduino, F"G0 Z{posicao['Z']} F{zMaxFedUp}")
+                    Fast.MoveTo(arduino, ('Z' , posicao['Z']), ('F' , zMaxFedUp))
                     #Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, reset=True, Pega=True)
                     globals()["pecaReset"] = 0
                 else:
                     Fast.sendGCODE(arduino, f"G90")
                     Fast.sendGCODE(arduino, f"G0 Z-5 F{zMaxFedDown}")
-                    Fast.sendGCODE(arduino, F"G0 Z{posicao['Z']} F{zMaxFedUp}")
+                    #Fast.sendGCODE(arduino, F"G0 Z{posicao['Z']} F{zMaxFedUp}")
+                    Fast.MoveTo(arduino, ('Z' , posicao['Z']), ('F' , zMaxFedUp))
                     #Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, Pega=True)
         else:
             tt = timeit.default_timer()

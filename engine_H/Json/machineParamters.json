@@ -231,6 +231,13 @@
                     "ZU2": 100,
                     "E": 100
                 },
+                "maxAceleration": {
+                    "X": 1500,
+                    "Y": 50,
+                    "Z": 2500,
+                    "E": 5000,
+                    "A": 5000
+                },
                 "defaultPosition": {
                     "pegaTombador": {
                         "X": 15.6,
@@ -281,8 +288,8 @@
                         "E": null
                     },
                     "parafusadeiraCentro": {
-                        "X": 256,
-                        "Y": 40.1,
+                        "X": 251,
+                        "Y": 39.5,
                         "Z": 132,
                         "E": null
                     },
