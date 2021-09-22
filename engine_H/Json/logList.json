@@ -1973,6 +1973,12 @@
             "description": "Parada manual pelo operador",
             "type": "warning",
             "date": 1632328440
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632329773
         }
     ]
 }

@@ -6,8 +6,8 @@
                 "Y": 3.8,
                 "Z": 115,
                 "E": null,
-                "offsetX": 0.0987,
-                "offsetY": 3.6754
+                "offsetX": -0.2653,
+                "offsetY": 3.7088
             },
             "1": {
                 "X": 245,
@@ -42,8 +42,8 @@
                 "Y": 5,
                 "Z": 115,
                 "E": null,
-                "offsetX": -0.2919,
-                "offsetY": 3.2012
+                "offsetX": -0.1669,
+                "offsetY": 2.5746
             },
             "1": {
                 "X": 263,
@@ -60,16 +60,16 @@
                 "Y": 4.8,
                 "Z": 115,
                 "E": null,
-                "offsetX": 0.8212,
-                "offsetY": 3.1633
+                "offsetX": 0.801,
+                "offsetY": 2.5651
             },
             "1": {
                 "X": 264.6,
                 "Y": 4.6,
                 "Z": 115,
                 "E": null,
-                "offsetX": 0.033,
-                "offsetY": 2.9911
+                "offsetX": 0.0116,
+                "offsetY": 3.1856
             }
         }
     },

@@ -189,7 +189,7 @@ class Hole_Filter(threading.Thread):
 
     def getData(self):
         #print("Return: X[", self.Mx,"] | Y[", self.My,"]")
-        # edit"Retornando centro do filtro > X:{self.Mx}, Y:{self.My}")
+        # edit(f"Retornando centro do filtro > X:{self.Mx}, Y:{self.My}")
         a,b,c,d = self.Mx, self.My, self.frame, self.draw
         self.clear()
         return a,b,c,d
@@ -919,11 +919,11 @@ def findScrew(imgAnalyse, FiltrosHSV, MainJson, processos, bh=0.3, **kwargs):
 def mm2coordinate(x, c=160, aMin=148.509, reverse=False):
     if not reverse:
         r = aMin-(c**2 - ((c**2-aMin**2)**0.5+x)**2)**0.5
-        # edit"Convertendo {x} em {r} | reverse=False\n")
+        # edit(f"Convertendo {x} em {r} | reverse=False\n")
         return r
     else:
         r = ((c**2 - (aMin-x)**2)**0.5)-(c**2 - aMin**2)**0.5
-        # edit"Convertendo {x} em {r} | reverse=True\n")
+        # edit(f"Convertendo {x} em {r} | reverse=True\n")
         return r
 
     # return round((0.0059*(x**2)) + (0.2741*x) + (0.6205), 2)       # Antiga
@@ -1229,12 +1229,12 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             # zzzzz print("Atual", lados, angle, index)
             # zzzzz print("Normal:", analise["X"], analise["Y"], '\n')
             #Fast.MoveTo  arduino,  X{analise['X']+analise['offsetX']} Y{analise['Y']+analise['offsetY']} A{angle} F{yMaxFed}")
-            # edit"Analisando lado {lados}> X:{analise['X']} Y:{analise['Y']} A:{angle} F:{yMaxFed}\n")
+            # edit(f"Analisando lado {lados}> X:{analise['X']} Y:{analise['Y']} A:{angle} F:{yMaxFed}\n")
             Fast.MoveTo(arduino, ('X', analise['X']), ('Y', analise['Y']), ('A', angle), ('F', yMaxFed))
             #Fast.MoveTo(arduino, ('X', analise['X']+analise['offsetX']), ('Y', analise['Y']+analise['offsetY']), ('A', angle), ('F', yMaxFed))
             #Fast.M400(arduino)
             MX, MY, nada, nada2 = Filter.getData()
-            # edit"Offset encontrado X:{MX} Y:{MY} \n")
+            # edit(f"Offset encontrado X:{MX} Y:{MY} \n")
             if not MX or not MY:
                 tt = timeit.default_timer()
                 while timeit.default_timer()-tt <= 2:
@@ -1245,13 +1245,13 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
         #     Fast.M400(arduino)
 
         posicao = Fast.M114(arduino)
-        # edit"Posicao atual da maquina > X:{posicao['X']} Y:{posicao['Y']} A:{posicao['A']} \n")
+        # edit(f"Posicao atual da maquina > X:{posicao['X']} Y:{posicao['Y']} A:{posicao['A']} \n")
         infoCode = clp.getStatus()
         for item in stopReasons:
             if infoCode == item['code']:
                 return -1, infoCode
         MX, MY, frame, img_draw = Filter.getData()
-        # edit"Offset encontrado X:{MX} Y:{MY} \n")
+        # edit(f"Offset encontrado X:{MX} Y:{MY} \n")
         if MX and MY:
             for axis in ['X', 'Y']:
                 if axis ==  'Y':
@@ -1290,17 +1290,17 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             yNOVO = round(mm2coordinate(posYmm + invDiffY + (posParafYmm - poscameCentYmm)), 3)
             xNOVO = round(posXmm + invDiffX + (posParafXmm - poscameCentXmm), 3)
             """
-            offsetYFixo = 0 #0.9
-            offsetXFixo = 0 #4.5
 
             #xNOVO = analise['X']+analise['offsetX']+MX+offsetXFixo
-            Fast.MoveTo(arduino, ('X', -(cameCent['X']-posicao['X'])+parafCent['X']+offsetXFixo), ('Y', mm2coordinate(mm2coordinate(parafCent['Y'], reverse=True)+offsetYFixo)), ('Z', posicao['Z']), ('F', yMaxFed))
-            tt = timeit.default_timer()
-            while timeit.default_timer() - tt <= 1:
-                pass
-            xNOVO = -(cameCent['X']-posicao['X']-MX)+parafCent['X']+offsetXFixo
+            
+            #Fast.MoveTo(arduino, ('X', -(cameCent['X']-posicao['X'])+parafCent['X']+offsetXFixo), ('Y', mm2coordinate(mm2coordinate(parafCent['Y'], reverse=True)+offsetYFixo)), ('Z', posicao['Z']), ('F', yMaxFed))
+            # tt = timeit.default_timer()
+            # while timeit.default_timer() - tt <= 1:
+            #     pass
+
+            xNOVO = -(cameCent['X']-posicao['X']-MX)+parafCent['X']
             #yNOVO = mm2coordinate(mm2coordinate(parafCent['Y'], reverse=True)+MY+offsetYFixo)
-            yNOVO = ('Y', mm2coordinate(mm2coordinate(parafCent['Y'], reverse=True)+offsetYFixo))
+            yNOVO = parafCent['Y']
             # edit"Posicao de parafusar: X = -({cameCent['X']}-{posicao['X']}-{MX})+{parafCent['X']}+{offsetXFixo} >> {xNOVO} \n")
             # edit"Posicao de parafusar: Y = mm2coordinate(mm2coordinate({parafCent['Y']}, reverse=True)+{MY}+{offsetYFixo}) >> {yNOVO} \n")
             posicao = {
@@ -1327,13 +1327,13 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
 
         #Fast.MoveTo  arduino,  X{round(analise['X']+analise['offsetX'], 4)} Y{round(analise['Y']+analise['offsetY'], 4)} A{angl    e} F{yMaxFed}")
         #Fast.MoveTo(arduino, ('X', round(analise['X']+analise['offsetX'], 4)), ('Y',round(analise['Y']+analise['offsetY'], 4)), ('A', angle ), ('F', yMaxFed))
-        # edit"Analisando lado {lados}> X:{analise['X']} Y:{analise['Y']} A:{angle} F:{yMaxFed}\n")
+        # edit(f"Analisando lado {lados}> X:{analise['X']} Y:{analise['Y']} A:{angle} F:{yMaxFed}\n")
         Fast.MoveTo(arduino, ('X', analise['X']), ('Y', analise['Y']), ('A', angle ), ('F', yMaxFed))
         
 
         if MX and MY:
             if deuBoa:
-                # edit"deuBoa \n")
+                # edit(f"deuBoa \n")
                 parafusadas += 1
                 if globals()["pecaReset"] >= 3:
                     Fast.sendGCODE(arduino, "G90")
