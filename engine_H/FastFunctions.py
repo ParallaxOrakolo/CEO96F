@@ -127,11 +127,11 @@ def sendGCODE(serial, command, **kargs):
         
         # Garante que os motores estarão travados
 #        serial.write(str("M17 X Y Z E" + '{0}'.format('\n')).encode('ascii'))
-        log = open('logMarlin.txt', 'a')
-            #f.write(serial)
-        if command != 'F':
-            log.write(f"{command} \n")
-        log.close()
+        # log = open('logMarlin.txt', 'a')
+        #     #f.write(serial)
+        # if command != 'F':
+        #     log.write(f"{command} \n")
+        # log.close()
         # Limpa o buffer.
         serial.flush()
         serial.flushInput()
