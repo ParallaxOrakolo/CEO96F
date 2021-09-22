@@ -1979,6 +1979,30 @@
             "description": "Parada manual pelo operador",
             "type": "warning",
             "date": 1632329773
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632333089
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632333587
+        },
+        {
+            "code": 3,
+            "description": "Falta de Material - Parafuso",
+            "type": "error",
+            "date": 1632334383
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632334654
         }
     ]
 }

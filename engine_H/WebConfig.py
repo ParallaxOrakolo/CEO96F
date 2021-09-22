@@ -1141,10 +1141,11 @@ def Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues):
         # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
         #            Corta a imagem e faz as marcações               #
 
-        show = frame[Pontos["P0"][1]:Pontos["P0"][1] + Pontos["P1"][1],
-                     Pontos["P0"][0]:Pontos["P0"][0] + Pontos["P1"][0]]
-        pa, pb = tuple(Pontos["P0"]), (Pontos["P0"][0]+Pontos["P1"][0],
-                                       Pontos["P0"][1]+Pontos["P1"][1])
+        show = frame[Pontos["Origin"][1] - Pontos["P0"][1]:Pontos["Origin"][1] + Pontos["P1"][1],
+                     Pontos["Origin"][0] - Pontos["P0"][0]:Pontos["Origin"][0] + Pontos["P1"][0]]
+        # pa, pb = tuple(Pontos["P0"]), (Pontos["P0"][0]+Pontos["P1"][0],
+        #                                Pontos["P0"][1]+Pontos["P1"][1])
+        pa, pb = (Pontos["Origin"][0] - Pontos["P0"][0], Pontos["Origin"][1] - Pontos["P0"][1]), (Pontos["Origin"][0] + Pontos["P1"][0], Pontos["Origin"][1] + Pontos["P1"][1])
 
         cv2.drawMarker(img_draw, pa, (255, 50, 0), thickness=10)
         cv2.drawMarker(img_draw, pb, (50, 255, 0), thickness=10)
@@ -1159,11 +1160,11 @@ def Process_Image_Hole(frame, areaMin, areaMax, perimeter, HSValues):
         # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-= #
         #                           X-ray                            #
 
-        img_draw[Pontos["P0"][1]:Pontos["P0"][1] + show.shape[0],
-                 Pontos["P0"][0]:Pontos["P0"][0] + show.shape[1]] = R
+        img_draw[pa[1]:pb[1],
+                 pa[0]:pb[0]] = R
 
-        cv2.drawMarker(img_draw, (int((pa[0]+pb[0])/2),
-                                  int((pa[1]+pb[1])/2)),
+        cv2.drawMarker(img_draw, (Pontos["Origin"][0],
+                                  Pontos["Origin"][1]),
                        (255, 0, 0),
                        thickness=5,
                        markerSize=50)

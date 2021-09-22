@@ -4,9 +4,9 @@
             "name": "Total",
             "production": {
                 "total": {
-                    "total": 811,
-                    "rigth": 280,
-                    "wrong": 450,
+                    "total": 832,
+                    "rigth": 294,
+                    "wrong": 457,
                     "timePerCicleMax": 75.3,
                     "timePerCicleMin": 47.05
                 },
@@ -61,10 +61,10 @@
                 },
                 "today": {
                     "day": 14,
-                    "total": 124,
-                    "rigth": 28,
-                    "wrong": 89,
-                    "timePerCicle": 30.65,
+                    "total": 145,
+                    "rigth": 42,
+                    "wrong": 96,
+                    "timePerCicle": 29.95,
                     "timesPerCicles": [
                         0,
                         0,
@@ -80,9 +80,9 @@
                 "partNumber": 0,
                 "production": {
                     "total": {
-                        "total": 797,
-                        "rigth": 275,
-                        "wrong": 442,
+                        "total": 818,
+                        "rigth": 289,
+                        "wrong": 449,
                         "timePerCicleMax": 86.3,
                         "timePerCicleMin": 43.9
                     },
@@ -154,10 +154,10 @@
                     },
                     "today": {
                         "day": 22,
-                        "total": 124,
-                        "rigth": 28,
-                        "wrong": 89,
-                        "timePerCicle": 61.3,
+                        "total": 145,
+                        "rigth": 42,
+                        "wrong": 96,
+                        "timePerCicle": 59.9,
                         "timesPerCicles": [
                             59.7,
                             64.3,
@@ -186,7 +186,21 @@
                             56.3,
                             56.3,
                             54.9,
-                            61.2
+                            61.2,
+                            55.2,
+                            56.4,
+                            63.0,
+                            57.0,
+                            56.0,
+                            55.5,
+                            56.8,
+                            55.4,
+                            57.1,
+                            55.0,
+                            56.5,
+                            56.1,
+                            60.9,
+                            58.5
                         ]
                     }
                 },
