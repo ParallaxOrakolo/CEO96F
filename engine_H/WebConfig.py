@@ -915,24 +915,46 @@ def findScrew(imgAnalyse, FiltrosHSV, MainJson, processos, bh=0.3, **kwargs):
             return offset_screw, chr_k
     return offset_screw, chr_k
 
+# def mm2coordinate(Variacao = 0, hipotenusa = 160, aberturaMinima = 149.509):
+#     coordenadaAtual_A = (aberturaMinima - Fast.M114(arduino)['Y'])
+#     a = RAIZ(hipotenusa**2 - (RAIZ(hipotenusa**2-coordenadaAtual_A**2)+Variacao)**2)
+#     print(a, aberturaMinima-a)
+#     return aberturaMinima-a
 
-def mm2coordinate(x, c=160, aMin=148.509, reverse=False):
-    if not reverse:
-        r = aMin-(c**2 - ((c**2-aMin**2)**0.5+x)**2)**0.5
-        # edit(f"Convertendo {x} em {r} | reverse=False\n")
-        return r
+def mm2coordinate(Variacao = 0, cAtual=0, hipotenusa = 160, aberturaMinima = 149.509, simul=False):
+    if not simul:
+        coordenadaAtual_A = (aberturaMinima - Fast.M114(arduino)['Y'])
     else:
-        r = ((c**2 - (aMin-x)**2)**0.5)-(c**2 - aMin**2)**0.5
-        # edit(f"Convertendo {x} em {r} | reverse=True\n")
-        return r
+        coordenadaAtual_A = (aberturaMinima - cAtual)
+    a = RAIZ(hipotenusa**2 - (RAIZ(hipotenusa**2-coordenadaAtual_A**2)+Variacao)**2)
+    print(a, aberturaMinima-a)
+    return aberturaMinima-a
 
-    # return round((0.0059*(x**2)) + (0.2741*x) + (0.6205), 2)       # Antiga
-    # return round((0.0051*(x**2)) + (0.302*x) + (0.5339), 2)        # 19/07 - 2/2 0->30
-    # return round((-0.0231*(x**2))+(2.4001*x)+0.4472, 2)            # Reversa 19/07
-    # return round(((x**2)*0.0035)+(0.3518*x)+0.1181,2)              # 20/07 - 0,2/0,2 0 -> 6,2
+# def mm2coordinate(x, c=160, aMin=148.509, reverse=False):
+#     if not reverse:
+#         r = aMin-(c**2 - ((c**2-aMin**2)**0.5+x)**2)**0.5
+#         # edit(f"Convertendo {x} em {r} | reverse=False\n")
+#         return r
+#     else:
+#         r = ((c**2 - (aMin-x)**2)**0.5)-(c**2 - aMin**2)**0.5
+#         # edit(f"Convertendo {x} em {r} | reverse=True\n")
+#         return r
 
-    # Piragoras tava certo :/
-    return round(quero, 2)
+#     # return round((0.0059*(x**2)) + (0.2741*x) + (0.6205), 2)       # Antiga
+#     # return round((0.0051*(x**2)) + (0.302*x) + (0.5339), 2)        # 19/07 - 2/2 0->30
+#     # return round((-0.0231*(x**2))+(2.4001*x)+0.4472, 2)            # Reversa 19/07
+#     # return round(((x**2)*0.0035)+(0.3518*x)+0.1181,2)              # 20/07 - 0,2/0,2 0 -> 6,2
+
+#     # Piragoras tava certo :/
+#     return round(quero, 2)
+
+def RAIZ(x):
+    return x**0.5
+
+def A2B(Variacao = 0, hipotenusa = 160, aberturaMinima = 149.509):
+    coordenadaAtual_A = (aberturaMinima - Fast.M114(arduino, 'R'))
+    RAIZ(hipotenusa**2 - (RAIZ(hipotenusa**2-coordenadaAtual_A**2)+Variacao)**2)
+
 
 def G28(Axis="A", offset=324, speed=50000):
     Fast.sendGCODE(arduino, F"G28 {Axis}")
@@ -1074,6 +1096,8 @@ def PegaObjeto():
     Fast.sendGCODE(arduino, "M42 P31 S255")
     Fast.sendGCODE(arduino, "G4 S0.3")
     Fast.sendGCODE(arduino, "G28 Y")
+    Fast.sendGCODE(arduino, "G0 Y5")
+    Fast.sendGCODE(arduino, "G0 Y1")
     Fast.sendGCODE(arduino, "M17 X Y Z A")
     temPeça = False
 
@@ -1256,15 +1280,15 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
         if MX and MY:
             for axis in ['X', 'Y']:
                 if axis ==  'Y':
-                    CordenadaCC = posicao['Y']
-                    offMM = MY
-                    CordenadaMM = mm2coordinate(CordenadaCC)
-                    CordenadaMM += offMM
-                    CordenadaMMcc = mm2coordinate(CordenadaMM, reverse=True)
-                    offCC = CordenadaMMcc-CordenadaCC 
-                    globals()[f"medMov{model}_{axis}_{angle}_{index}"].recebido = round(offCC,4)
+                    # CordenadaCC = posicao['Y']
+                    # offMM = MY
+                    #CordenadaMM = mm2coordinate(CordenadaCC)
+                    #CordenadaMM += offMM
+                    #CordenadaMMcc = mm2coordinate(CordenadaMM, reverse=True)
+                    #offCC = CordenadaMMcc-CordenadaCC 
+                    globals()[f"medMov{model}_{axis}_{angle}_{index}"].recebido = mm2coordinate(MY)#offCC
                 else:
-                    globals()[f"medMov{model}_{axis}_{angle}_{index}"].recebido = round((MX/2), 4)
+                    globals()[f"medMov{model}_{axis}_{angle}_{index}"].recebido = MX
                 globals()[f"medMov{model}_{axis}_{angle}_{index}"].atualizaVetor()
 
             for axis in ['X', 'Y']:
@@ -1272,7 +1296,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                 if globals()[f"medMov{model}_{axis}_{angle}_{index}"].atualizaMedia():
                     # zzzzz print(globals()[f"medMov{model}_{axis}_{angle}_{index}"].valores)
                     # zzzzz print(globals()[f"medMov{model}_{axis}_{angle}_{index}"].media)
-                    analise[f'offset{axis}'] = round(globals()[f"medMov{model}_{axis}_{angle}_{index}"].media, 4)
+                    analise[f'offset{axis}'] = MX/10#round(globals()[f"medMov{model}_{axis}_{angle}_{index}"].media, 4)
 
             Pos.append(posicao)
             """
@@ -1300,8 +1324,17 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             #     pass
 
             xNOVO = -(cameCent['X']-posicao['X']-MX)+parafCent['X']
+
+            #xNOVO = -(cameCent['Y']-(mm2coordinate(MY*-1)))+parafCent['Y']
+
+
+
             #yNOVO = mm2coordinate(mm2coordinate(parafCent['Y'], reverse=True)+MY+offsetYFixo)
-            yNOVO = parafCent['Y']
+
+
+            yNOVO = mm2coordinate(MY, parafCent['Y'], simul=True)  #-(cameCent['Y']-(mm2coordinate(MY*-1)))+parafCent['Y']
+            #yNOVO = parafCent['Y']+mm2coordinate(MY)
+
             # edit"Posicao de parafusar: X = -({cameCent['X']}-{posicao['X']}-{MX})+{parafCent['X']}+{offsetXFixo} >> {xNOVO} \n")
             # edit"Posicao de parafusar: Y = mm2coordinate(mm2coordinate({parafCent['Y']}, reverse=True)+{MY}+{offsetYFixo}) >> {yNOVO} \n")
             posicao = {

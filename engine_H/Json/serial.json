@@ -1,6 +1,6 @@
 {
     "Ramps 1.4": {
-        "porta": "/dev/ttyUSB0",
+        "porta": "/dev/ttyUSB2",
         "velocidade": 115200,
         "expectedMessage": "echo:start"
     },

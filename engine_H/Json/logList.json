@@ -2003,6 +2003,66 @@
             "description": "Verficar se a parafuso travado",
             "type": "error",
             "date": 1632334654
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632336190
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632336752
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632339502
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632340136
+        },
+        {
+            "code": 8,
+            "description": "Verificar calha de alimetanção do Aro",
+            "type": "error",
+            "date": 1632405771
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632406511
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632408765
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632409282
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632413680
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632414035
         }
     ]
 }
