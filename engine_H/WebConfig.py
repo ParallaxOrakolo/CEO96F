@@ -611,9 +611,6 @@ class Process(threading.Thread):
             print(f"{self.cor} ID:{self.id}--> {self.rodada}{Fast.ColorPrint.ENDC}")
             #Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, Pega=True) #LLLLLL
     
-            Fast.sendGCODE(arduino, f"G90")
-            Fast.sendGCODE(arduino, f"G0 Z-5 F{zMaxFedDown}")
-            Fast.sendGCODE(arduino, f"G0 Z{125 if modelo_atual == '0' else 150} F{zMaxFedUp}")
         Filter.stop()
         await descarte(self.status_estribo)
         self.terminou = True
@@ -1090,14 +1087,15 @@ def PegaObjeto():
     Fast.sendGCODE(arduino, "G90")
     #Fast.MoveTo  arduino,  X{pegaPos['X']} A0 F{xMaxFed}")
     Fast.MoveTo(arduino, ('X', pegaPos['X']),('A', 0), ('F', xMaxFed))
-    Fast.MoveTo(arduino, ('Y', pegaPos['Y']),('A', 0), ('F', yMaxFed))
+    Fast.MoveTo(arduino, ('Y', pegaPos['Y']),('A', 0), ('Z', -5) ,('F', zMaxFedDown))
+    Fast.sendGCODE(arduino, "M42 P31 S255")
+    #Fast.sendGCODE(arduino, f"G90")
+    #Fast.sendGCODE(arduino, f"G0  F{zMaxFedDown}")
+    Fast.sendGCODE(arduino, f"G0 Y0 Z{125 if modelo_atual == '0' else 150} F{zMaxFedUp}")
     #Fast.MoveTo  arduino,  Y{pegaPos['Y']} F{yMaxFed}")
     #Fast.M400(arduino)
-    Fast.sendGCODE(arduino, "M42 P31 S255")
-    Fast.sendGCODE(arduino, "G4 S0.3")
+    #Fast.sendGCODE(arduino, "G4 S0.3")
     Fast.sendGCODE(arduino, "G28 Y")
-    Fast.sendGCODE(arduino, "G0 Y5")
-    Fast.sendGCODE(arduino, "G0 Y1")
     Fast.sendGCODE(arduino, "M17 X Y Z A")
     temPeça = False
 
@@ -2128,7 +2126,7 @@ if __name__ == "__main__":
     arduino = "Ponteiro_Thread"
     clp = "Ponteiro_Thread"
     wrongSequence = 0
-    limitWrongSequence = 50
+    limitWrongSequence = 3
     portFront = machineParamters["configuration"]["informations"]["port"]
     portBack = machineParamters["configuration"]["informations"]["portStream"]
     offSetIp = 0
