@@ -4,67 +4,67 @@
             "name": "Total",
             "production": {
                 "total": {
-                    "total": 964,
-                    "rigth": 368,
-                    "wrong": 511,
-                    "timePerCicleMax": 75.3,
+                    "total": 1017,
+                    "rigth": 409,
+                    "wrong": 522,
+                    "timePerCicleMax": 75.5,
                     "timePerCicleMin": 47.05
                 },
                 "dailyAvarege": {
-                    "total": 123.89999999999999,
-                    "rigth": 46.6,
-                    "wrong": 65.8,
-                    "times": 66.0,
+                    "total": 133.4,
+                    "rigth": 51.6,
+                    "wrong": 69.8,
+                    "times": 67.0,
                     "week_total": [
-                        21,
                         213,
                         50,
                         89,
                         177,
                         113,
-                        204
+                        204,
+                        88
                     ],
                     "week_rigth": [
-                        14,
                         88,
                         18,
                         44,
                         74,
                         15,
-                        73
+                        73,
+                        49
                     ],
                     "week_wrong": [
-                        6,
                         105,
                         30,
                         37,
                         78,
                         82,
-                        123
+                        123,
+                        34
                     ],
                     "week_times": [
-                        25.45,
                         24.75,
                         27.95,
                         31.15,
                         35.6,
                         29.0,
-                        57.2
+                        57.2,
+                        28.9
                     ]
                 },
                 "yesterday": {
                     "day": 13,
-                    "total": 204,
-                    "rigth": 73,
-                    "wrong": 123,
-                    "timePerCicle": 57.2
+                    "total": 88,
+                    "rigth": 49,
+                    "wrong": 34,
+                    "timePerCicle": 28.9
                 },
                 "today": {
                     "day": 14,
-                    "total": 86,
-                    "rigth": 48,
-                    "wrong": 34,
-                    "timePerCicle": 28.9,
+                    "total": 51,
+                    "rigth": 40,
+                    "wrong": 11,
+                    "timePerCicle": 58.349999999999994,
                     "timesPerCicles": [
                         0,
                         0,
@@ -80,134 +80,57 @@
                 "partNumber": 0,
                 "production": {
                     "total": {
-                        "total": 950,
-                        "rigth": 363,
-                        "wrong": 503,
+                        "total": 988,
+                        "rigth": 390,
+                        "wrong": 513,
                         "timePerCicleMax": 86.3,
                         "timePerCicleMin": 43.9
                     },
                     "dailyAvarege": {
-                        "total": 118.3,
-                        "rigth": 43.6,
-                        "wrong": 63.4,
-                        "times": 54.5,
+                        "total": 128.4,
+                        "rigth": 48.9,
+                        "wrong": 67.7,
+                        "times": 56.2,
                         "week_total": [
-                            16,
                             208,
                             45,
                             84,
                             172,
                             112,
-                            191
+                            191,
+                            87
                         ],
                         "week_rigth": [
-                            11,
                             85,
                             14,
                             41,
                             71,
                             15,
-                            68
+                            68,
+                            48
                         ],
                         "week_wrong": [
-                            4,
                             103,
                             29,
                             35,
                             76,
                             81,
-                            116
+                            116,
+                            34
                         ],
                         "week_times": [
-                            45.9,
                             48.5,
                             50.9,
                             56.3,
                             63.2,
                             58.0,
-                            58.6
+                            58.6,
+                            57.8
                         ]
                     },
                     "yesterday": {
-                        "day": 22,
-                        "total": 191,
-                        "rigth": 68,
-                        "wrong": 116,
-                        "timePerCicle": 58.6,
-                        "timesPerCicles": [
-                            59.7,
-                            64.3,
-                            57.1,
-                            59.7,
-                            57.9,
-                            54.0,
-                            57.5,
-                            56.3,
-                            63.8,
-                            70.4,
-                            64.7,
-                            63.2,
-                            63.7,
-                            64.5,
-                            63.0,
-                            62.1,
-                            64.8,
-                            64.6,
-                            63.1,
-                            67.5,
-                            68.4,
-                            66.8,
-                            54.8,
-                            54.7,
-                            56.3,
-                            56.3,
-                            54.9,
-                            61.2,
-                            55.2,
-                            56.4,
-                            63.0,
-                            57.0,
-                            56.0,
-                            55.5,
-                            56.8,
-                            55.4,
-                            57.1,
-                            55.0,
-                            56.5,
-                            56.1,
-                            60.9,
-                            58.5,
-                            55.8,
-                            55.8,
-                            55.5,
-                            55.9,
-                            54.4,
-                            55.1,
-                            54.1,
-                            56.4,
-                            60.8,
-                            55.3,
-                            54.6,
-                            55.2,
-                            58.3,
-                            60.5,
-                            56.2,
-                            56.1,
-                            56.6,
-                            56.6,
-                            62.4,
-                            56.2,
-                            56.5,
-                            56.1,
-                            57.7,
-                            56.7,
-                            55.0,
-                            58.1
-                        ]
-                    },
-                    "today": {
                         "day": 23,
-                        "total": 86,
+                        "total": 87,
                         "rigth": 48,
                         "wrong": 34,
                         "timePerCicle": 57.8,
@@ -261,6 +184,42 @@
                             59.9,
                             58.8
                         ]
+                    },
+                    "today": {
+                        "day": 24,
+                        "total": 37,
+                        "rigth": 27,
+                        "wrong": 10,
+                        "timePerCicle": 57.8,
+                        "timesPerCicles": [
+                            58.3,
+                            57.2,
+                            58.1,
+                            61.2,
+                            62.0,
+                            56.9,
+                            58.5,
+                            56.7,
+                            59.7,
+                            60.6,
+                            57.0,
+                            57.3,
+                            59.0,
+                            57.3,
+                            57.8,
+                            54.2,
+                            54.9,
+                            57.8,
+                            58.8,
+                            57.2,
+                            59.7,
+                            56.5,
+                            54.2,
+                            59.4,
+                            57.8,
+                            56.7,
+                            56.1
+                        ]
                     }
                 },
                 "mistakes": {
@@ -277,75 +236,85 @@
                 "partNumber": 1,
                 "production": {
                     "total": {
-                        "total": 14,
-                        "rigth": 5,
-                        "wrong": 8,
-                        "timePerCicleMax": 64.3,
+                        "total": 29,
+                        "rigth": 19,
+                        "wrong": 9,
+                        "timePerCicleMax": 64.7,
                         "timePerCicleMin": 50.2
                     },
                     "dailyAvarege": {
-                        "total": 5.6,
-                        "rigth": 3.0,
-                        "wrong": 2.4,
-                        "times": 11.5,
+                        "total": 5.0,
+                        "rigth": 2.7,
+                        "wrong": 2.1,
+                        "times": 10.8,
                         "week_total": [
                             5,
                             5,
                             5,
                             5,
-                            5,
                             1,
-                            13
+                            13,
+                            1
                         ],
                         "week_rigth": [
-                            3,
                             3,
                             4,
                             3,
                             3,
                             0,
-                            5
+                            5,
+                            1
                         ],
                         "week_wrong": [
                             2,
-                            2,
                             1,
                             2,
                             2,
                             1,
-                            7
+                            7,
+                            0
                         ],
                         "week_times": [
-                            5,
                             1,
                             5,
                             6,
                             8,
                             0,
-                            55.8
+                            55.8,
+                            0
                         ]
                     },
                     "yesterday": {
-                        "day": 17,
-                        "total": 13,
-                        "rigth": 5,
-                        "wrong": 7,
-                        "timePerCicle": 55.8,
+                        "day": 20,
+                        "total": 1,
+                        "rigth": 1,
+                        "wrong": 0,
+                        "timePerCicle": 0,
                         "timesPerCicles": [
-                            50.2,
-                            51.6,
-                            64.3,
-                            53.1,
-                            59.8
+                            57.4
                         ]
                     },
                     "today": {
-                        "day": 20,
-                        "total": 0,
-                        "rigth": 0,
-                        "wrong": 0,
-                        "timePerCicle": 0,
-                        "timesPerCicles": []
+                        "day": 24,
+                        "total": 14,
+                        "rigth": 13,
+                        "wrong": 1,
+                        "timePerCicle": 58.9,
+                        "timesPerCicles": [
+                            57.3,
+                            58.5,
+                            56.8,
+                            59.3,
+                            59.3,
+                            57.4,
+                            58.4,
+                            59.7,
+                            58.4,
+                            57.1,
+                            59.1,
+                            59.1,
+                            64.7
+                        ]
                     }
                 },
                 "mistakes": {

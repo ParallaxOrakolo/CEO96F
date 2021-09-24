@@ -2117,6 +2117,30 @@
             "description": "Falta de Material - Arruela",
             "type": "error",
             "date": 1632426181
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632481577
+        },
+        {
+            "code": 2,
+            "description": "Falta de Material - Arruela",
+            "type": "error",
+            "date": 1632482705
+        },
+        {
+            "code": 7,
+            "description": "Verificar alimentador de Aro",
+            "type": "error",
+            "date": 1632484485
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632486807
         }
     ]
 }
