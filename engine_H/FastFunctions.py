@@ -262,13 +262,15 @@ def M400(arduino, pattern='', **kwargs):
             raise MyException(f"Movimento não pode ser concluido dentro de {timeout} segundos.")
 
 
-def MoveTo(arduino, *args):
+def MoveTo(arduino, *args, **kargs):
     cords = ""
     for pos in args:
         axis = pos[0].upper()
         pp = pos[1]
         cords+=f"{axis}{pp} "
     sendGCODE(arduino, f"G0 {cords}")
+    if kargs.get("nonSync"):
+        return
     futuro = M114(arduino)
     real = M114(arduino, 'R')
     #while True:
