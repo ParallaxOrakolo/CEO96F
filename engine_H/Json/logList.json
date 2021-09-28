@@ -2567,6 +2567,264 @@
             "description": "Verificar alimentador de Aro",
             "type": "error",
             "date": 1632772597
+        },
+        {
+            "code": 3,
+            "description": "Falta de Material - Parafuso",
+            "type": "error",
+            "date": 1632774038
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632774345
+        },
+        {
+            "code": 3,
+            "description": "Falta de Material - Parafuso",
+            "type": "error",
+            "date": 1632775331
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632775479
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632776597
+        },
+        {
+            "code": 7,
+            "description": "Verificar alimentador de Aro",
+            "type": "error",
+            "date": 1632827777
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632828057
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632828358
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632828847
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632829769
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632829861
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632830203
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632830759
+        },
+        {
+            "code": 2,
+            "description": "Falta de Material - Arruela",
+            "type": "error",
+            "date": 1632831412
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632831634
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632831706
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632832012
+        },
+        {
+            "code": 5,
+            "description": "Pistão Travado - Parafuso",
+            "type": "error",
+            "date": 1632840584
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632840634
+        },
+        {
+            "code": 3,
+            "description": "Falta de Material - Parafuso",
+            "type": "error",
+            "date": 1632842805
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632843216
+        },
+        {
+            "code": 7,
+            "description": "Verificar alimentador de Aro",
+            "type": "error",
+            "date": 1632843422
+        },
+        {
+            "code": 3,
+            "description": "Falta de Material - Parafuso",
+            "type": "error",
+            "date": 1632844715
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632844886
+        },
+        {
+            "code": 2,
+            "description": "Falta de Material - Arruela",
+            "type": "error",
+            "date": 1632845780
+        },
+        {
+            "code": 2,
+            "description": "Falta de Material - Arruela",
+            "type": "error",
+            "date": 1632845825
+        },
+        {
+            "code": 2,
+            "description": "Falta de Material - Arruela",
+            "type": "error",
+            "date": 1632846120
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632846329
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632846579
+        },
+        {
+            "code": 7,
+            "description": "Verificar alimentador de Aro",
+            "type": "error",
+            "date": 1632846679
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632847617
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632850530
+        },
+        {
+            "code": 5,
+            "description": "Pistão Travado - Parafuso",
+            "type": "error",
+            "date": 1632851443
+        },
+        {
+            "code": 5,
+            "description": "Pistão Travado - Parafuso",
+            "type": "error",
+            "date": 1632851692
+        },
+        {
+            "code": 6,
+            "description": "Pistão travado - Conjunto",
+            "type": "error",
+            "date": 1632852238
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632852627
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632853011
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632853681
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632853897
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632857852
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1632860146
+        },
+        {
+            "code": 5,
+            "description": "Pistão Travado - Parafuso",
+            "type": "error",
+            "date": 1632860321
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632860804
         }
     ]
 }

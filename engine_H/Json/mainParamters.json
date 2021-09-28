@@ -52,7 +52,7 @@
         "all": false,
         "logs": true,
         "print": false,
-        "pictures": false,
+        "pictures": true,
         "markings": false,
         "realTime": false,
         "testControls": false,
@@ -62,7 +62,7 @@
     "Mask_Parameters": {
         "hole": {
             "perimeter": 0,
-            "areaMin": 16000,
+            "areaMin": 20000,
             "areaMax": 38000
         },
         "screw": {

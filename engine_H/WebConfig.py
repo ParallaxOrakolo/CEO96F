@@ -243,6 +243,7 @@ class CamThread(threading.Thread):
 
             rval, frame = cam.read()                  # Atualiza
             frame = cv2.blur(frame, (3, 3))
+            #if blurry <= 110:
             globals()[f'frame{previewName}'] = frame
             #if cv2.waitKey(1) == 27:
             #    break
@@ -510,9 +511,16 @@ class Process(threading.Thread):
                     Fast.MoveTo(arduino, ('X', ValidaPos['X']), ('Y', ValidaPos['Y']), ('A', 360), ('F', yMaxFed))
                     validar = timeit.default_timer()
                     tt = timeit.default_timer()
-                    while timeit.default_timer() - tt <= 1.2:
+                    frame = globals()[
+                            'frame'+str(mainParamters["Cameras"]["screw"]["Settings"]["id"])]
+                    blur = int(cv2.Laplacian(cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY), cv2.CV_64F).var())
+                    while blur < 16:
                         frame = globals()[
                             'frame'+str(mainParamters["Cameras"]["screw"]["Settings"]["id"])]
+                        blur = int(cv2.Laplacian(cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY), cv2.CV_64F).var())
+                        #print(blur)
+                        if timeit.default_timer() - tt >= 10:
+                            break
                     _, encontrados, failIndex = Process_Image_Screw(frame,
                                                                     Op.extractHSValue(
                                                                         mainParamters['Filtros']['HSV']['screw']["Valores"], 'lower'),
@@ -524,24 +532,33 @@ class Process(threading.Thread):
                                                                         self.model)
                                                                     )
 
-                    if DebugPictures:
-                        d = datetime.now()
-                        cv2.imwrite(
-                            f"Images/Process/{self.id}_{str(d.day)+str(d.month)}/validar/{self.rodada}/normal/{encontrados}.jpg", cv2.resize(frame, None, fx=0.3, fy=0.3))
-                        cv2.imwrite(
-                            f"Images/Process/{self.id}_{str(d.day)+str(d.month)}/validar/{self.rodada}/filtro/{encontrados}.jpg", cv2.resize(_, None, fx=0.3, fy=0.3))
+                    
                     validar = timeit.default_timer()-validar
-                    if  not any(x in map(int, list(selected[modelo_atual].keys())) for x in failIndex):
+                    if  not any(x in map(int, list(selected[modelo_atual].keys())) for x in failIndex) and blur >= 16:
                         self.status_estribo = "Certo"
                         self.corretas += 1
+                        #edit(f"Modelo: {modelo_atual}, id: {self.id}, rodada: {self.rodada}, encontrados: {encontrados}| Blur: {cv2.Laplacian(cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY), cv2.CV_64F).var()}, Status: OK\n")
+                        if erroDetectado:
+                            break
                     else:
                         print(f"Foram fixados apenas {encontrados} parafusos.")
+                        #edit(f"Modelo: {modelo_atual}, id: {self.id}, rodada: {self.rodada}, encontrados: {encontrados}| Blur: {cv2.Laplacian(cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY), cv2.CV_64F).var()}, Status: FAIL\n")
+                        if DebugPictures:
+                            d = datetime.now()
+                            cv2.imwrite(
+                                f"Images/Process/{self.id}_{str(d.day)+str(d.month)}/validar/{self.rodada}/normal/{encontrados}.jpg", cv2.resize(frame, None, fx=0.3, fy=0.3))
+                            cv2.imwrite(
+                                f"Images/Process/{self.id}_{str(d.day)+str(d.month)}/validar/{self.rodada}/filtro/{encontrados}.jpg", cv2.resize(_, None, fx=0.3, fy=0.3))
                         self.status_estribo = "Errado"
                         self.erradas += 1
+                        if erroDetectado:
+                            break
                 else:
                     print(f"Foram parafusados apenas {parafusados} parafusos")
                     self.status_estribo = "Errado"
                     self.erradas += 1
+                    if erroDetectado:
+                        break
             else:
                 self.status_estribo = "Errado"
                 self.erradas += 1
@@ -679,7 +696,7 @@ def setCameraFilter():
 
 
 def setCameraHsv(jsonPayload):
-    print("Alterando Payload da camera usando a  configuração do Front.")
+    #print("Alterando Payload da camera usando a  configuração do Front.")
     global camera
     newColors = []
     for filters in jsonPayload["filters"]:
@@ -688,7 +705,7 @@ def setCameraHsv(jsonPayload):
         filters = jsonPayload["filters"][filters]["gradient"]
         for hexColor in filters:
             hexColor = filters[hexColor]
-            colorGroup.append(Fast.Hex2HSVF(hexColor, print=True))
+            colorGroup.append(Fast.Hex2HSVF(hexColor, print=False))
         newColors.append(colorGroup)
         for index in range(len(colorGroup)):
             jsonPayload["filters"][filterName]["hsv"]["hue"][index] = colorGroup[index][0]
@@ -699,9 +716,9 @@ def setCameraHsv(jsonPayload):
 
 def setFilterWithCamera():
     global mainParamters, camera
-    print("Alterando valores da arquivo de configuração com base no payload da Camera")
+    #print("Alterando valores da arquivo de configuração com base no payload da Camera")
     for _ in camera["filters"]:
-        print("~"*20)
+     #   print("~"*20)
         # print(mainP["Filtros"]["HSV"][_]["Valores"])
         lower = {}
         upper = {}
@@ -714,7 +731,7 @@ def setFilterWithCamera():
         for k, v in Valoroes.items():
             for k1, v1 in v.items():
                 mainParamters["Filtros"]["HSV"][_]["Valores"][k][k1] = v1
-        print(_, ":", mainParamters["Filtros"]["HSV"][_]["Valores"])
+      #  print(_, ":", mainParamters["Filtros"]["HSV"][_]["Valores"])
 
 
 async def updateCamera(payload):
@@ -838,10 +855,11 @@ def HomingAll():
 
 
 def verificaCLP(serial):
-    global wrongSequence, limitWrongSequence, temPeça
-    if wrongSequence >= limitWrongSequence:
+    global wrongSequence, limitWrongSequence, temPeça, ScrewWrongSequence, limitScrewWrongSequence
+    #print("WS:", wrongSequence,'&' ,'SWS:', ScrewWrongSequence)
+    if (wrongSequence >= limitWrongSequence) or (ScrewWrongSequence >= limitScrewWrongSequence):
         print("Sequêcina de peças erradas:", wrongSequence)
-        wrongSequence = 0
+        ScrewWrongSequence, wrongSequence = 0, 0
         return 18
     
     echo = Fast.sendGCODE(serial, 'F', echo=True)
@@ -1047,9 +1065,10 @@ def edit(command, file='movments.txt'):
     log.close()
 
 def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model="A", rodada=0, thread=None):
-    global Analise, modelo_atual, Problema, px2mmEcho
+    global Analise, modelo_atual, Problema, px2mmEcho, ScrewWrongSequence, wrongSequence
     Filter = thread
-
+    #wrongSequence = 0
+    ScrewWrongSequence = 0
     first = True
     parafusadas = 0
     angle = 0
@@ -1090,7 +1109,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             first = False
             MX, MY = None, None
 
-        posicao = Fast.M114(arduino)
+        posicaoXY = Fast.M114(arduino)
         if not deuBoa:
             tt = timeit.default_timer()
             while timeit.default_timer() - tt <= 2:
@@ -1112,19 +1131,23 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                 if globals()[f"medMov{model}_{axis}_{angle}_{index}"].atualizaMedia():
                     analise[f'offset{axis}'] = MX/10#round(globals()[f"medMov{model}_{axis}_{angle}_{index}"].media, 4)
 
-            Pos.append(posicao)
+            Pos.append(posicaoXY)
 
-            xNOVO = -(cameCent['X']-posicao['X']-MX)+parafCent['X']
+            xNOVO = -(cameCent['X']-posicaoXY['X']-MX)+parafCent['X']
             yNOVO = mm2coordinate(MY, parafCent['Y'], simul=True)  #-(cameCent['Y']-(mm2coordinate(MY*-1)))+parafCent['Y']
             posicao = {
                 'X': xNOVO,   
                 'Y': yNOVO,
-                'A': posicao['A'],
+                'A': posicaoXY['A'],
                 'Z': 125 if modelo_atual == "0" else 135
             }
 
             Fast.MoveTo(arduino, ('X', posicao['X']), ('Y', posicao['Y']), ('Z', posicao['Z']), ('F', yMaxFed))
             deuBoa = Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'],  parafusaCommand['mm'], zFRPD2, zFRPU2)
+            if not deuBoa:
+                ScrewWrongSequence += 1
+            else:
+                ScrewWrongSequence = 0
             Fast.sendGCODE(arduino, F"g0 Z{posicao['Z']+10} F {zMaxFedUp}", nonSync=True)
         temp = list(selected[modelo_atual])
         try:
@@ -1153,8 +1176,10 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                     Fast.sendGCODE(arduino, f"G4 s0.5")
                     #Fast.sendGCODE(arduino, F"G0 Z{posicao['Z']} F{zMaxFedUp}")
                     Fast.MoveTo(arduino, ('Z' , posicao['Z']), ('F' , zMaxFedUp), nonSync=True)
+                    #edit(f"Modelo: {modelo_atual}, X:{posicaoXY['X']}, Y:{posicaoXY['Y']}, A:{posicaoXY['A']} | Blur: {cv2.Laplacian(cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY), cv2.CV_64F).var()}, Status: OK\n")
                     #Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'], 1, Pega=True)
         else:
+            #edit(f"Modelo: {modelo_atual}, X:{posicaoXY['X']}, Y:{posicaoXY['Y']}, A:{posicaoXY['A']} | Blur: {cv2.Laplacian(cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY), cv2.CV_64F).var()}, Status: FAIL\n")
             tt = timeit.default_timer()
             while timeit.default_timer() - tt <= 2:
                 pass
@@ -1166,7 +1191,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                     f"{path}_{str(d.day)+str(d.month)}/identificar/{rodada}/falha/L{lados}_FE.jpg", cv2.resize(img_draw, None, fx=0.3, fy=0.3))
 
     #Fast.MoveTo  arduino,  A360 F{xMaxFed}")
-    Fast.MoveTo(arduino, ('A', 360), ('F', xMaxFed), nonSync=True)
+    #Fast.MoveTo(arduino, ('A', 360), ('F', xMaxFed), nonSync=True)
     
     return Pos, parafusadas
 
@@ -1599,13 +1624,13 @@ async def updateProduction(cicleSeconds, valor):
             for k, v in appends.items():
                 while len(v) > 7:
                     v.pop(0)
-                media = round(sum(v) / len(v), 1)
+                media = round(sum(v) / len(v), 2)
                 print(k, v, media)
                 prodd["dailyAvarege"][k] = media
 
     valores = prodd["today"]["timesPerCicles"]
     if valores:
-        media = round(sum(valores) / len(valores), 1)
+        media = round(sum(valores) / len(valores), 2)
         prodd["today"]["timePerCicle"] = media
     Fast.writeJson('Json/production.json', production)
 
@@ -1669,35 +1694,35 @@ async def updateProduction(cicleSeconds, valor):
         dtw_ttpc.append(np.array(mod["production"]["dailyAvarege"]["week_times"], dtype=object))
     
     all_prodd["dailyAvarege"]["total"] = dat
-    all_prodd["dailyAvarege"]["rigth"] = dar
+    all_prodd["dailyAvarege"]["rigth"] = dat - daw
     all_prodd["dailyAvarege"]["wrong"] = daw
     all_prodd["dailyAvarege"]["times"] = datpc
 
     all_prodd["dailyAvarege"]["week_total"] = (np.sum(np.array(dtw_t), axis=0)).tolist() 
     all_prodd["dailyAvarege"]["week_rigth"] = (np.sum(np.array(dtw_r), axis=0)).tolist() 
     all_prodd["dailyAvarege"]["week_wrong"] = (np.sum(np.array(dtw_w), axis=0)).tolist() 
-    all_prodd["dailyAvarege"]["week_times"] = (np.average(np.array(dtw_ttpc), axis=0)).tolist() 
+    all_prodd["dailyAvarege"]["week_times"] = (np.around(np.average(np.array(dtw_ttpc), axis=0))).tolist()
     
     
 
     all_prodd["total"]["total"] = tt
-    all_prodd["total"]["rigth"] = tr
+    all_prodd["total"]["rigth"] = tt-tw
     all_prodd["total"]["wrong"] = tw
 
 
     all_prodd["today"]["total"] = tdt
-    all_prodd["today"]["rigth"] = tdr
+    all_prodd["today"]["rigth"] = tdt-tdw
     all_prodd["today"]["wrong"] = tdw
-    all_prodd["today"]["timePerCicle"] = tdtc/len(tdd)
+    all_prodd["today"]["timePerCicle"] = round(tdtc/len(tdd), 2)
 
     all_prodd["yesterday"]["total"] = ydt
-    all_prodd["yesterday"]["rigth"] = ydr
+    all_prodd["yesterday"]["rigth"] = ydt-ydw
     all_prodd["yesterday"]["wrong"] = ydw
-    all_prodd["yesterday"]["timePerCicle"] = ydtc/len(ydd)
+    all_prodd["yesterday"]["timePerCicle"] = round(ydtc/len(ydd), 2)
 
 
-    all_prodd["total"]["timePerCicleMin"] = ttmin/len(production["production"]["productionPartList"])
-    all_prodd["total"]["timePerCicleMax"] = ttmax/len(production["production"]["productionPartList"])
+    all_prodd["total"]["timePerCicleMin"] = round(ttmin/len(production["production"]["productionPartList"]), 2)
+    all_prodd["total"]["timePerCicleMax"] = round(ttmax/len(production["production"]["productionPartList"]), 2)
 
     
 
@@ -1907,7 +1932,9 @@ if __name__ == "__main__":
     arduino = "Ponteiro_Thread"
     clp = "Ponteiro_Thread"
     wrongSequence = 0
+    ScrewWrongSequence = 0
     limitWrongSequence = 6
+    limitScrewWrongSequence = 4
     portFront = machineParamters["configuration"]["informations"]["port"]
     portBack = machineParamters["configuration"]["informations"]["portStream"]
     offSetIp = 0

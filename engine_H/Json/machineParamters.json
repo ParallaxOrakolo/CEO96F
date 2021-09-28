@@ -289,7 +289,7 @@
                     },
                     "parafusadeiraCentro": {
                         "X": 253.9,
-                        "Y": 39.5,
+                        "Y": 39.9,
                         "Z": 132,
                         "E": null
                     },
@@ -310,7 +310,7 @@
                 "hole": {
                     "name": "hole",
                     "area": [
-                        16000,
+                        20000,
                         38000
                     ],
                     "gradient": {
