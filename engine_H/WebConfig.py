@@ -436,8 +436,7 @@ class Process(threading.Thread):
             if erroDetectado:
                 break
             self.rodada += 1
-            Fast.sendGCODE(arduino, "M42 P33 S0")
-            Fast.sendGCODE(arduino, "M42 P34 S255") #desativado-ruido
+            Fast.sendGCODE(arduino, "M42 P33 S0") #desativado-ruido
 
             self.status_estribo = "Errado"
             # ------------ Vai ate tombador e pega ------------ #
@@ -501,26 +500,35 @@ class Process(threading.Thread):
             if self.infoCode not in stopReasons and not intencionalStop:
                 if parafusados == len(selected[modelo_atual])-1:
                     Fast.sendGCODE(arduino, "M42 P34 S0")
-                    Fast.sendGCODE(arduino, "M42 P33 S255") #desativado-ruido
+                    
                     print("Montagem finalizada. infoCode:", self.infoCode)
                     print("Iniciando processo de validação.")
                     ValidaPos = machineParamters['configuration']['informations'][
                         'machine']['defaultPosition']['validaParafuso']
 
                     Fast.sendGCODE(arduino, "G90")
-                    Fast.MoveTo(arduino, ('X', ValidaPos['X']), ('Y', ValidaPos['Y']), ('A', 360), ('F', yMaxFed))
+                    Fast.sendGCODE(arduino, "g0 A360 f50000")
+                    Fast.MoveTo(arduino, ('X', ValidaPos['X']), ('Y', ValidaPos['Y']), ('F', yMaxFed))
+                    Fast.sendGCODE(arduino, "M42 P33 S255") #desativado-ruido
                     validar = timeit.default_timer()
                     tt = timeit.default_timer()
                     frame = globals()[
                             'frame'+str(mainParamters["Cameras"]["screw"]["Settings"]["id"])]
                     blur = int(cv2.Laplacian(cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY), cv2.CV_64F).var())
-                    while blur < 16:
+                    while blur < 18:
                         frame = globals()[
                             'frame'+str(mainParamters["Cameras"]["screw"]["Settings"]["id"])]
                         blur = int(cv2.Laplacian(cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY), cv2.CV_64F).var())
-                        #print(blur)
+                        print("Blur antes:", blur)
                         if timeit.default_timer() - tt >= 10:
                             break
+                    # tt = timeit.default_timer()
+                    # while timeit.default_timer() - tt < 1:
+                    #     pass
+                    # frame = globals()[
+                    #         'frame'+str(mainParamters["Cameras"]["screw"]["Settings"]["id"])]
+                    # blur = int(cv2.Laplacian(cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY), cv2.CV_64F).var())
+                    # print("Blur depois:", blur)
                     _, encontrados, failIndex = Process_Image_Screw(frame,
                                                                     Op.extractHSValue(
                                                                         mainParamters['Filtros']['HSV']['screw']["Valores"], 'lower'),
@@ -882,30 +890,37 @@ def Parafusa(pos, voltas=2, mm=0, ZFD=100, ZFU=100, dowLess=False, reset=False, 
     Fast.sendGCODE(arduino, f'g91')
     Fast.sendGCODE(arduino, f'g38.3 z-{pos} F{speed}')
     Fast.MoveTo(arduino, ('Z', mm),  ('F' , speed), nonSync=True)
-
     t0 = timeit.default_timer()
-    while (timeit.default_timer() - t0 < (((voltas*40)/500)if not Pega else ((voltas*40)/3000))):
+    while (timeit.default_timer() - t0 < (((voltas*40)/400)if not Pega else ((voltas*40)/3000))):
         st = Fast.M119(arduino)["z_probe"]
         #print("Status Atual: ", st, "Time:",round(timeit.default_timer() - t0,2))
         if st == "open":
             deuBoa = True
+            edit(F"OK 0 (Z: {Fast.M114(arduino, 'R')})")
             break
     else:                                                                                       # Caso o temo estoure e o loop termine de forma natural
+        edit(F"Falha 0 (Z: {Fast.M114(arduino, 'R')})")
         if not Pega:   
+            Fast.sendGCODE(arduino, f"M42 P32 S0")
             Fast.sendGCODE(arduino, 'G91')                                                      # Garate que está em posição relativa 
             Fast.MoveTo(arduino, ('Z', abs(mm)+10),  ('F' , speed), nonSync=True)                             # Sobe 20mm no eixo Z
+            Fast.sendGCODE(arduino, f'M201 Z{zMaxAcceleration/4}')
             Fast.sendGCODE(arduino, f'g38.3 z-{pos} F{speed}')                                  # Desce até tocar na peça usando o probe
             Fast.MoveTo(arduino, ('Z', mm),  ('F' , speed), nonSync=True)                                    # Avança mais 'x'mm para garantir a rosca correta
+            Fast.sendGCODE(arduino, f"M42 P32 S255")
             t0 = timeit.default_timer()                                                         # Inicialiança o temporizador
-            while (timeit.default_timer() - t0 < (voltas*40/500)):                              # Enquanto um tempo 'x' definido com base no numero de voltas desejado não execer.
+            while (timeit.default_timer() - t0 < (voltas*40/400)):                              # Enquanto um tempo 'x' definido com base no numero de voltas desejado não execer.
                 st = Fast.M119(arduino)["z_probe"]
          #       print("Status Atual: ", st, "Time:",round(timeit.default_timer() - t0,2))       # Mostra o status do sensor
                 if st  == "open":                                                               # Se o sensor 'abrir', pois deu rosca até econtrar a ponta.
                     deuBoa = True                                                               # Avisa que deuBoa
+                    edit(F"OK 1 (Z: {Fast.M114(arduino, 'R')['Z']})")
                     break                                                                       # quebra o loop
             else:                                                                               # Caso não consiga
+                edit(F"Falha 1 (Z: {Fast.M114(arduino, 'R')['Z']})")
                 deuBoa = False                                                                  # Avisa que deu ruim
-
+            Fast.sendGCODE(arduino, f"M42 P32 S255")
+            Fast.sendGCODE(arduino, f'M201 Z{zMaxAcceleration}')
     if reset:
         Fast.sendGCODE(arduino, "G28 Z")
     Fast.sendGCODE(arduino, 'g90')
@@ -1095,19 +1110,32 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
     def indexs(n , especial=[2,5]):
         a = "1" if int(n) in especial else "0"
         return a
-        
+    
+    breakNextLoop = False
     for lados, angle in selected[modelo_atual].items():
+        if breakNextLoop:
+            break
         if first:
             index = indexs(lados)
             analise = Analise[modelo_atual][str(angle)][index]
             Fast.MoveTo(arduino, ('X', analise['X']), ('Y', analise['Y']), ('A', angle), ('F', yMaxFed))
-            MX, MY, nada, nada2 = Filter.getData()
-            if not MX or not MY:
-                tt = timeit.default_timer()
-                while timeit.default_timer()-tt <= 2:
-                    pass
+            Fast.sendGCODE(arduino, "M42 P34 S255")
+            tt = timeit.default_timer()
+            blur = int(cv2.Laplacian(cv2.cvtColor(globals()['frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])],cv2.COLOR_BGR2GRAY), cv2.CV_64F).var())
+            while blur <= (16 if modelo_atual == "1" else 10):
+                blur = int(cv2.Laplacian(cv2.cvtColor(globals()['frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])],cv2.COLOR_BGR2GRAY), cv2.CV_64F).var())
+                print(blur)
+                if timeit.default_timer() - tt >= 5:
+                    breakNextLoop = True
+                    break
+            # MX, MY, nada, nada2 = Filter.getData()
+            # edit(f"Blur First 0 | lado {lados} :{blur}")
+            # if not MX or not MY:
+            #     tt = timeit.default_timer()
+            #     while timeit.default_timer()-tt <= 2:
+            #         pass
             first = False
-            MX, MY = None, None
+            # MX, MY = None, None
 
         posicaoXY = Fast.M114(arduino)
         if not deuBoa:
@@ -1119,6 +1147,8 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             if infoCode == item['code']:
                 return -1, infoCode
         MX, MY, frame, img_draw = Filter.getData()
+        #blur = int(cv2.Laplacian(cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY), cv2.CV_64F).var())
+        #edit(f"Blur First 1 | lado {lados} :{blur}")
         if MX and MY:
             for axis in ['X', 'Y']:
                 if axis ==  'Y':
@@ -1142,7 +1172,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
                 'Z': 125 if modelo_atual == "0" else 135
             }
 
-            Fast.MoveTo(arduino, ('X', posicao['X']), ('Y', posicao['Y']), ('Z', posicao['Z']), ('F', yMaxFed))
+            Fast.MoveTo(arduino, ('X', posicao['X']), ('Y', posicao['Y']), ('Z', posicao['Z']), ('F', yMaxFed), nonSync=True)
             deuBoa = Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'],  parafusaCommand['mm'], zFRPD2, zFRPU2)
             if not deuBoa:
                 ScrewWrongSequence += 1
@@ -2037,6 +2067,9 @@ if __name__ == "__main__":
     async def serialMonitor(obj):
         if str(obj).upper() == "REBOOT":
             await restart_raspberry()
+        elif str(obj).upper() == "G28 Z":
+            Fast.sendGCODE(arduino, 'G28 Z')
+            Fast.sendGCODE(arduino, 'G0 Z150 f10000')
         else:
             Fed = obj.find('F')
             if Fed != -1:

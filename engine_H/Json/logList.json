@@ -2825,6 +2825,174 @@
             "description": "Verficar se a parafuso travado",
             "type": "error",
             "date": 1632860804
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632915683
+        },
+        {
+            "code": 2,
+            "description": "Falta de Material - Arruela",
+            "type": "error",
+            "date": 1632917051
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632917392
+        },
+        {
+            "code": 6,
+            "description": "Pistão travado - Conjunto",
+            "type": "error",
+            "date": 1632918240
+        },
+        {
+            "code": 11,
+            "description": "Verficar se a parafuso travado",
+            "type": "error",
+            "date": 1632918527
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632919636
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632920019
+        },
+        {
+            "code": 18,
+            "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+            "type": "warning",
+            "date": 1632920417
+        },
+        {
+            "code": 69,
+            "description": "Emergência Ativada",
+            "type": "error",
+            "date": 1632920760
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1633001734
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1633003055
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1633004002
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1633004466
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1633007681
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1633008117
+        },
+        {
+            "code": 8,
+            "description": "Verificar calha de alimetanção do Aro",
+            "type": "error",
+            "date": 1633008859
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1633009745
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1633011384
+        },
+        {
+            "code": 7,
+            "description": "Verificar alimentador de Aro",
+            "type": "error",
+            "date": 1633012221
+        },
+        {
+            "code": 7,
+            "description": "Verificar alimentador de Aro",
+            "type": "error",
+            "date": 1633012655
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1633013665
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1633013764
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1633013846
+        },
+        {
+            "code": 8,
+            "description": "Verificar calha de alimetanção do Aro",
+            "type": "error",
+            "date": 1633014796
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1633017415
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1633021622
+        },
+        {
+            "code": 15,
+            "description": "Sem comunicação com a estação de montagem",
+            "type": "error",
+            "date": 1633026652
+        },
+        {
+            "code": 5,
+            "description": "Pistão Travado - Parafuso",
+            "type": "error",
+            "date": 1633026741
         }
     ]
 }
