@@ -158,8 +158,10 @@ export default {
       }
 
       // console.log("ultima data: ", data[0].data);
-      this.chartOptions.yaxis.min = Math.min(...data[0].data) - 15;
-      this.chartOptions.yaxis.max = Math.max(...data[0].data) + 15;
+      this.chartOptions.yaxis.min =  20;
+      this.chartOptions.yaxis.max =  80;
+      // this.chartOptions.yaxis.min = Math.min(...data[0].data) - 15;
+      // this.chartOptions.yaxis.max = Math.max(...data[0].data) + 15;
 
       return data;
     },
