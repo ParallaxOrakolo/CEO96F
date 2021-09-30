@@ -2993,6 +2993,18 @@
             "description": "Pistão Travado - Parafuso",
             "type": "error",
             "date": 1633026741
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1633027358
+        },
+        {
+            "code": 17,
+            "description": "Parada manual pelo operador",
+            "type": "warning",
+            "date": 1633029102
         }
     ]
 }
