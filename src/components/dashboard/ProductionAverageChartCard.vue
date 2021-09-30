@@ -68,7 +68,6 @@ export default {
     sampleGender: 1,
     intervalDays: 7,
     chartOptions: {
-      
       stroke: {
         curve: "smooth",
       },
@@ -161,13 +160,11 @@ export default {
         },
       ];
 
-      
       serie[0].data = data.production.dailyAvarege.week_wrong
-        .slice(0)
-        .reverse();
+        .slice(0);
       serie[1].data = data.production.dailyAvarege.week_total
         .slice(0)
-        .reverse();
+        ;
       // this.series[0].data = this.state.production.dailyAvarege.week_total.slice(0).reverse();
       // this.series[1].data = this.state.production.dailyAvarege.week_rigth.slice(0).reverse();
       // this.series[2].data = this.state.production.dailyAvarege.week_wrong.slice(0).reverse();
