@@ -137,12 +137,7 @@
             "port": 5000,
             "portStream": 8080,
             "users": {
-                "logged": {
-                    "name": "Rodrigo Gomes",
-                    "id": "123",
-                    "lastAcess": 1630420578915,
-                    "level": "Parallax"
-                },
+                "logged": false,
                 "levelList": [
                     {
                         "name": "Parallax",
@@ -170,8 +165,8 @@
                 "userList": [
                     {
                         "name": "Rodrigo Gomes",
-                        "id": "123",
-                        "lastAcess": 1630420578915,
+                        "id": "45585921835",
+                        "lastAcess": 1633376084411,
                         "level": "Parallax"
                     },
                     {

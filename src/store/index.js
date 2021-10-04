@@ -51,8 +51,12 @@ const store = new Vuex.Store({
       wrong: 5,
       placed: 0,
       finished: false,
-      onlyCorrectParts: false
+      running:false,
+      played: false,
+      started: false,
+      onlyCorrectParts: false,
     },
+    stopSuccess:false,
 
     localTimer: {
       currentSeconds: null,
@@ -288,21 +292,6 @@ const store = new Vuex.Store({
               level: Number,
               componentsProhibitedAccess: Array
             },
-            {
-              name: "Parallax",
-              level: 1,
-              componentsProhibitedAccess: []
-            },
-            {
-              name: "Manutenção",
-              level: 2,
-              componentsProhibitedAccess: ["JsonEditor2", "SerialMonitor"]
-            },
-            {
-              name: "Operador",
-              level: 3,
-              componentsProhibitedAccess: ["AdvancedSettings", "SerialMonitor", "UserTable"]
-            },
           ],
           userList: [
             {
@@ -310,24 +299,6 @@ const store = new Vuex.Store({
               id: String,
               lastAcess: Number,
               level: String
-            },
-            {
-              name: "Rodrigo Gomes",
-              id: "123",
-              lastAcess: 0,
-              level: "Parallax"
-            },
-            {
-              name: "Arthur",
-              id: "321",
-              lastAcess: 0,
-              level: "Operador"
-            },
-            {
-              name: "Ronaldo",
-              id: "111",
-              lastAcess: 0,
-              level: "Manutenção"
             },
           ],
         },
@@ -572,7 +543,7 @@ const store = new Vuex.Store({
     SEND_MESSAGE: (state, payload) => {
       state.ws_message.command = payload.command;
       state.ws_message.parameter = payload.parameter;
-      wsConnection.send(JSON.stringify(state.ws_message));      
+      wsConnection.send(JSON.stringify(state.ws_message));
       console.log("%c Enviado:", 'color: #bada55');
       console.log(JSON.stringify(state.ws_message, null, 2));
     },
@@ -621,27 +592,30 @@ const store = new Vuex.Store({
     },
 
     START2: (state) => {
-      state.playing = true
-      state.started = true
-      state.stoped = false
+      // state.playing = true
+      // state.started = true
+      // state.stoped = false
+      state.stopSuccess = false
     },
 
     RESTART(state) {
-      state.localTimer.currentSeconds = null;
-      state.progress = 5.1;
-      state.paused = true;
-      state.finished = false;
-      state.started = false;
+      // state.localTimer.currentSeconds = null;
+      // state.progress = 5.1;
+      // state.paused = true;
+      // state.finished = false;
+      // state.started = false;
+      state.stopSuccess = false
     },
 
     STOP(state) {
-      state.localTimer.currentSeconds = 0;
-      state.progress = 5.1;
-      state.playing = false
-      state.paused = true;
-      state.finished = false;
-      // state.started = false;
-      state.stoped = true
+      // state.localTimer.currentSeconds = 0;
+      // state.progress = 5.1;
+      // state.playing = false
+      // state.paused = true;
+      // state.finished = false;
+      // // state.started = false;
+      // state.stoped = true
+      state.stopSuccess = true
     },
   },
 

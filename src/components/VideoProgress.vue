@@ -1,7 +1,9 @@
 <template>
   <div class="video" justify="center">
-    <v-icon class="videoIcon" x-large v-show="!state.playing && state.started">mdi-pause</v-icon>
-    <video loop @canplay="getElement" muted="muted">
+    <v-icon class="videoIcon" x-large v-show="!running && !finished"
+      >mdi-pause</v-icon
+    >
+    <video loop autoplay @canplay="getElement" muted="muted">
       <source src="../assets/img/estribo-animation.mp4" type="video/mp4" />
     </video>
   </div>
@@ -25,22 +27,36 @@ export default {
   },
 
   computed: {
-    // ...mapState(["started"]),
-    ...mapState(["playing", ]),
+    ...mapState({
+      running: (state) => {
+        // if (state.operation.running) {
+          this.videoElement.play();
+          // document.querySelector(".videoContent").play();
+        // } else {
+        //   this.videoElement.pause();
+        // }
+        return state.operation.running
+      },
+
+      started: state => state.operation.started,
+      running: state => state.operation.running,
+      finished: state => state.operation.finished,
+
+    }),
     ...mapGetters(["state"]),
   },
 
-  watch: {
-    playing(newValue, oldValue) {
-      console.log(`Updating "Playing" from ${oldValue} to ${newValue}`);
-      if (newValue) {
-         this.videoElement.play();
-        // document.querySelector(".videoContent").play();
-      } else {
-         this.videoElement.pause();
-      }
-    },
-  },
+  // watch: {
+  //  .running(newValue, oldValue) {
+  //     console.log(`Updating .running" from ${oldValue} to ${newValue}`);
+  //     if (newValue) {
+  //       this.videoElement.play();
+  //       // document.querySelector(".videoContent").play();
+  //     } else {
+  //       this.videoElement.pause();
+  //     }
+  //   },
+  // },
 
   methods: {
     getElement(event) {
@@ -57,7 +73,7 @@ section {
     justify-content: center;
     align-items: center;
 
-    video{
+    video {
       width: 100vw;
       max-width: 800px;
     }

@@ -1,15 +1,16 @@
 <template>
-  <div>
+  <div class="container">
+    <!-- <div  class="mx-auto"> -->
     <!-- <v-card class="mx-auto" v-if="series[0].data"> -->
-    <v-card class="mx-auto">
-      <div class="pa-3">
-        <v-row>
-          <div class="text--secondary ml-3 mb-6">Tempo produção de <b>hoje</b> por peça</div>
+    <div class="">
+      <!-- <v-row>
+          <div class="text--secondary ml-3 mb-6">
+            Tempo produção de <b>hoje</b> por peça
+          </div>
           <v-spacer></v-spacer>
-          <DropdownData @selected-item="selectedArray"></DropdownData>
-        </v-row>
-        <v-row>
-          <v-fade-transition>
+        </v-row> -->
+      <v-row>
+        <v-fade-transition>
           <div class="pr-5 pl-3 d-flex justify-space-around statistics">
             <div
               class="d-flex justify-center"
@@ -31,24 +32,24 @@
               </div>
             </div>
           </div>
-          </v-fade-transition>
-        </v-row>
+        </v-fade-transition>
+      </v-row>
 
-        <!-- <v-divider class="ml-2"></v-divider> -->
+      <!-- <v-divider class="ml-2"></v-divider> -->
 
-        <template>
-          <div>
-            <apexchart
-              ref="sampleGender"
-              type="area"
-              height="350"
-              :options="chartOptions"
-              :series="series"
-            ></apexchart>
-          </div>
-        </template>
-      </div>
-    </v-card>
+      <template>
+        <div>
+          <apexchart
+            ref="sampleGender"
+            type="area"
+            height="200"
+            width="100%"
+            :options="chartOptions"
+            :series="series"
+          ></apexchart>
+        </div>
+      </template>
+    </div>
   </div>
 </template>
 
@@ -60,10 +61,17 @@ import DropdownData from "@/components/dashboard/DropdownData.vue";
 // import VideoProgress from "../components/VideoProgress"; Remove VideoProgress
 export default {
   // mixins: [mixins],
-  name: "TimeLineChartCard",
+  name: "ProgressInfo",
 
   components: {
     DropdownData,
+  },
+
+  props: {
+    // averageTime: Number,
+    right: Number,
+    wrong: Number,
+    total: Number,
   },
 
   data: () => ({
@@ -74,57 +82,40 @@ export default {
     sampleGender: 1,
     intervalDays: 7,
     selectedDataSet: 0,
+
     chartOptions: {
+      legend: {
+        show: false,
+      },
       colors: ["#2E93fA"],
       fill: {},
       type: "gradient",
-      zoom: {
-        enabled: true,
+      grid: {
+        padding: {
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+        },
       },
       chart: {
-        height: 400,
         type: "area",
-        toolbar: {
-          show: false,
-        },
-        selection: {
+        height: 200,
+        sparkline: {
           enabled: true,
-          xaxis: {
-            min: 0,
-            max: 10,
-          },
-        },
-      },
-      dataLabels: {
-        enabled: false,
-        background: {
-          enabled: true,
-          borderRadius: 15,
-          borderWidth: 3,
         },
       },
       stroke: {
-        curve: "smooth",
+        curve: "straight",
       },
-      xaxis: {
-        tickPlacement: "between",
-        // type: "datetime",
+      fill: {
+        opacity: 0.3,
       },
       yaxis: {
-        min: 20,
-        max: 80,
-        labels: {
-          formatter: (value) => {
-            return value.toFixed(1);
-          },
-        },
+        min: 0,
+        max: 100,
       },
-
-      tooltip: {
-        x: {
-          format: "dd/MM",
-        },
-      },
+      colors: ["#DCE6EC"],
     },
   }),
 
@@ -145,23 +136,14 @@ export default {
       let data = [
         {
           name: "Total",
-          data: null,
+          data: [],
         },
       ];
 
-      if (!this.dataSeries) {
-        data[0].data = this.allParts.production.today.timesPerCicles;
-        // console.log("data1", data);
-      } else {
-        data[0].data = this.dataSeries.production.today.timesPerCicles;
-        // console.log("data2", data);
-      }
-
-      // console.log("ultima data: ", data[0].data);
-      // this.chartOptions.yaxis.min =  20;
-      // this.chartOptions.yaxis.max =  80;
+      data[0].data = this.allParts.production.today.timesPerCicles;
+     
       // this.chartOptions.yaxis.min = Math.min(...data[0].data) - 15;
-      // this.chartOptions.yaxis.max = Math.max(...data[0].data) + 15;
+      this.chartOptions.yaxis.max = Math.max(...data[0].data) + 15;
 
       return data;
     },
@@ -183,14 +165,14 @@ export default {
         {
           text: "Total",
           unit: "",
-          number: data.production.today.total,
+          number: this.total,
           icon: "mdi-chart-timeline-variant",
           color: "blue lighten-2",
         },
         {
           text: "Certas",
           unit: "",
-          number: data.production.today.rigth,
+          number: this.right,
 
           // number: this.state.production.today.rigth,
           icon: "mdi-check",
@@ -200,7 +182,7 @@ export default {
           text: "Erradas",
           unit: "",
           // number: this.state.production.today.wrong,
-          number: data.production.today.wrong,
+          number: this.wrong,
 
           icon: "mdi-close",
           color: "red lighten-2",
@@ -221,7 +203,8 @@ export default {
 </script>
 
 <style lang="scss" scopped>
-.statistics {
+.statistics .container {
   width: 100%;
+  padding: 0;
 }
 </style>

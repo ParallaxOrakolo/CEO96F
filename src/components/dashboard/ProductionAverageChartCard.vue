@@ -162,7 +162,7 @@ export default {
 
       serie[0].data = data.production.dailyAvarege.week_wrong
         .slice(0);
-      serie[1].data = data.production.dailyAvarege.week_total
+      serie[1].data = data.production.dailyAvarege.week_rigth
         .slice(0)
         ;
       // this.series[0].data = this.state.production.dailyAvarege.week_total.slice(0).reverse();

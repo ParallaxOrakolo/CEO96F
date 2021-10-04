@@ -117,8 +117,8 @@ export default {
   .content {
     background-image: url("../assets/img/estribo-quadrado-mirror-perspective.jpg");
     width: 100%;
-    margin-top: 2em;
-    padding: 4em 5em 0em 0em;
+    // margin-top: 2em;
+    padding: 6em 5em 0em 0em;
     background-position: -22em 5em;
 
     .text {

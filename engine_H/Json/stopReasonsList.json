@@ -425,6 +425,126 @@
             "description": "Parada para ajuste técnico",
             "type": "info",
             "date": 1633359587
+        },
+        {
+            "code": 12,
+            "description": "Garra não pegou",
+            "type": "error",
+            "date": 1633365337
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1633365567
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1633365572
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1633365573
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1633366001
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1633366178
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1633367683
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1633368406
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1633369510
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1633369785
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1633370672
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1633370723
+        },
+        {
+            "code": 13,
+            "description": "Troca de turno",
+            "type": "info",
+            "date": 1633371630
+        },
+        {
+            "code": 12,
+            "description": "Garra não pegou",
+            "type": "error",
+            "date": 1633371776
+        },
+        {
+            "code": 12,
+            "description": "Garra não pegou",
+            "type": "error",
+            "date": 1633371855
+        },
+        {
+            "code": 13,
+            "description": "Troca de turno",
+            "type": "info",
+            "date": 1633372131
+        },
+        {
+            "code": 13,
+            "description": "Troca de turno",
+            "type": "info",
+            "date": 1633372246
+        },
+        {
+            "code": 12,
+            "description": "Garra não pegou",
+            "type": "error",
+            "date": 1633373055
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1633373335
+        },
+        {
+            "code": 998,
+            "description": "Parada para ajuste técnico",
+            "type": "info",
+            "date": 1633373388
         }
     ]
 }
