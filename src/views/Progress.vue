@@ -1,20 +1,14 @@
 <template>
   <section class="content d-flex align-center flex-column">
     <!-- <ProgressStatus /> -->
-    <VideoProgress v-show="running" />
+    <VideoProgress v-if="running" />
     <v-img
-      v-if="!started"
+      v-if="!started && !running"
       class="mt-15"
       :src="require(`@/assets/img/estribo-quadrado-perspective.jpg`)"
       max-width="300"
     ></v-img>
-
     
-    <div
-      v-show="started"
-      v-text="numberParts"
-      class="yellow--text text--darken-3 font-weight-light text-h2"
-    ></div>
     <div class="buttons">
       <!-- <v-btn
         class="mt-15"
@@ -43,6 +37,7 @@
       >
         <v-icon>mdi-alert-box</v-icon></v-btn
       > -->
+      <!--
       <v-btn
         v-if="finished"
         rounded
@@ -52,13 +47,13 @@
         dark
       >
         <v-icon left>mdi-reload</v-icon>reiniciar</v-btn
-      >
-      {{ state.configuration.statistics.des }}
+      >-->
 
       <v-btn
         v-if="started && running"
         rounded
         x-large
+        :loading="state.stopSuccess && !finished"
         v-on:click="
           () => {
             SEND_MESSAGE({ command: actions.STOP_PROCESS });
@@ -116,10 +111,9 @@
       </router-link>
     </div>
     <ProgressInfo
-      averageTime="10"
-      :right="operation.right"
-      :wrong="operation.wrong"
-      :total="operation.total"
+      :right="allPartsToday.rigth"
+      :wrong="allPartsToday.wrong"
+      :total="allPartsToday.total"
       timePerCicle="60"
     ></ProgressInfo>
   </section>
@@ -152,6 +146,14 @@ export default {
     StartButton,
   },
 
+  watch: {
+    finished: function (newValue) {
+      if (newValue) {
+        this.$router.push({ path: "/success" }).catch(() => {});
+      }
+    },
+  },
+
   computed: {
     ...mapState({
       operation: (state) => state.operation,
@@ -159,22 +161,9 @@ export default {
       started: (state) => state.operation.started,
       running: (state) => state.operation.running,
       finished: (state) => state.operation.finished,
+      allPartsToday: (state) => state.production.allParts.production.today,
     }),
 
-    numberParts: function () {
-      if (this.operation.finished) {
-        this.$router.push({ path: "/success" }).catch(() => {});
-      }
-      if (this.operation.total) {
-        return this.operation.placed + " de " + this.operation.total;
-      } else {
-        if (this.operation.onlyCorrectParts) {
-          return this.operation.placed + " de infinitas";
-        } else {
-          this.operation.right + this.operation.wrong + " de infinitas";
-        }
-      }
-    },
   },
 
   methods: {

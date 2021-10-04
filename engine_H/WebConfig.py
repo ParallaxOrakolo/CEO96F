@@ -47,7 +47,8 @@ operation = {
         "finished": True,
         "started": False,
         "running": False,
-        "onlyCorrectParts": False
+        "onlyCorrectParts": False,
+        "stopSuccess": False
     },
 }
 
@@ -444,7 +445,8 @@ class Process(threading.Thread):
                 if pega:
                     
                     print("~~"*10)
-                    while not temPeça and not erroDetectado:
+                    tt = timeit.default_timer()
+                    while not temPeça and not erroDetectado and not intencionalStop and timeit.default_timer() - tt <= 5:
                         Fast.sendGCODE(arduino, f"\n g90 \n G0 X200 Y0 F{xMaxFed}")
                         self.infoCode = clp.getStatus()
                         print("Esperando peça, infoCode:", self.infoCode)

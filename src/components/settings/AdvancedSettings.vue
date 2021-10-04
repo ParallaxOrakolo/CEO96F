@@ -72,7 +72,8 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
+import { mapState, mapMutations } from "vuex";
+import { actions } from "../../store/index";
 import UserTable from "./UserTable.vue";
 import JsonEditor2 from "./JsonEditor2.vue";
 import Mixins from "@/mixins/mixins";
@@ -118,11 +119,18 @@ export default {
   },
 
   methods: {
+        ...mapMutations(["SEND_MESSAGE"]),
+
+     updateBack() {
+      this.SEND_MESSAGE({command: actions.UPDATE_USERS,  parameter: this.configuration.informations.users,});
+    },
     
     logout() {
       this.configuration.informations.users.logged = false;
       this.idInput = "";
+      this.updateBack()
       console.log(this.configuration.informations.users.logged);
+
     },
     // logout() {
     //   this.configuration.logged = !this.configuration.logged;
@@ -137,6 +145,7 @@ export default {
           const currentDate = new Date();
           user.lastAcess = currentDate.getTime();
           this.idInput = "";
+          this.updateBack()
         }
       });
     },

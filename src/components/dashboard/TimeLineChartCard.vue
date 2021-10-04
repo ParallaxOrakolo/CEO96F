@@ -111,8 +111,8 @@ export default {
         // type: "datetime",
       },
       yaxis: {
-        min: 0,
-        max: 120,
+        min: 20,
+        max: 80,
         labels: {
           formatter: (value) => {
             return value.toFixed(1);
@@ -158,8 +158,8 @@ export default {
       }
 
       // console.log("ultima data: ", data[0].data);
-      this.chartOptions.yaxis.min =  20;
-      this.chartOptions.yaxis.max =  80;
+      // this.chartOptions.yaxis.min =  20;
+      // this.chartOptions.yaxis.max =  80;
       // this.chartOptions.yaxis.min = Math.min(...data[0].data) - 15;
       // this.chartOptions.yaxis.max = Math.max(...data[0].data) + 15;
 

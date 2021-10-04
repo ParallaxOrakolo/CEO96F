@@ -35,7 +35,6 @@
             </v-list-item-subtitle>
           </v-list-item-content>
         </v-list-item>
-        <EditableInfo></EditableInfo>
       </v-list>
     </v-expansion-panel-content>
   </v-expansion-panel>
@@ -43,10 +42,9 @@
 
 <script>
 import { mapState } from "vuex";
-import EditableInfo from "./EditableInfo";
 
 export default {
-  components: { EditableInfo },
+  components: {},
   name: "Infos",
   data: () => ({
     show1: false,

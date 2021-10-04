@@ -1,11 +1,11 @@
 self.__precacheManifest = (self.__precacheManifest || []).concat([
   {
-    "revision": "f848d9b983dbe2f10be2",
-    "url": "/css/app.a1f47ff9.css"
+    "revision": "23854cf2fa9bb19f9740",
+    "url": "/css/app.73d90a6d.css"
   },
   {
-    "revision": "3abe5911d00442efb217",
-    "url": "/css/chunk-vendors.eeb6e5e7.css"
+    "revision": "e2821c44d59b4edae39b",
+    "url": "/css/chunk-vendors.eca91a8f.css"
   },
   {
     "revision": "c5c1873073eaadb07d99d4eb037a4ee5",
@@ -112,16 +112,16 @@ self.__precacheManifest = (self.__precacheManifest || []).concat([
     "url": "/img/parallax-logo-06.12190c35.svg"
   },
   {
-    "revision": "0aa701c8f48a31718de7dcf72cf7593c",
+    "revision": "59bbf11e5fdd9ced099bb35606b9b1c6",
     "url": "/index.html"
   },
   {
-    "revision": "f848d9b983dbe2f10be2",
-    "url": "/js/app.4e0c1930.js"
+    "revision": "23854cf2fa9bb19f9740",
+    "url": "/js/app.fa8f1487.js"
   },
   {
-    "revision": "3abe5911d00442efb217",
-    "url": "/js/chunk-vendors.06e5e17e.js"
+    "revision": "e2821c44d59b4edae39b",
+    "url": "/js/chunk-vendors.2122b1b3.js"
   },
   {
     "revision": "7cfe264e7f1084d3fe8ef2cec97ff0c6",

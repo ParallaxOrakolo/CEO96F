@@ -3,7 +3,7 @@
     <v-icon class="videoIcon" x-large v-show="!running && !finished"
       >mdi-pause</v-icon
     >
-    <video loop @canplay="getElement" muted="muted">
+    <video loop autoplay @canplay="getElement" muted="muted">
       <source src="../assets/img/estribo-animation.mp4" type="video/mp4" />
     </video>
   </div>
@@ -29,12 +29,12 @@ export default {
   computed: {
     ...mapState({
       running: (state) => {
-        if (state.operation.running) {
+        // if (state.operation.running) {
           this.videoElement.play();
           // document.querySelector(".videoContent").play();
-        } else {
-          this.videoElement.pause();
-        }
+        // } else {
+        //   this.videoElement.pause();
+        // }
         return state.operation.running
       },
 

@@ -68,7 +68,7 @@ export default {
   },
 
   props: {
-    averageTime: Number,
+    // averageTime: Number,
     right: Number,
     wrong: Number,
     total: Number,
