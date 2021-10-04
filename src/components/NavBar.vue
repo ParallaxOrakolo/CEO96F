@@ -40,20 +40,8 @@
 
     <v-spacer></v-spacer>
     <!-- <SnackBar /> -->
-    <v-btn
-      icon
-      v-if="$route.name == 'settings'"
-      v-on:click="
-        () => {
-          SEND_MESSAGE({
-            command: actions.SHUTDOWN_RASPBERRY,
-          });
-          request();
-        }
-      "
-    >
-      <v-icon dark>mdi-restart</v-icon>
-    </v-btn>
+    
+    <RestartButton v-if="$route.name == 'settings'" :online="isConnected"></RestartButton>
 
     <v-icon dark color="light-green lighten-1" v-show="isConnected"
       >mdi-lan-check</v-icon
@@ -75,11 +63,13 @@
 // import { mapMutations } from "vuex"; Remove mapMutations -HB
 import { mapState, mapMutations } from "vuex";
 import { actions } from "../../src/store/index";
+import RestartButton from "./navbar/RestarButton.vue"
 
 export default {
   name: "NavBar",
   data: () => ({
     actions,
+    restartDialog: false,
     online: false,
     showOnlineMsg: false,
     alert: true,
@@ -97,6 +87,7 @@ export default {
   },
 
   components: {
+    RestartButton,
     // SnackBar,
   },
   methods: {
