@@ -1,23 +1,32 @@
 <template>
   <section class="content d-flex align-center flex-column">
     <!-- <ProgressStatus /> -->
-    <VideoProgress v-show="state.started" />
+    <VideoProgress v-show="running" />
+    <v-img
+      v-if="!started"
+      class="mt-15"
+      :src="require(`@/assets/img/estribo-quadrado-perspective.jpg`)"
+      max-width="300"
+    ></v-img>
+
+    
     <div
-      v-show="state.started"
+      v-show="started"
       v-text="numberParts"
       class="yellow--text text--darken-3 font-weight-light text-h2"
     ></div>
     <div class="buttons">
-      <v-btn
-        v-if="!state.paused && !state.finished"
+      <!-- <v-btn
+        class="mt-15"
+        v-if="!paused && !finished"
         rounded
         x-large
         v-on:click="SEND_MESSAGE({ command: actions.PAUSE_PROCESS })"
         color="warning"
         dark
         ><v-icon left> mdi-pause </v-icon> pausar</v-btn
-      >
-      <StartButton v-if="!state.playing" />
+      > -->
+      <StartButton v-if="!running" />
       <!-- <v-btn
         rounded
         x-large
@@ -35,7 +44,7 @@
         <v-icon>mdi-alert-box</v-icon></v-btn
       > -->
       <v-btn
-        v-if="state.finished"
+        v-if="finished"
         rounded
         x-large
         v-on:click="SEND_MESSAGE({ command: actions.RESTART_PROCESS })"
@@ -45,8 +54,9 @@
         <v-icon left>mdi-reload</v-icon>reiniciar</v-btn
       >
       {{ state.configuration.statistics.des }}
+
       <v-btn
-        v-if="state.started && state.playing"
+        v-if="started && running"
         rounded
         x-large
         v-on:click="
@@ -83,7 +93,7 @@
                   parameter: stopReasonsMessage(reason.code),
                 });
                 overlay = false;
-                state.operation.finished = true;
+                finished = true;
               }
             "
           >
@@ -105,15 +115,23 @@
         > -->
       </router-link>
     </div>
+    <ProgressInfo
+      averageTime="10"
+      :right="operation.right"
+      :wrong="operation.wrong"
+      :total="operation.total"
+      timePerCicle="60"
+    ></ProgressInfo>
   </section>
 </template>
 
 <script>
 //import ProgressStatus from "../components/ProgressStatus";
-import { MapperForStateWithNamespace, mapMutations, mapState } from "vuex";
+import { mapMutations, mapState } from "vuex";
 import { actions } from "../store/index";
 import VideoProgress from "../components/VideoProgress";
 import StartButton from "../components/StartButton";
+import ProgressInfo from "@/components/ProgressInfo";
 
 export default {
   // mixins: [mixins],
@@ -129,6 +147,7 @@ export default {
 
   components: {
     //ProgressStatus,
+    ProgressInfo,
     VideoProgress,
     StartButton,
   },
@@ -137,6 +156,9 @@ export default {
     ...mapState({
       operation: (state) => state.operation,
       state: (state) => state,
+      started: (state) => state.operation.started,
+      running: (state) => state.operation.running,
+      finished: (state) => state.operation.finished,
     }),
 
     numberParts: function () {
@@ -171,6 +193,10 @@ export default {
 
 <style lang="scss" >
 section {
+  .img {
+    // max-height: 200px;
+    max-width: 450px;
+  }
   .buttons {
     display: flex;
     flex-flow: column;

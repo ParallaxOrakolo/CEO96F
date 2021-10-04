@@ -51,7 +51,10 @@ const store = new Vuex.Store({
       wrong: 5,
       placed: 0,
       finished: false,
-      onlyCorrectParts: false
+      running:false,
+      played: false,
+      started: false,
+      onlyCorrectParts: false,
     },
 
     localTimer: {
@@ -572,7 +575,7 @@ const store = new Vuex.Store({
     SEND_MESSAGE: (state, payload) => {
       state.ws_message.command = payload.command;
       state.ws_message.parameter = payload.parameter;
-      wsConnection.send(JSON.stringify(state.ws_message));      
+      wsConnection.send(JSON.stringify(state.ws_message));
       console.log("%c Enviado:", 'color: #bada55');
       console.log(JSON.stringify(state.ws_message, null, 2));
     },
