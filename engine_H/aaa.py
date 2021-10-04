@@ -1,42 +1,113 @@
-def mm2coordinate(x, c=160, aMin=148.509, reverse=False):
-    if not reverse:
-        r = aMin-(c**2 - ((c**2-aMin**2)**0.5+x)**2)**0.5
- #       edit(f"Convertendo {x} em {r} | reverse=False\n")
-        return r
-    else:
-        r = ((c**2 - (aMin-x)**2)**0.5)-(c**2 - aMin**2)**0.5
-#        edit(f"Convertendo {x} em {r} | reverse=True\n")
-        return r
+tt = 0
+tr = 0
+tw = 0
+ttmin=0
+ttmax=0
 
+tdt = 0
+tdr = 0
+tdw = 0
+
+
+ydt = 0
+ydr = 0
+ydw = 0
+
+
+dat = 0
+dar = 0
+daw = 0
+datpc = 0
+
+dtw_ttpc = []
+tdtcs = []
+ydtcs = []
+dtw_t = []
+dtw_w = []
+dtw_r = []
+tdd=[]
+ydd=[]
 import FastFunctions as Fast
-def RAIZ(x):
-    return x**0.5
-arduino=2
-def mm2coordinate(Variacao = 0, m114=0, hipotenusa = 160, aberturaMinima = 149.509, simul=False):
-    if not simul:
-        coordenadaAtual_A = (aberturaMinima - Fast.M114(arduino)['Y'])
-    else:
-        coordenadaAtual_A = (aberturaMinima - m114)
-    a = RAIZ(hipotenusa**2 - (RAIZ(hipotenusa**2-coordenadaAtual_A**2)+Variacao)**2)
-    print(a, aberturaMinima-a)
-    return aberturaMinima-a
+import numpy as np
+production = Fast.readJson("Json/production.json")
+modelo_atual ="1"
+prodd = production["production"]["productionPartList"][int(modelo_atual)]["production"]
+all_prodd = production["production"]["allParts"]["production"]
+print("A")
+for mod in production["production"]["productionPartList"]:
+    tt += mod["production"]["total"]["total"]
+    tr += mod["production"]["total"]["rigth"]
+    tw += mod["production"]["total"]["wrong"]
+    print("B")
+    ttmin += mod["production"]["total"]["timePerCicleMin"]
+    ttmax += mod["production"]["total"]["timePerCicleMax"]
+    print("C")
+    tdd.append(mod["production"]["today"]["day"])
+    tdt += mod["production"]["today"]["total"]
+    tdr += mod["production"]["today"]["rigth"]
+    tdw += mod["production"]["today"]["wrong"]
+    print("D")
+    tdtcs += mod["production"]["today"]["timesPerCicles"]
+    print("E")
+    ydd.append(mod["production"]["today"]["day"])
+    ydt += mod["production"]["yesterday"]["total"]
+    ydr += mod["production"]["yesterday"]["rigth"]
+    ydw += mod["production"]["yesterday"]["wrong"]
+    ydtcs += mod["production"]["yesterday"]["timesPerCicles"]
+    print("F")
+    print("G")
+    dat += mod["production"]["dailyAvarege"]["total"]
+    dar += mod["production"]["dailyAvarege"]["rigth"]
+    daw += mod["production"]["dailyAvarege"]["wrong"]
+    datpc += mod["production"]["dailyAvarege"]["times"]
+    print("H")
+    dtw_t.append(np.array(mod["production"]["dailyAvarege"]["week_total"].copy(), dtype=object))
+    dtw_r.append(np.array(mod["production"]["dailyAvarege"]["week_rigth"].copy(), dtype=object))
+    dtw_w.append(np.array(mod["production"]["dailyAvarege"]["week_wrong"].copy(), dtype=object))
+    dtw_ttpc.append(np.array(mod["production"]["dailyAvarege"]["week_times"].copy(), dtype=object))
+    print("I")
+print("J")
+all_prodd["dailyAvarege"]["total"] = round(dat,2)
+all_prodd["dailyAvarege"]["rigth"] = round(dat - daw,2)
+all_prodd["dailyAvarege"]["wrong"] = round(daw,2)
+all_prodd["dailyAvarege"]["times"] = round(datpc,2)
+print("K")
 
-while True:
-
-    print(F'G0 Y{mm2coordinate(float(input("mm:")), float(input("cc:")), simul=True)} F5000')
-# Fast.validadeUSBSerial('Json/serial.json')
-# status, code, arduino = Fast.SerialConnect(
-                # SerialPath='Json/serial.json', name='Ramps 1.4')
-
-# Fast.sendGCODE(arduino, 'G28 Y')
-# Fast.sendGCODE(arduino, 'G28 X')
-# Fast.sendGCODE(arduino, 'G0 X200 F5000')
-# Fast.sendGCODE(arduino, 'G90')
-# Fast.sendGCODE(arduino, 'G0 Y10')
-# while True:
-#     Fast.sendGCODE(arduino, F'G0 Y{A2B(float(input("mm:")))} F5000')
+print((np.around(np.average(np.array(dtw_t), axis=0).tolist())))
+all_prodd["dailyAvarege"]["week_total"] = (np.around(np.average(np.array(dtw_t), axis=0).tolist())).tolist()
+all_prodd["dailyAvarege"]["week_rigth"] = (np.around(np.average(np.array(dtw_r), axis=0).tolist())).tolist() 
+all_prodd["dailyAvarege"]["week_wrong"] = (np.around(np.average(np.array(dtw_w), axis=0).tolist())).tolist()
+all_prodd["dailyAvarege"]["week_times"] = (np.around(np.average(np.array(dtw_ttpc), axis=0).tolist())).tolist()
+print("L")
 
 
-# 4.58 --- 0.0
-# 3.38     4.103
-10.5
+all_prodd["total"]["total"] = tt
+all_prodd["total"]["rigth"] = tt-tw
+all_prodd["total"]["wrong"] = tw
+print("M")
+
+all_prodd["today"]["total"] = tdt
+all_prodd["today"]["rigth"] = tdt-tdw
+all_prodd["today"]["wrong"] = tdw
+print( tdtcs)
+all_prodd["today"]["timePerCicle"] = (np.around(np.average(np.array(tdtcs), axis=0).tolist())).tolist()
+all_prodd["today"]["timesPerCicles"] = np.around(np.array(tdtcs)).tolist()
+print("N")
+all_prodd["yesterday"]["total"] = ydt
+all_prodd["yesterday"]["rigth"] = ydt-ydw
+all_prodd["yesterday"]["wrong"] = ydw
+print("TT",ydtcs)
+all_prodd["yesterday"]["timePerCicle"] = (np.around(np.average(np.array(ydtcs), axis=0).tolist())).tolist()
+all_prodd["yesterday"]["timePerCicle"] = np.around(np.array(ydtcs)).tolist()
+print("O")
+
+all_prodd["total"]["timePerCicleMin"] = round(ttmin/len(production["production"]["productionPartList"]), 2)
+all_prodd["total"]["timePerCicleMax"] = round(ttmax/len(production["production"]["productionPartList"]), 2)
+print(all_prodd)
+print("P")
+
+
+    # if tdd.count(tdd[0]) == len(tdd):
+    # if ydd.count(ydd[0]) == len(ydd):
+        
+    

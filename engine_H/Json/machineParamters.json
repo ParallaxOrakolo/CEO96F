@@ -36,7 +36,7 @@
                                 "top": "25%",
                                 "left": "83%"
                             },
-                            "mount": false
+                            "mount": true
                         },
                         {
                             "index": 3,
@@ -44,7 +44,7 @@
                                 "top": "57%",
                                 "left": "83%"
                             },
-                            "mount": false
+                            "mount": true
                         },
                         {
                             "index": 4,
@@ -298,7 +298,7 @@
                         "Y": null,
                         "Z": 150,
                         "E": null,
-                        "mm": -3.5,
+                        "mm": -3,
                         "voltas": 25
                     }
                 }
@@ -515,6 +515,14 @@
                     "button_action": "popupResponseSolve"
                 },
                 {
+                    "code": 19,
+                    "description": "Queda de energia detectada, todos os sistemas foram desligados!",
+                    "listed": false,
+                    "type": "warning",
+                    "button_text": "Entendi",
+                    "button_action": "popupResponseSolve"
+                },
+                {
                     "code": 998,
                     "description": "Parada para ajuste técnico",
                     "listed": true,
@@ -528,7 +536,7 @@
                     "listed": false,
                     "type": "error",
                     "button_text": "Reiniciar",
-                    "button_action": "Reboot"
+                    "button_action": "restart_raspberry"
                 }
             ],
             "nonStopCode": [

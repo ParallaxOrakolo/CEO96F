@@ -129,7 +129,7 @@ class CLP(threading.Thread):
             while timeit.default_timer() - tt <= self.readInterval:
                 pass
             if not self._read_event.is_set():
-                a = verificaCLP(self.serial) 
+                a = verificaCLP(self.serial)
                 if a !=  None and a > 0:
                     self.errorList.append(a)
                 self.errorList = self.removeDuplicate()
@@ -404,7 +404,7 @@ class Process(threading.Thread):
             asyncio.run(self.posMount())
         except Fast.MyException as my:
             for item in stopReasons:
-                if my == item["description"]:
+                if str(my) == str(item["description"]):
                     asyncio.run(sendWsMessage("error", item))
             print("Erro meu:", my)
             return my
@@ -497,7 +497,7 @@ class Process(threading.Thread):
                 erroDetectado = True
                 break
             self.infoCode = clp.getStatus()
-            if self.infoCode not in stopReasons and not intencionalStop:
+            if self.infoCode not in stopReasons:
                 if parafusados == len(selected[modelo_atual])-1:
                     Fast.sendGCODE(arduino, "M42 P34 S0")
                     
@@ -877,6 +877,16 @@ def verificaCLP(serial):
         return None
 
     if echo != "ok":
+        if echo == "shutdown":
+            try:
+                for item in stopReasons:
+                    if item["code"] == 19:
+                        asyncio.run(Resolva(item))
+                        time.sleep(2)
+            except Exception as exp:
+                print(exp)
+            shutdown_raspberry()
+            return echo
         try:
             return int(echo)
         except Exception:
@@ -938,7 +948,8 @@ async def descarte(valor="Errado", Deposito={"Errado": {"X": 230, "Y": 0}}):
         try:
             cicleSeconds = round(timeit.default_timer()-Total0, 1)
             await updateProduction(cicleSeconds, valor)
-        except Exception:
+        except Exception as exp:
+            print(exp)
             pass
         print("updateProducion - Finish")
         if valor == "Errado" and not intencionalStop:
@@ -1080,7 +1091,7 @@ def edit(command, file='movments.txt'):
     log.close()
 
 def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model="A", rodada=0, thread=None):
-    global Analise, modelo_atual, Problema, px2mmEcho, ScrewWrongSequence, wrongSequence
+    global Analise, modelo_atual, Problema, px2mmEcho, ScrewWrongSequence, wrongSequence, limitScrewWrongSequence
     Filter = thread
     #wrongSequence = 0
     ScrewWrongSequence = 0
@@ -1093,7 +1104,7 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
     path = f"Images/Process/{ids}"
     cameCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['camera0Centro']
     parafCent = machineParamters['configuration']['informations']['machine']['defaultPosition']['parafusadeiraCentro'].copy()
-
+    limitScrewWrongSequence = len(selected[modelo_atual])-1
     if not os.path.exists(path) and DebugPictures:
         d = datetime.now()
 
@@ -1122,21 +1133,17 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             Fast.sendGCODE(arduino, "M42 P34 S255")
             tt = timeit.default_timer()
             blur = int(cv2.Laplacian(cv2.cvtColor(globals()['frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])],cv2.COLOR_BGR2GRAY), cv2.CV_64F).var())
-            while blur <= (16 if modelo_atual == "1" else 10):
+            if modelo_atual == "1":
+                limit = 3 if (int(angle) == 0 or int(angle) == 270) else 16
+            else:
+                limit = 10
+            while blur <= limit:
                 blur = int(cv2.Laplacian(cv2.cvtColor(globals()['frame'+str(mainParamters["Cameras"]["hole"]["Settings"]["id"])],cv2.COLOR_BGR2GRAY), cv2.CV_64F).var())
                 print(blur)
                 if timeit.default_timer() - tt >= 5:
                     breakNextLoop = True
                     break
-            # MX, MY, nada, nada2 = Filter.getData()
-            # edit(f"Blur First 0 | lado {lados} :{blur}")
-            # if not MX or not MY:
-            #     tt = timeit.default_timer()
-            #     while timeit.default_timer()-tt <= 2:
-            #         pass
             first = False
-            # MX, MY = None, None
-
         posicaoXY = Fast.M114(arduino)
         if not deuBoa:
             tt = timeit.default_timer()
@@ -1173,9 +1180,18 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
             }
 
             Fast.MoveTo(arduino, ('X', posicao['X']), ('Y', posicao['Y']), ('Z', posicao['Z']), ('F', yMaxFed), nonSync=True)
+
+            infoCode = clp.getStatus()
+            for item in stopReasons:
+                if infoCode == item['code']:
+                    return -1, infoCode
+
             deuBoa = Parafusa(parafusaCommand['Z'], parafusaCommand['voltas'],  parafusaCommand['mm'], zFRPD2, zFRPU2)
+
+
             if not deuBoa:
                 ScrewWrongSequence += 1
+                print("Seqûencia de parafusos errados:", ScrewWrongSequence)
             else:
                 ScrewWrongSequence = 0
             Fast.sendGCODE(arduino, F"g0 Z{posicao['Z']+10} F {zMaxFedUp}", nonSync=True)
@@ -1190,6 +1206,10 @@ def Processo_Hole(frame, areaMin, areaMax, perimeter, HSValues, ids=None, model=
 
         Fast.MoveTo(arduino, ('X', analise['X']), ('Y', analise['Y']), ('A', angle ), ('F', yMaxFed))
         
+        infoCode = clp.getStatus()
+        for item in stopReasons:
+            if infoCode == item['code']:
+                return -1, infoCode        
 
         if MX and MY:
             if deuBoa:
@@ -1280,9 +1300,8 @@ async def sendParafusa(parms):
              parafusaCommand['voltas'],  parafusaCommand['mm'])
 
 
-async def shutdown_raspberry():
-    subprocess.run(["reboot"])
-    await asyncio.sleep(1)
+def shutdown_raspberry():
+    subprocess.run(["shutdown", "now"])
 
 
 async def restart_raspberry():
@@ -1449,7 +1468,7 @@ async def startAutoCheck(date=None):
     global arduino, nano, conexaoStatusArdu, conexaoStatusNano, threadStatus, infoCode, assembly, clp
     if date and platform.system() == "Linux":
         subprocess.run(
-            ["date", "-s", f"{date[:len(date)-len('(Horário Padrão de Brasília)')]}"])
+            ["sudo", "date", "-s", f"{date[:len(date)-len('(Horário Padrão de Brasília)')]}"])
     # await updateSlider('Normal')
     await sendWsMessage("update", machineParamters)
     await sendWsMessage("update", production)
@@ -1654,13 +1673,14 @@ async def updateProduction(cicleSeconds, valor):
             for k, v in appends.items():
                 while len(v) > 7:
                     v.pop(0)
-                media = round(sum(v) / len(v), 2)
+                media = (np.around(np.average(np.array(v), axis=0).tolist())).tolist()#round(sum(v) / len(v), 2)
                 print(k, v, media)
                 prodd["dailyAvarege"][k] = media
 
     valores = prodd["today"]["timesPerCicles"]
     if valores:
-        media = round(sum(valores) / len(valores), 2)
+        #media = round(sum(valores) / len(valores), 2)
+        media = (np.around(np.average(np.array(valores), axis=0).tolist())).tolist()
         prodd["today"]["timePerCicle"] = media
     Fast.writeJson('Json/production.json', production)
 
@@ -1686,74 +1706,79 @@ async def updateProduction(cicleSeconds, valor):
     datpc = 0
 
     dtw_ttpc = []
+    tdtcs = []
     dtw_t = []
     dtw_w = []
     dtw_r = []
     tdd=[]
     ydd=[]
+    ydtcs = []
+    tdtcs = []
+    dat = []
+    dar = []
+    daw = []
+    datpc = []
+    
     for mod in production["production"]["productionPartList"]:
         tt += mod["production"]["total"]["total"]
         tr += mod["production"]["total"]["rigth"]
         tw += mod["production"]["total"]["wrong"]
-
+        
         ttmin += mod["production"]["total"]["timePerCicleMin"]
         ttmax += mod["production"]["total"]["timePerCicleMax"]
-
+        
         tdd.append(mod["production"]["today"]["day"])
         tdt += mod["production"]["today"]["total"]
         tdr += mod["production"]["today"]["rigth"]
         tdw += mod["production"]["today"]["wrong"]
-
-        tdtc += mod["production"]["today"]["timePerCicle"]
-
+        
+        tdtcs += mod["production"]["today"]["timesPerCicles"]
+        
         ydd.append(mod["production"]["today"]["day"])
         ydt += mod["production"]["yesterday"]["total"]
         ydr += mod["production"]["yesterday"]["rigth"]
         ydw += mod["production"]["yesterday"]["wrong"]
+        ydtcs += mod["production"]["yesterday"]["timesPerCicles"]
 
-        ydtc += mod["production"]["yesterday"]["timePerCicle"]
-
-        dat += mod["production"]["dailyAvarege"]["total"]
-        dar += mod["production"]["dailyAvarege"]["rigth"]
-        daw += mod["production"]["dailyAvarege"]["wrong"]
-        datpc += mod["production"]["dailyAvarege"]["times"]
-
-        dtw_t.append(np.array(mod["production"]["dailyAvarege"]["week_total"], dtype=object))
-        dtw_r.append(np.array(mod["production"]["dailyAvarege"]["week_rigth"], dtype=object))
-        dtw_w.append(np.array(mod["production"]["dailyAvarege"]["week_wrong"], dtype=object))
-        dtw_ttpc.append(np.array(mod["production"]["dailyAvarege"]["week_times"], dtype=object))
+        dat.append(mod["production"]["dailyAvarege"]["total"])
+        dar.append(mod["production"]["dailyAvarege"]["rigth"])
+        daw.append(mod["production"]["dailyAvarege"]["wrong"])
+        datpc.append(mod["production"]["dailyAvarege"]["times"])
     
-    all_prodd["dailyAvarege"]["total"] = dat
-    all_prodd["dailyAvarege"]["rigth"] = dat - daw
-    all_prodd["dailyAvarege"]["wrong"] = daw
-    all_prodd["dailyAvarege"]["times"] = datpc
+        dtw_t.append(np.array(mod["production"]["dailyAvarege"]["week_total"].copy(), dtype=object))
+        dtw_r.append(np.array(mod["production"]["dailyAvarege"]["week_rigth"].copy(), dtype=object))
+        dtw_w.append(np.array(mod["production"]["dailyAvarege"]["week_wrong"].copy(), dtype=object))
+        dtw_ttpc.append(np.array(mod["production"]["dailyAvarege"]["week_times"].copy(), dtype=object))
+        
+    all_prodd["dailyAvarege"]["total"] = (np.around(np.average(np.array(dat), axis=0).tolist())).tolist()
+    all_prodd["dailyAvarege"]["rigth"] = (np.around(np.average(np.array(dar), axis=0).tolist())).tolist()
+    all_prodd["dailyAvarege"]["wrong"] = (np.around(np.average(np.array(daw), axis=0).tolist())).tolist()
+    all_prodd["dailyAvarege"]["times"] = (np.around(np.average(np.array(datpc), axis=0).tolist())).tolist()
 
-    all_prodd["dailyAvarege"]["week_total"] = (np.sum(np.array(dtw_t), axis=0)).tolist() 
-    all_prodd["dailyAvarege"]["week_rigth"] = (np.sum(np.array(dtw_r), axis=0)).tolist() 
-    all_prodd["dailyAvarege"]["week_wrong"] = (np.sum(np.array(dtw_w), axis=0)).tolist() 
-    all_prodd["dailyAvarege"]["week_times"] = (np.around(np.average(np.array(dtw_ttpc), axis=0))).tolist()
-    
-    
+    #print((np.around(np.average(np.array(dtw_t), axis=0).tolist())))
+    all_prodd["dailyAvarege"]["week_total"] = (np.around(np.average(np.array(dtw_t), axis=0).tolist())).tolist()
+    all_prodd["dailyAvarege"]["week_rigth"] = (np.around(np.average(np.array(dtw_r), axis=0).tolist())).tolist() 
+    all_prodd["dailyAvarege"]["week_wrong"] = (np.around(np.average(np.array(dtw_w), axis=0).tolist())).tolist()
+    all_prodd["dailyAvarege"]["week_times"] = (np.around(np.average(np.array(dtw_ttpc), axis=0).tolist())).tolist()
 
     all_prodd["total"]["total"] = tt
-    all_prodd["total"]["rigth"] = tt-tw
+    all_prodd["total"]["rigth"] = tr
     all_prodd["total"]["wrong"] = tw
 
-
     all_prodd["today"]["total"] = tdt
-    all_prodd["today"]["rigth"] = tdt-tdw
+    all_prodd["today"]["rigth"] = tdr
     all_prodd["today"]["wrong"] = tdw
-    all_prodd["today"]["timePerCicle"] = round(tdtc/len(tdd), 2)
+    all_prodd["today"]["timePerCicle"] = (np.around(np.average(np.array(tdtcs), axis=0).tolist())).tolist()
+    all_prodd["today"]["timesPerCicles"] = np.around(np.array(tdtcs)).tolist()
 
     all_prodd["yesterday"]["total"] = ydt
-    all_prodd["yesterday"]["rigth"] = ydt-ydw
+    all_prodd["yesterday"]["rigth"] = ydr
     all_prodd["yesterday"]["wrong"] = ydw
-    all_prodd["yesterday"]["timePerCicle"] = round(ydtc/len(ydd), 2)
-
+    all_prodd["yesterday"]["timePerCicle"] = (np.around(np.average(np.array(ydtcs), axis=0).tolist())).tolist()
+    all_prodd["yesterday"]["timesPerCicles"] = np.around(np.array(ydtcs)).tolist()
 
     all_prodd["total"]["timePerCicleMin"] = round(ttmin/len(production["production"]["productionPartList"]), 2)
     all_prodd["total"]["timePerCicleMax"] = round(ttmax/len(production["production"]["productionPartList"]), 2)
-
     
 
     # if tdd.count(tdd[0]) == len(tdd):
@@ -2102,7 +2127,7 @@ if __name__ == "__main__":
                 except Fast.MyException as my:
                     await sendWsMessage(str(command)+"_success")
                     for item in stopReasons:
-                        if my == item["description"]:
+                        if str(my) == str(item["description"]):
                             await sendWsMessage("error", item)
         except NameError as nmr:
             print(nmr)
