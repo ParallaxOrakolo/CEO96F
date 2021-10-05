@@ -160,11 +160,8 @@ export default {
         },
       ];
 
-      serie[0].data = data.production.dailyAvarege.week_wrong
-        .slice(0);
-      serie[1].data = data.production.dailyAvarege.week_rigth
-        .slice(0)
-        ;
+      serie[0].data = data.production.dailyAvarege.week_wrong.slice(0);
+      serie[1].data = data.production.dailyAvarege.week_rigth.slice(0);
       // this.series[0].data = this.state.production.dailyAvarege.week_total.slice(0).reverse();
       // this.series[1].data = this.state.production.dailyAvarege.week_rigth.slice(0).reverse();
       // this.series[2].data = this.state.production.dailyAvarege.week_wrong.slice(0).reverse();

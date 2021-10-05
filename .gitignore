@@ -11,5 +11,8 @@ engine_H/Images/
 engine_H/Ignore/
 engine_H/Json/logList.json
 
+dist/
+npm-debug.log
+
 __pycache__/
 node_modules/

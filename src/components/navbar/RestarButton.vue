@@ -45,7 +45,7 @@
 
 <script>
 import { actions } from "@/store/index";
-
+import { mapMutations } from "vuex";
 export default {
   name: "RestartButton",
 
@@ -72,6 +72,7 @@ export default {
   },
 
   methods: {
+    ...mapMutations(["SEND_MESSAGE"]),
     request() {
       fetch(
         "http://" +

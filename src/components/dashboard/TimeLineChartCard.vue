@@ -4,33 +4,37 @@
     <v-card class="mx-auto">
       <div class="pa-3">
         <v-row>
-          <div class="text--secondary ml-3 mb-6">Tempo produção de <b>hoje</b> por peça</div>
+          <div class="text--secondary ml-3 mb-6">
+            Tempo produção de <b>hoje</b> por peça
+          </div>
           <v-spacer></v-spacer>
           <DropdownData @selected-item="selectedArray"></DropdownData>
         </v-row>
         <v-row>
           <v-fade-transition>
-          <div class="pr-5 pl-3 d-flex justify-space-around statistics">
-            <div
-              class="d-flex justify-center"
-              v-for="item in infoList"
-              :key="item.text"
-            >
-              <div class="d-flex justify-center flex-column">
-                <div>
-                  <span class="text-h5 text--primary">
-                    <v-icon class="ml-4" :color="item.color" large>{{
-                      item.icon
-                    }}</v-icon>
-                    {{ item.number }}</span
-                  ><span class="text--secondary">{{ item.unit }}</span>
-                </div>
-                <div class="text--secondary caption ml-3 d-flex justify-center">
-                  {{ item.text }}
+            <div class="pr-5 pl-3 d-flex justify-space-around statistics">
+              <div
+                class="d-flex justify-center"
+                v-for="item in infoList"
+                :key="item.text"
+              >
+                <div class="d-flex justify-center flex-column">
+                  <div>
+                    <span class="text-h5 text--primary">
+                      <v-icon class="ml-4" :color="item.color" large>{{
+                        item.icon
+                      }}</v-icon>
+                      {{ item.number }}</span
+                    ><span class="text--secondary">{{ item.unit }}</span>
+                  </div>
+                  <div
+                    class="text--secondary caption ml-3 d-flex justify-center"
+                  >
+                    {{ item.text }}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
           </v-fade-transition>
         </v-row>
 

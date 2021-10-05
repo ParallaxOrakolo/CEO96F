@@ -30,18 +30,17 @@ export default {
     ...mapState({
       running: (state) => {
         // if (state.operation.running) {
-          this.videoElement.play();
-          // document.querySelector(".videoContent").play();
+        this.videoElement.play();
+        // document.querySelector(".videoContent").play();
         // } else {
         //   this.videoElement.pause();
         // }
-        return state.operation.running
+        return state.operation.running;
       },
 
-      started: state => state.operation.started,
-      running: state => state.operation.running,
-      finished: state => state.operation.finished,
-
+      started: (state) => state.operation.started,
+      running: (state) => state.operation.running,
+      finished: (state) => state.operation.finished,
     }),
     ...mapGetters(["state"]),
   },
