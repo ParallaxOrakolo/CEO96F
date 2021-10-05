@@ -70,6 +70,18 @@ export default {
   props: {
     online: Boolean,
   },
+
+  methods: {
+    request() {
+      fetch(
+        "http://" +
+          this.configuration.informations.ip +
+          ":" +
+          this.configuration.informations.portStream +
+          "/exit"
+      );
+    },
+  },
 };
 </script>
 
