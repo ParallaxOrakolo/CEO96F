@@ -1,7 +1,7 @@
 import { constants } from "fs";
 import Vue from "vue";
 import Vuex from "vuex";
-import machineJson from "../../engine_H/Json/machineParamters.json";
+import machineJson from "../../engine/Json/machineParamters.json";
 Vue.use(Vuex);
 
 var wsConnection = constants;
