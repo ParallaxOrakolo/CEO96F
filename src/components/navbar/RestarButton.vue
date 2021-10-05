@@ -28,7 +28,7 @@
             v-on:click="
               () => {
                 SEND_MESSAGE({
-                  command: actions.SHUTDOWN_RASPBERRY,
+                  command: actions.RESTART_RASPBERRY,
                 });
                 restartDialog = false;
                 request();
@@ -45,7 +45,7 @@
 
 <script>
 import { actions } from "@/store/index";
-
+import { mapMutations } from "vuex";
 export default {
   name: "RestartButton",
 
@@ -72,6 +72,7 @@ export default {
   },
 
   methods: {
+    ...mapMutations(["SEND_MESSAGE"]),
     request() {
       fetch(
         "http://" +

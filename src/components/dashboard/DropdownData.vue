@@ -1,21 +1,18 @@
 <template>
   <div class="text-center">
-    <v-menu
-       offset-y
-      :close-on-click="closeOnClick"
-    >
+    <v-menu offset-y :close-on-click="closeOnClick">
       <template v-slot:activator="{ on, attrs }">
         <v-btn
-        class="mr-5"
-        small
-        rounded
-        outlined
+          class="mr-5"
+          small
+          rounded
+          outlined
           color="primary"
           dark
           v-bind="attrs"
           v-on="on"
         >
-          {{selectedArray ? selectedArray.name : defaultArrayName }}
+          {{ selectedArray ? selectedArray.name : defaultArrayName }}
         </v-btn>
       </template>
 
@@ -45,24 +42,26 @@ export default {
 
   computed: {
     ...mapState({
-      allParts: state => state.production.allParts,
-      allArrays: state =>{
-          let concatenatedArray=[]
-          concatenatedArray = state.production.productionPartList
-          concatenatedArray = concatenatedArray.concat([state.production.allParts])
-          // console.log(concatenatedArray);
-          return concatenatedArray
+      allParts: (state) => state.production.allParts,
+      allArrays: (state) => {
+        let concatenatedArray = [];
+        concatenatedArray = state.production.productionPartList;
+        concatenatedArray = concatenatedArray.concat([
+          state.production.allParts,
+        ]);
+        // console.log(concatenatedArray);
+        return concatenatedArray;
       },
-      defaultArrayName: state => state.production.allParts.name
+      defaultArrayName: (state) => state.production.allParts.name,
     }),
   },
 
   methods: {
-      select(selectedItem){
-          this.selectedArray = selectedItem
-          this.$emit('selected-item', selectedItem)
-          // console.log(selectedItem);
-      }
+    select(selectedItem) {
+      this.selectedArray = selectedItem;
+      this.$emit("selected-item", selectedItem);
+      // console.log(selectedItem);
+    },
   },
 };
 </script>

@@ -8,7 +8,7 @@
       :src="require(`@/assets/img/estribo-quadrado-perspective.jpg`)"
       max-width="300"
     ></v-img>
-    
+
     <div class="buttons">
       <!-- <v-btn
         class="mt-15"
@@ -163,7 +163,6 @@ export default {
       finished: (state) => state.operation.finished,
       allPartsToday: (state) => state.production.allParts.production.today,
     }),
-
   },
 
   methods: {

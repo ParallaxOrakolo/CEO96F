@@ -1,0 +1,621 @@
+{
+    "configuration": {
+        "logged": false,
+        "cameraList": [
+            {
+                "name": "Câmera - Furação",
+                "cameraId": 0,
+                "filter": "hole"
+            },
+            {
+                "name": "Camera Validação",
+                "cameraId": 2,
+                "filter": "screw"
+            }
+        ],
+        "assembly": {
+            "listOfParts": [
+                {
+                    "index": 0,
+                    "partName": "Peça Menor",
+                    "frontImg": "estribo-quadrado-front.png",
+                    "perspectiveImg": "estribo-quadrado.png",
+                    "listed": true,
+                    "listOfHoles": [
+                        {
+                            "index": 1,
+                            "checkboxPosition": {
+                                "top": "8.3%",
+                                "left": "50%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 2,
+                            "checkboxPosition": {
+                                "top": "25%",
+                                "left": "83%"
+                            },
+                            "mount": false
+                        },
+                        {
+                            "index": 3,
+                            "checkboxPosition": {
+                                "top": "57%",
+                                "left": "83%"
+                            },
+                            "mount": false
+                        },
+                        {
+                            "index": 4,
+                            "checkboxPosition": {
+                                "top": "72%",
+                                "left": "50%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 5,
+                            "checkboxPosition": {
+                                "top": "25%",
+                                "left": "11%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 6,
+                            "checkboxPosition": {
+                                "top": "57%",
+                                "left": "11%"
+                            },
+                            "mount": true
+                        }
+                    ]
+                },
+                {
+                    "index": 1,
+                    "partName": "Peça Maior",
+                    "frontImg": "estribo-retangular-front.png",
+                    "perspectiveImg": "estribo-retangular.png",
+                    "listed": true,
+                    "listOfHoles": [
+                        {
+                            "index": 1,
+                            "checkboxPosition": {
+                                "top": "0",
+                                "left": "50%"
+                            },
+                            "mount": false
+                        },
+                        {
+                            "index": 2,
+                            "checkboxPosition": {
+                                "top": "18%",
+                                "left": "83%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 3,
+                            "checkboxPosition": {
+                                "top": "55%",
+                                "left": "83%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 4,
+                            "checkboxPosition": {
+                                "top": "72%",
+                                "left": "50%"
+                            },
+                            "mount": false
+                        },
+                        {
+                            "index": 5,
+                            "checkboxPosition": {
+                                "top": "55%",
+                                "left": "11%"
+                            },
+                            "mount": true
+                        },
+                        {
+                            "index": 6,
+                            "checkboxPosition": {
+                                "top": "18%",
+                                "left": "11%"
+                            },
+                            "mount": true
+                        }
+                    ]
+                }
+            ]
+        },
+        "informations": {
+            "ip": "192.168.4.1",
+            "connectionId": 123456,
+            "port": 5000,
+            "portStream": 8080,
+            "users": {
+                "logged": {
+                    "name": "Henrycke",
+                    "lastAcess": 1633445174112,
+                    "id": 12462584986,
+                    "newUserIndex": null,
+                    "level": "Parallax"
+                },
+                "levelList": [
+                    {
+                        "name": "Parallax",
+                        "level": 1,
+                        "componentsProhibitedAccess": []
+                    },
+                    {
+                        "name": "Manutenção",
+                        "level": 2,
+                        "componentsProhibitedAccess": [
+                            "JsonEditor2",
+                            "SerialMonitor"
+                        ]
+                    },
+                    {
+                        "name": "Operador",
+                        "level": 3,
+                        "componentsProhibitedAccess": [
+                            "AdvancedSettings",
+                            "SerialMonitor",
+                            "UserTable"
+                        ]
+                    }
+                ],
+                "userList": [
+                    {
+                        "name": "Rodrigo Gomes",
+                        "id": "45585921835",
+                        "lastAcess": 1633378146572,
+                        "level": "Parallax"
+                    },
+                    {
+                        "name": "Arthur",
+                        "id": "321",
+                        "lastAcess": 0,
+                        "level": "Operador"
+                    },
+                    {
+                        "name": "Ronaldo",
+                        "id": "111",
+                        "lastAcess": 0,
+                        "level": "Manutenção"
+                    },
+                    {
+                        "name": "Henrycke",
+                        "lastAcess": 1633445174112,
+                        "id": 12462584986,
+                        "newUserIndex": null,
+                        "level": "Parallax"
+                    }
+                ]
+            },
+            "version": {
+                "backend": "1.0.0",
+                "frontend": "0.1.1",
+                "marlin": "None"
+            },
+            "machine": {
+                "limits": {
+                    "xMin": 0,
+                    "yMin": 0,
+                    "zMin": 0,
+                    "aMin": 0,
+                    "bMin": 0,
+                    "xMax": 250,
+                    "yMax": 45,
+                    "zMax": 152,
+                    "aMax": 360,
+                    "bMax": 360
+                },
+                "maxFeedrate": {
+                    "xMax": 20000,
+                    "yMax": 50000,
+                    "zMax": 10000,
+                    "zMaxD": 15000,
+                    "zMaxU": 8000,
+                    "aMax": 50000,
+                    "bMax": 50000
+                },
+                "maxFeedratePercent": {
+                    "X": 50,
+                    "Y": 90,
+                    "ZD": 100,
+                    "ZU": 80,
+                    "ZD2": 50,
+                    "ZU2": 100,
+                    "E": 100
+                },
+                "MaxAcceleration": {
+                    "X": 2500,
+                    "Y": 250,
+                    "Z": 2500,
+                    "E": 5000,
+                    "A": 5000
+                },
+                "defaultPosition": {
+                    "pegaTombador": {
+                        "X": 13.6,
+                        "Y": 45,
+                        "Z": null,
+                        "E": 0
+                    },
+                    "alinhaPeca": {
+                        "X": 54,
+                        "Y": 20,
+                        "Z": null,
+                        "E": 0
+                    },
+                    "analisaFoto": {
+                        "X": 204.5,
+                        "Y": 1.5,
+                        "Z": null,
+                        "E": null
+                    },
+                    "validaParafuso": {
+                        "X": 266,
+                        "Y": 0,
+                        "Z": null,
+                        "E": 0
+                    },
+                    "descarteErrado": {
+                        "X": 230,
+                        "Y": 0,
+                        "Z": null,
+                        "E": 0
+                    },
+                    "descarteCerto": {
+                        "X": 13.6,
+                        "Y": 0,
+                        "Z": null,
+                        "E": 0
+                    },
+                    "camera0Centro": {
+                        "X": 251,
+                        "Y": 2,
+                        "Z": null,
+                        "E": null
+                    },
+                    "camera1Centro": {
+                        "X": 61,
+                        "Y": 1,
+                        "Z": null,
+                        "E": null
+                    },
+                    "parafusadeiraCentro": {
+                        "X": 253.9,
+                        "Y": 39.9,
+                        "Z": 132,
+                        "E": null
+                    },
+                    "parafusar": {
+                        "X": null,
+                        "Y": null,
+                        "Z": 150,
+                        "E": null,
+                        "mm": -3,
+                        "voltas": 25
+                    }
+                }
+            }
+        },
+        "camera": {
+            "process": null,
+            "filters": {
+                "hole": {
+                    "name": "hole",
+                    "area": [
+                        20000,
+                        38000
+                    ],
+                    "gradient": {
+                        "color": "#000000",
+                        "color2": "#9f000f"
+                    },
+                    "hsv": {
+                        "hue": [
+                            0,
+                            354.34
+                        ],
+                        "sat": [
+                            0,
+                            255
+                        ],
+                        "val": [
+                            0,
+                            159.12
+                        ]
+                    }
+                },
+                "screw": {
+                    "name": "screw",
+                    "area": [
+                        7000,
+                        65000
+                    ],
+                    "gradient": {
+                        "color": "#454140",
+                        "color2": "#ffec41"
+                    },
+                    "hsv": {
+                        "hue": [
+                            12,
+                            54
+                        ],
+                        "sat": [
+                            18.36,
+                            189.975
+                        ],
+                        "val": [
+                            69.105,
+                            255
+                        ]
+                    }
+                },
+                "normal": {
+                    "name": "normal",
+                    "area": [
+                        2068,
+                        8662
+                    ],
+                    "gradient": {
+                        "color": "#000000",
+                        "color2": "#000000"
+                    },
+                    "hsv": {
+                        "hue": [
+                            0,
+                            0
+                        ],
+                        "sat": [
+                            0,
+                            0
+                        ],
+                        "val": [
+                            0,
+                            0
+                        ]
+                    }
+                }
+            }
+        },
+        "statistics": {
+            "stopReasons": [
+                {
+                    "code": 69,
+                    "description": "Emergência Ativada",
+                    "listed": false,
+                    "type": "error",
+                    "button_text": "Entendi",
+                    "button_action": "popupResponseSolve"
+                },
+                {
+                    "code": 2,
+                    "description": "Falta de Material - Arruela",
+                    "listed": false,
+                    "type": "error",
+                    "button_text": "Entendi",
+                    "button_action": "popupResponseSolve"
+                },
+                {
+                    "code": 3,
+                    "description": "Falta de Material - Parafuso",
+                    "listed": false,
+                    "type": "error",
+                    "button_text": "Entendi",
+                    "button_action": "popupResponseSolve"
+                },
+                {
+                    "code": 4,
+                    "description": "Pressostato - Pressão baixa no sitema",
+                    "listed": false,
+                    "type": "error",
+                    "button_text": "Entendi",
+                    "button_action": "popupResponseSolve"
+                },
+                {
+                    "code": 5,
+                    "description": "Pistão Travado - Parafuso",
+                    "listed": false,
+                    "type": "error",
+                    "button_text": "Entendi",
+                    "button_action": "popupResponseSolve"
+                },
+                {
+                    "code": 6,
+                    "description": "Pistão travado - Conjunto",
+                    "listed": false,
+                    "type": "error",
+                    "button_text": "Entendi",
+                    "button_action": "popupResponseSolve"
+                },
+                {
+                    "code": 7,
+                    "description": "Verificar alimentador de Aro",
+                    "listed": false,
+                    "type": "error",
+                    "button_text": "Entendi",
+                    "button_action": "popupResponseSolve"
+                },
+                {
+                    "code": 8,
+                    "description": "Verificar calha de alimetanção do Aro",
+                    "listed": false,
+                    "type": "error",
+                    "button_text": "Entendi",
+                    "button_action": "popupResponseSolve"
+                },
+                {
+                    "code": 11,
+                    "description": "Verficar se a parafuso travado",
+                    "listed": false,
+                    "type": "error",
+                    "button_text": "Entendi",
+                    "button_action": "popupResponseSolve"
+                },
+                {
+                    "code": 12,
+                    "description": "Garra não pegou",
+                    "listed": true,
+                    "type": "error",
+                    "button_text": "Entendi",
+                    "button_action": "popupResponseSolve"
+                },
+                {
+                    "code": 13,
+                    "description": "Troca de turno",
+                    "listed": true,
+                    "type": "info",
+                    "button_text": "Entendi",
+                    "button_action": "popupResponseSolve"
+                },
+                {
+                    "code": 14,
+                    "description": "Sem comunicação com o CLP",
+                    "listed": false,
+                    "type": "error",
+                    "button_text": "Entendi",
+                    "button_action": "popupResponseSolve"
+                },
+                {
+                    "code": 15,
+                    "description": "Sem comunicação com a estação de montagem",
+                    "listed": false,
+                    "type": "error",
+                    "button_text": "Entendi",
+                    "button_action": "popupResponseSolve"
+                },
+                {
+                    "code": 16,
+                    "description": "Camera _id_ não pode ser iniciada.",
+                    "listed": false,
+                    "type": "error",
+                    "button_text": "Reiniciar",
+                    "button_action": "restart_raspberry"
+                },
+                {
+                    "code": 17,
+                    "description": "Parada manual pelo operador",
+                    "listed": false,
+                    "type": "warning",
+                    "button_text": "Entendi",
+                    "button_action": "popupResponseSolve"
+                },
+                {
+                    "code": 18,
+                    "description": "Houve uma sequência de peças que não pode ser montada, verifique a maquina.",
+                    "listed": false,
+                    "type": "warning",
+                    "button_text": "Entendi",
+                    "button_action": "popupResponseSolve"
+                },
+                {
+                    "code": 19,
+                    "description": "Queda de energia detectada, todos os sistemas foram desligados!",
+                    "listed": false,
+                    "type": "warning",
+                    "button_text": "Entendi",
+                    "button_action": "popupResponseSolve"
+                },
+                {
+                    "code": 20,
+                    "description": "Porta aberta",
+                    "listed": false,
+                    "type": "warning",
+                    "button_text": "Entendi",
+                    "button_action": "popupResponseSolve"
+                },
+                {
+                    "code": 998,
+                    "description": "Parada para ajuste técnico",
+                    "listed": true,
+                    "type": "info",
+                    "button_text": "Entendi",
+                    "button_action": "popupResponseSolve"
+                },
+                {
+                    "code": 999,
+                    "description": "Conexão com placa foi encontrada, mas ela não responde...",
+                    "listed": false,
+                    "type": "error",
+                    "button_text": "Reiniciar",
+                    "button_action": "restart_raspberry"
+                }
+            ],
+            "nonStopCode": [
+                0,
+                9,
+                10,
+                "ok"
+            ],
+            "functionsCode": {
+                "PI": {
+                    "code": 111,
+                    "description": "Progama iniciou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "PT": {
+                    "code": 112,
+                    "description": "Programa terminou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "AVI": {
+                    "code": 113,
+                    "description": "Auto verificiação iniciou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "AVT": {
+                    "code": 114,
+                    "description": "Auto verificiação terminou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "IDI": {
+                    "code": 115,
+                    "description": "Identificação iniciou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "IDT": {
+                    "code": 116,
+                    "description": "Identificação terminou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "VMI": {
+                    "code": 115,
+                    "description": "Validação de montagem iniciou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "VMT": {
+                    "code": 116,
+                    "description": "Validação de montagem terminou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "PSI": {
+                    "code": 117,
+                    "description": "Processo de Scan Iniciou",
+                    "listed": false,
+                    "type": "info"
+                },
+                "PST": {
+                    "code": 118,
+                    "description": "Processo de Scan terminou",
+                    "listed": false,
+                    "type": "info"
+                }
+            }
+        }
+    }
+}
