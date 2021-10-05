@@ -1658,7 +1658,7 @@ async def updateProduction(cicleSeconds, valor):
             prodd["yesterday"] = prodd["today"]
             # Zera o dia de hoje
             prodd["today"] = {"day": int(
-                current_time.day), "total": 0, "rigth": 0, "wrong": 0, "timePerCicle": 0, "timesPerCicles": [0]}
+                current_time.day), "total": 0, "rigth": 0, "wrong": 0, "timePerCicle": 0, "timesPerCicles": [prodd["today"]["timePerCicle"]]}
             prodd["dailyAvarege"]["week_times"].append(
                 prodd["yesterday"]["timePerCicle"])
             prodd["dailyAvarege"]["week_total"].append(

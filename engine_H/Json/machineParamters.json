@@ -330,7 +330,7 @@
                 "screw": {
                     "name": "screw",
                     "area": [
-                        7000,
+                        17000,
                         65000
                     ],
                     "gradient": {

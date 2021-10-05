@@ -67,7 +67,7 @@
         },
         "screw": {
             "perimeter": 0,
-            "areaMin": 17000,
+            "areaMin": 7000,
             "areaMax": 65000
         },
         "normal": {
