@@ -1,7 +1,7 @@
 import { constants } from "fs";
 import Vue from "vue";
 import Vuex from "vuex";
-import machineJson from "../../engine_H/Json/machineParamters.json";
+import machineJson from "../../engine/Json/machineParamters.json";
 Vue.use(Vuex);
 
 var wsConnection = constants;
@@ -23,6 +23,7 @@ export const actions = {
   SERIAL_MONITOR: "serialMonitor",
   SHOW_POPUP: "showPopup",
   SHUTDOWN_RASPBERRY: "shutdown_raspberry",
+  RESTART_RASPBERRY:"restart_raspberry",
   START_AUTOCHECK: "startAutoCheck",
   START_CAMERA_STREAM: "startCameraStream",
   START_PROCESS: "startProcess",

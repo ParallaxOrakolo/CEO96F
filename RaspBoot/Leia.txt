@@ -1,0 +1,1 @@
+# Mova esta pasta para a área de trabalho e configure o Raspberry para executar o arquivo boot.sh ao iniciar.
