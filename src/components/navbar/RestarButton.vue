@@ -28,7 +28,7 @@
             v-on:click="
               () => {
                 SEND_MESSAGE({
-                  command: actions.SHUTDOWN_RASPBERRY,
+                  command: actions.RESTART_RASPBERRY,
                 });
                 restartDialog = false;
                 request();

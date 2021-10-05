@@ -1472,7 +1472,6 @@ async def startAutoCheck(date=None):
         subprocess.run(
             ["sudo", "date", "-s", f"{date[:len(date)-len('(Horário Padrão de Brasília)')]}"])
     # await updateSlider('Normal')
-    await sendWsMessage("update", machineParamters)
     await sendWsMessage("update", production)
     await sendWsMessage("update", stopReasonsList)
     setCameraFilter()
@@ -1503,6 +1502,8 @@ async def startAutoCheck(date=None):
                 SerialPath='Json/serial.json', name='Ramps 1.4')
             if status:
                 conexaoStatusArdu = True
+                machineParamters["configuration"]["informations"]["version"]["marlin"] = Fast.M115(arduino)
+                #Fast.writeJson('Json/machineParamters.json', machineParamters)
                 HomingAll()
             else:
                 raise TypeError
@@ -1595,6 +1596,7 @@ async def startAutoCheck(date=None):
         await asyncio.sleep(0.5)
 
     connection["connectionStatus"] = "Verificação concluida"
+    await sendWsMessage("update", machineParamters)
     await sendWsMessage("update", connection)
     await logRequest()
     await sendWsMessage("startAutoCheck_success")

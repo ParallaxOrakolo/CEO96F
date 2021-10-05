@@ -201,6 +201,8 @@ def M114(serial, type='', where=[("X:", " Y:"), ("Y:", " Z:"), ("Z:", " A:"), ("
         print("Recebi:", Echo)
         return Echo
 
+def M115(serial, line=0, start=21, end=28):
+    return sendGCODE(serial, "M115", echo=True)[line][start:end]
 
 def M119(serial, cut=": "):
     pos=[]

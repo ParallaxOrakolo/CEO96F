@@ -23,6 +23,7 @@ export const actions = {
   SERIAL_MONITOR: "serialMonitor",
   SHOW_POPUP: "showPopup",
   SHUTDOWN_RASPBERRY: "shutdown_raspberry",
+  RESTART_RASPBERRY:"restart_raspberry",
   START_AUTOCHECK: "startAutoCheck",
   START_CAMERA_STREAM: "startCameraStream",
   START_PROCESS: "startProcess",

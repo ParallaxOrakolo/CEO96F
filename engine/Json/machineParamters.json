@@ -132,12 +132,18 @@
             ]
         },
         "informations": {
-            "ip": "192.168.1.38",
+            "ip": "192.168.4.1",
             "connectionId": 123456,
             "port": 5000,
             "portStream": 8080,
             "users": {
-                "logged": false,
+                "logged": {
+                    "name": "Henrycke",
+                    "lastAcess": 1633445174112,
+                    "id": 12462584986,
+                    "newUserIndex": null,
+                    "level": "Parallax"
+                },
                 "levelList": [
                     {
                         "name": "Parallax",
@@ -183,7 +189,7 @@
                     },
                     {
                         "name": "Henrycke",
-                        "lastAcess": 1630420604227,
+                        "lastAcess": 1633445174112,
                         "id": 12462584986,
                         "newUserIndex": null,
                         "level": "Parallax"
@@ -191,9 +197,9 @@
                 ]
             },
             "version": {
-                "backend": "0.1.0",
+                "backend": "1.0.0",
                 "frontend": "0.1.1",
-                "marlin": "2.0.0"
+                "marlin": "None"
             },
             "machine": {
                 "limits": {
