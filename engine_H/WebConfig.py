@@ -908,10 +908,10 @@ def Parafusa(pos, voltas=2, mm=0, ZFD=100, ZFU=100, dowLess=False, reset=False, 
         #print("Status Atual: ", st, "Time:",round(timeit.default_timer() - t0,2))
         if st == "open":
             deuBoa = True
-            edit(F"OK 0 (Z: {Fast.M114(arduino, 'R')})")
+            #edit(F"OK 0 (Z: {Fast.M114(arduino, 'R')})")
             break
     else:                                                                                       # Caso o temo estoure e o loop termine de forma natural
-        edit(F"Falha 0 (Z: {Fast.M114(arduino, 'R')})")
+        #edit(F"Falha 0 (Z: {Fast.M114(arduino, 'R')})")
         if not Pega:   
             Fast.sendGCODE(arduino, f"M42 P32 S0")
             Fast.sendGCODE(arduino, 'G91')                                                      # Garate que está em posição relativa 
@@ -926,10 +926,10 @@ def Parafusa(pos, voltas=2, mm=0, ZFD=100, ZFU=100, dowLess=False, reset=False, 
          #       print("Status Atual: ", st, "Time:",round(timeit.default_timer() - t0,2))       # Mostra o status do sensor
                 if st  == "open":                                                               # Se o sensor 'abrir', pois deu rosca até econtrar a ponta.
                     deuBoa = True                                                               # Avisa que deuBoa
-                    edit(F"OK 1 (Z: {Fast.M114(arduino, 'R')['Z']})")
+                    #edit(F"OK 1 (Z: {Fast.M114(arduino, 'R')['Z']})")
                     break                                                                       # quebra o loop
             else:                                                                               # Caso não consiga
-                edit(F"Falha 1 (Z: {Fast.M114(arduino, 'R')['Z']})")
+                #edit(F"Falha 1 (Z: {Fast.M114(arduino, 'R')['Z']})")
                 deuBoa = False                                                                  # Avisa que deu ruim
             Fast.sendGCODE(arduino, f"M42 P32 S255")
             Fast.sendGCODE(arduino, f'M201 Z{zMaxAcceleration}')
