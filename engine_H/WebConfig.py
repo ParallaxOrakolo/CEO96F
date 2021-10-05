@@ -1652,33 +1652,36 @@ async def updateProduction(cicleSeconds, valor):
     current_time = datetime.now()
     print(f"{current_time.day} vs {int(prodd['today']['day'])}")
     if int(prodd["today"]["day"]) != int(current_time.day):
-        print("Atualizando Dia de Hoje...")
-        prodd["yesterday"] = prodd["today"]
-        # Zera o dia de hoje
-        prodd["today"] = {"day": int(
-            current_time.day), "total": 0, "rigth": 0, "wrong": 0, "timePerCicle": 0, "timesPerCicles": []}
-        prodd["dailyAvarege"]["week_times"].append(
-            prodd["yesterday"]["timePerCicle"])
-        prodd["dailyAvarege"]["week_total"].append(
-            prodd["yesterday"]["total"])
-        prodd["dailyAvarege"]["week_rigth"].append(
-            prodd["yesterday"]["rigth"])
-        prodd["dailyAvarege"]["week_wrong"].append(
-            prodd["yesterday"]["wrong"])
-        week_time = prodd["dailyAvarege"]["week_times"]
-        week_total = prodd["dailyAvarege"]["week_total"]
-        week_rigth = prodd["dailyAvarege"]["week_rigth"]
-        week_wrong = prodd["dailyAvarege"]["week_wrong"]
-        appends = {"times": week_time, "total": week_total,
-                   "rigth": week_rigth, "wrong": week_wrong}
-        if week_time:
-            for k, v in appends.items():
-                while len(v) > 7:
-                    v.pop(0)
-                media = (np.around(np.average(np.array(v), axis=0).tolist())).tolist()#round(sum(v) / len(v), 2)
-                print(k, v, media)
-                prodd["dailyAvarege"][k] = media
-
+        for x in range(2):
+            prodd = production["production"]["productionPartList"][int(x)]["production"]
+            print("Atualizando Dia de Hoje...")
+            prodd["yesterday"] = prodd["today"]
+            # Zera o dia de hoje
+            prodd["today"] = {"day": int(
+                current_time.day), "total": 0, "rigth": 0, "wrong": 0, "timePerCicle": 0, "timesPerCicles": [0]}
+            prodd["dailyAvarege"]["week_times"].append(
+                prodd["yesterday"]["timePerCicle"])
+            prodd["dailyAvarege"]["week_total"].append(
+                prodd["yesterday"]["total"])
+            prodd["dailyAvarege"]["week_rigth"].append(
+                prodd["yesterday"]["rigth"])
+            prodd["dailyAvarege"]["week_wrong"].append(
+                prodd["yesterday"]["wrong"])
+            week_time = prodd["dailyAvarege"]["week_times"]
+            week_total = prodd["dailyAvarege"]["week_total"]
+            week_rigth = prodd["dailyAvarege"]["week_rigth"]
+            week_wrong = prodd["dailyAvarege"]["week_wrong"]
+            appends = {"times": week_time, "total": week_total,
+                    "rigth": week_rigth, "wrong": week_wrong}
+            if week_time:
+                for k, v in appends.items():
+                    while len(v) > 7:
+                        v.pop(0)
+                    media = (np.around(np.average(np.array(v), axis=0).tolist())).tolist()#round(sum(v) / len(v), 2)
+                    print(k, v, media)
+                    prodd["dailyAvarege"][k] = media
+        else:
+            prodd = production["production"]["productionPartList"][int(modelo_atual)]["production"]
     valores = prodd["today"]["timesPerCicles"]
     if valores:
         #media = round(sum(valores) / len(valores), 2)

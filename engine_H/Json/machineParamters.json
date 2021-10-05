@@ -36,7 +36,7 @@
                                 "top": "25%",
                                 "left": "83%"
                             },
-                            "mount": true
+                            "mount": false
                         },
                         {
                             "index": 3,
@@ -44,7 +44,7 @@
                                 "top": "57%",
                                 "left": "83%"
                             },
-                            "mount": true
+                            "mount": false
                         },
                         {
                             "index": 4,
@@ -166,7 +166,7 @@
                     {
                         "name": "Rodrigo Gomes",
                         "id": "45585921835",
-                        "lastAcess": 1633376084411,
+                        "lastAcess": 1633378146572,
                         "level": "Parallax"
                     },
                     {
@@ -512,6 +512,14 @@
                 {
                     "code": 19,
                     "description": "Queda de energia detectada, todos os sistemas foram desligados!",
+                    "listed": false,
+                    "type": "warning",
+                    "button_text": "Entendi",
+                    "button_action": "popupResponseSolve"
+                },
+                {
+                    "code": 20,
+                    "description": "Porta aberta",
                     "listed": false,
                     "type": "warning",
                     "button_text": "Entendi",
