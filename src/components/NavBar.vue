@@ -40,8 +40,11 @@
 
     <v-spacer></v-spacer>
     <!-- <SnackBar /> -->
-    
-    <RestartButton v-if="$route.name == 'settings'" :online="isConnected"></RestartButton>
+
+    <RestartButton
+      v-if="$route.name == 'settings'"
+      :online="isConnected"
+    ></RestartButton>
 
     <v-icon dark color="light-green lighten-1" v-show="isConnected"
       >mdi-lan-check</v-icon
@@ -63,7 +66,7 @@
 // import { mapMutations } from "vuex"; Remove mapMutations -HB
 import { mapState, mapMutations } from "vuex";
 import { actions } from "../../src/store/index";
-import RestartButton from "./navbar/RestarButton.vue"
+import RestartButton from "./navbar/RestarButton.vue";
 
 export default {
   name: "NavBar",
@@ -92,15 +95,6 @@ export default {
   },
   methods: {
     ...mapMutations(["SEND_MESSAGE"]),
-    request() {
-      fetch(
-        "http://" +
-          this.configuration.informations.ip +
-          ":" +
-          this.configuration.informations.portStream +
-          "/exit"
-      );
-    },
     close() {
       const remote = require("electron").remote;
       var window = remote.getCurrentWindow();
