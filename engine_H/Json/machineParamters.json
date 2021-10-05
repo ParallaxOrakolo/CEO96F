@@ -132,7 +132,7 @@
             ]
         },
         "informations": {
-            "ip": "192.168.4.1",
+            "ip": "192.168.1.38",
             "connectionId": 123456,
             "port": 5000,
             "portStream": 8080,
@@ -330,7 +330,7 @@
                 "screw": {
                     "name": "screw",
                     "area": [
-                        17000,
+                        7000,
                         65000
                     ],
                     "gradient": {
