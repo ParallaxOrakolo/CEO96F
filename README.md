@@ -1,4 +1,5 @@
-# CEO96f
+# Tração CEO
+![enter image description here](https://img.shields.io/badge/build-1.0.0-green)
 
 ## Project setup
 ```
