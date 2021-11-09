@@ -28,6 +28,9 @@
                 </div>
                 <div class="text--secondary caption ml-3 d-flex justify-center">
                   {{ item.text }}
+                  <span v-if="item.isEditable">
+                    <EditProductionButton></EditProductionButton>
+                  </span>
                 </div>
               </div>
             </div>
@@ -57,6 +60,7 @@
 //import ProgressStatus from "../components/ProgressStatus";
 import { mapState } from "vuex";
 import DropdownData from "@/components/dashboard/DropdownData.vue";
+import EditProductionButton from "@/components/EditProductionButton.vue";
 
 // import VideoProgress from "../components/VideoProgress"; Remove VideoProgress
 export default {
@@ -65,6 +69,7 @@ export default {
 
   components: {
     DropdownData,
+    EditProductionButton,
   },
 
   props: {
@@ -87,8 +92,6 @@ export default {
       legend: {
         show: false,
       },
-      colors: ["#2E93fA"],
-      fill: {},
       type: "gradient",
       grid: {
         padding: {
@@ -141,7 +144,7 @@ export default {
       ];
 
       data[0].data = this.allParts.production.today.timesPerCicles;
-     
+
       // this.chartOptions.yaxis.min = Math.min(...data[0].data) - 15;
       this.chartOptions.yaxis.max = Math.max(...data[0].data) + 15;
 
@@ -168,12 +171,13 @@ export default {
           number: this.total,
           icon: "mdi-chart-timeline-variant",
           color: "blue lighten-2",
+          isEditable: false,
         },
         {
           text: "Certas",
           unit: "",
           number: this.right,
-
+          isEditable: true,
           // number: this.state.production.today.rigth,
           icon: "mdi-check",
           color: "green lighten-2",
@@ -183,7 +187,7 @@ export default {
           unit: "",
           // number: this.state.production.today.wrong,
           number: this.wrong,
-
+          isEditable: false,
           icon: "mdi-close",
           color: "red lighten-2",
         },
@@ -191,6 +195,7 @@ export default {
           text: "Tempo médio",
           unit: "s",
           // number: this.state.production.today.timePerCicle.toFixed(1),
+          isEditable: false,
           number: data.production.today.timePerCicle.toFixed(1),
           icon: "mdi-timer-outline",
           color: "blue lighten-2",

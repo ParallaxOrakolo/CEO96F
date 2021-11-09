@@ -36,6 +36,7 @@ export const actions = {
   UPDATE_USERS: "updateUsers",
   UPDATE_FILTER: "updateFilter",
   UPDATE_SLIDER: "updateSlider",
+  EDIT_PRODUCTION: 'editProduction'
 };
 
 const store = new Vuex.Store({

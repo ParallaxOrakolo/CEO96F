@@ -27,12 +27,18 @@
                   item.icon
                 }}</v-icon>
                 {{ item.number }}</span
-              ><span class="subtitle-1">{{ item.unit }}</span>
+              ><span class="subtitle-1"
+                >{{ item.unit }}
+                </span>
             </div>
 
             <!-- <v-divider class="ml-2"></v-divider> -->
             <div class="subtitle-1 caption ml-3 d-flex justify-end">
-              {{ item.text }}
+              <EditProductionButton
+              class="pr-2"
+                  v-if="item.isEditable"
+                ></EditProductionButton
+              >{{ item.text }}
             </div>
           </div>
         </div>
@@ -51,6 +57,7 @@
 import { mapGetters, mapMutations } from "vuex";
 import { actions } from "../store/index";
 import StartButton from "../components/StartButton";
+import EditProductionButton from "@/components/EditProductionButton.vue";
 
 export default {
   // mixins: [mixins],
@@ -66,6 +73,7 @@ export default {
 
   components: {
     StartButton,
+    EditProductionButton,
   },
 
   computed: {
@@ -79,6 +87,7 @@ export default {
           number: this.state.operation.right + this.state.operation.wrong,
           icon: "mdi-chart-timeline-variant",
           color: "blue lighten-2",
+          isEditable: false,
         },
         {
           text: "Certas",
@@ -86,6 +95,7 @@ export default {
           number: this.state.operation.right,
           icon: "mdi-check",
           color: "green lighten-2",
+          isEditable: true,
         },
         {
           text: "Erradas",
@@ -93,6 +103,7 @@ export default {
           number: this.state.operation.wrong,
           icon: "mdi-close",
           color: "red lighten-2",
+          isEditable: false,
         },
       ];
       return list;
